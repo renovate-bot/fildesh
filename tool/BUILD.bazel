@@ -95,6 +95,13 @@ alias(
     visibility = ["//visibility:public"],
 )
 
+# The sxpb2yaml tool is used by rules_sxproto.
+alias(
+    name = "sxpb2yaml",
+    actual = "//src/builtin:sxpb2yaml",
+    visibility = ["//visibility:public"],
+)
+
 
 ################################################################################
 ## Tool library.

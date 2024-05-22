@@ -13,3 +13,13 @@
   (((and)) true false)
   (((or)) false false true))
 )
+
+; An empty manyof.
+(((empty_manyof)))
+
+; A manyof with empty elements.
+((empty_manyof_elements)
+ ((empty_array))
+ (((empty_manyof)))
+ (empty_message)
+)

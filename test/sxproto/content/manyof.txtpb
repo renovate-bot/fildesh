@@ -41,3 +41,11 @@ expressions: [{
     }]
   }]
 }]
+empty_manyof: []
+empty_manyof_elements: [{
+  empty_array: []
+}, {
+  empty_manyof: []
+}, {
+  empty_message {}
+}]

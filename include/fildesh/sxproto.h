@@ -120,6 +120,8 @@ void
 print_json_FildeshO(FildeshO* out, FildeshSxpb* sxpb);
 void
 print_txtpb_FildeshO(FildeshO* out, FildeshSxpb* sxpb);
+void
+print_yaml_FildeshO(FildeshO* out, FildeshSxpb* sxpb);
 
 const char*
 ensure_name_FildeshSxpb(FildeshSxpb* sxpb, const char* s, size_t n);

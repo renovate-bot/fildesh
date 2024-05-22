@@ -2,10 +2,10 @@
   "f": 5.5e+0,
   "i": 5,
   "m": {
-    "f": 5.5e+0,
-    "i": 5,
-    "s": "hello"
+    "f": -5.5e+0,
+    "i": -5,
+    "s": "goodbye"
   },
   "s": "hello",
-  "maybe_m": {}
+  "empty_message": {}
 }

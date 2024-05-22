@@ -8,6 +8,7 @@ add_library(sxproto_lib_obj OBJECT
   "txtpb.c"
   "value.c"
   "value.h"
+  "yaml.c"
   "${PROJECT_SOURCE_DIR}/include/fildesh/sxproto.h"
 )
 add_library(sxproto_lib STATIC

@@ -35,6 +35,7 @@ cc_library(
         "//src/builtin:sponge.c",
         "//src/builtin:sxpb2json.c",
         "//src/builtin:sxpb2txtpb.c",
+        "//src/builtin:sxpb2yaml.c",
         "//src/builtin:time2sec.c",
         "//src/builtin:transpose.c",
         "//src/builtin:ujoin.c",

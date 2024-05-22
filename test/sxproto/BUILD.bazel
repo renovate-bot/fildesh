@@ -59,3 +59,18 @@ fildesh_test(
         "message_txtpb": "//test/sxproto/content:message.txtpb",
     },
 )
+
+fildesh_test(
+    name = "sxpb2yaml_test",
+    srcs = ["sxpb2yaml_test.fildesh"],
+    input_by_option = {
+        "array_sxpb": "//test/sxproto/content:array.sxpb",
+        "array_yaml": "//test/sxproto/content:array.yaml",
+        "loneof_sxpb": "//test/sxproto/content:loneof.sxpb",
+        "loneof_yaml": "//test/sxproto/content:loneof.yaml",
+        "manyof_sxpb": "//test/sxproto/content:manyof.sxpb",
+        "manyof_yaml": "//test/sxproto/content:manyof.yaml",
+        "message_sxpb": "//test/sxproto/content:message.sxpb",
+        "message_yaml": "//test/sxproto/content:message.yaml",
+    },
+)

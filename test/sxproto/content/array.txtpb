@@ -9,3 +9,4 @@ my_messages: [{
   i: 5
   s: "hello"
 }]
+my_empty_array: []

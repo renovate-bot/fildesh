@@ -4,7 +4,6 @@
 
 #include "src/sxproto/value.h"
 
-static
   void
 print_json_literal_value_FildeshO(FildeshO* out, const FildeshSxprotoValue* e)
 {

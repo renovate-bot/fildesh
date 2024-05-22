@@ -9,5 +9,6 @@
     "f": 5.5e+0,
     "i": 5,
     "s": "hello"
-  }]
+  }],
+  "my_empty_array": []
 }

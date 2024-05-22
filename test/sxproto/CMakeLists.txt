@@ -47,3 +47,15 @@ add_test(NAME sxpb2txtpb_test COMMAND ${Fildesh_EXECUTABLE}
   "--message_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.sxpb"
   "--message_txtpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.txtpb"
 )
+
+add_test(NAME sxpb2yaml_test COMMAND ${Fildesh_EXECUTABLE}
+  -f "${CMAKE_CURRENT_SOURCE_DIR}/sxpb2yaml_test.fildesh"
+  "--array_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/array.sxpb"
+  "--array_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/array.yaml"
+  "--loneof_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/loneof.sxpb"
+  "--loneof_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/loneof.yaml"
+  "--manyof_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/manyof.sxpb"
+  "--manyof_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/manyof.yaml"
+  "--message_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.sxpb"
+  "--message_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/message.yaml"
+)

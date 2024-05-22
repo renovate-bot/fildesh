@@ -1,0 +1,48 @@
+
+# There are several tests. Search for:
+# - message_sxpb
+# - loneof_sxpb
+# - array_sxpb
+# - manyof_sxpb
+
+(: message_sxpb Filename .self.opt.message_sxpb)
+(: message_yaml Filename .self.opt.message_yaml)
+
+|< zec / / $(XOF message_sxpb)
+|- sxpb2yaml
+|- cmptxt $(XOF message_yaml)
+|> stdout
+
+
+$(barrier)
+
+(: loneof_sxpb Filename .self.opt.loneof_sxpb)
+(: loneof_yaml Filename .self.opt.loneof_yaml)
+
+|< zec / / $(XOF loneof_sxpb)
+|- sxpb2yaml
+|- cmptxt $(XOF loneof_yaml)
+|> stdout
+
+
+$(barrier)
+
+(: array_sxpb Filename .self.opt.array_sxpb)
+(: array_yaml Filename .self.opt.array_yaml)
+
+|< zec / / $(XOF array_sxpb)
+|- sxpb2yaml
+|- cmptxt $(XOF array_yaml)
+|> stdout
+
+
+$(barrier)
+
+(: manyof_sxpb Filename .self.opt.manyof_sxpb)
+(: manyof_yaml Filename .self.opt.manyof_yaml)
+
+|< zec / / $(XOF manyof_sxpb)
+|- sxpb2yaml
+|- cmptxt $(XOF manyof_yaml)
+|> stdout
+

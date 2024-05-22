@@ -15,6 +15,7 @@ exports_files([
     "sponge.c",
     "sxpb2json.c",
     "sxpb2txtpb.c",
+    "sxpb2yaml.c",
     "time2sec.c",
     "transpose.c",
     "ujoin.c",
@@ -93,14 +94,21 @@ cc_binary(
     name = "sxpb2json",
     srcs = ["sxpb2json.c"],
     deps = ["//:sxproto_lib"],
-    visibility = ["//visibility:public"],
+    visibility = [ "//tool:__pkg__"],
 )
 
 cc_binary(
     name = "sxpb2txtpb",
     srcs = ["sxpb2txtpb.c"],
     deps = ["//:sxproto_lib"],
-    visibility = ["//visibility:public"],
+    visibility = [ "//tool:__pkg__"],
+)
+
+cc_binary(
+    name = "sxpb2yaml",
+    srcs = ["sxpb2yaml.c"],
+    deps = ["//:sxproto_lib"],
+    visibility = [ "//tool:__pkg__"],
 )
 
 cc_binary(
