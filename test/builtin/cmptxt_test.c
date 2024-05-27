@@ -97,27 +97,6 @@ usage_test(char* bad_filename)
 
   argc = 3;
   reset_argv(argc, argv, inputv, outputv);
-  argv[1] = (char*)"/dev/null";
-  argv[2] = (char*)"/dev/null";
-  exstatus = fildesh_builtin_cmptxt_main(argc, argv, inputv, outputv);
-  assert(exstatus == 0);
-
-  argc = 2;
-  reset_argv(argc, argv, inputv, outputv);
-  argv[1] = (char*)"-";
-  exstatus = fildesh_builtin_cmptxt_main(argc, argv, inputv, outputv);
-  assert(exstatus == 64);
-
-  argc = 4;
-  reset_argv(argc, argv, inputv, outputv);
-  argv[1] = (char*)"/dev/null";
-  argv[2] = (char*)"/dev/null";
-  argv[3] = (char*)"too_many_files";
-  exstatus = fildesh_builtin_cmptxt_main(argc, argv, inputv, outputv);
-  assert(exstatus == 64);
-
-  argc = 3;
-  reset_argv(argc, argv, inputv, outputv);
   argv[1] = (char*)"-o";
   argv[2] = bad_filename;
   exstatus = fildesh_builtin_cmptxt_main(argc, argv, inputv, outputv);

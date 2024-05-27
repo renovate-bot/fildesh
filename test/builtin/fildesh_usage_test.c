@@ -4,34 +4,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
-static void add_usage_tests(const char* fildesh_exe) {
-  int istat;
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "add",
-      "no_arg_is_valid", NULL);
-  assert(istat == 64);
-}
-
 static void bestmatch_usage_tests(const char* fildesh_exe, const char* bad_filename) {
   int istat;
-  /* Need -x-lut.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "bestmatch",
-      "-x", "/dev/null", NULL);
-  assert(istat == 64);
-
-  /* Missing -d arg.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "bestmatch",
-      "-x-lut", "/dev/null", "-d", NULL);
-  assert(istat == 64);
-
-  /* Bad flag.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "bestmatch",
-      "--invalid-flag", NULL);
-  assert(istat == 64);
-
   /* Can't open files.*/
   istat = fildesh_compat_fd_spawnlp_wait(
       0, 1, 2, NULL, fildesh_exe, "-as", "bestmatch",
@@ -50,43 +24,6 @@ static void bestmatch_usage_tests(const char* fildesh_exe, const char* bad_filen
 }
 
 static void
-cmp_usage_tests(const char* fildesh_exe, const char* bad_filename)
-{
-  int istat;
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      "/dev/null", "/dev/null", NULL);
-  assert(istat == 0);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      "-", NULL);
-  assert(istat == 64);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      "/dev/null", "/dev/null", "too_many_files", NULL);
-  assert(istat == 64);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      "-o", bad_filename, NULL);
-  assert(istat == 73);
-
-  /* First open should fail.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      bad_filename, "-", NULL);
-  assert(istat == 66);
-
-  /* Second open should fail.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "cmp",
-      "-", "-", NULL);
-  assert(istat == 66);
-}
-
-static void
 elastic_pthread_usage_tests(const char* fildesh_exe, const char* bad_filename)
 {
   int istat;
@@ -102,11 +39,6 @@ elastic_pthread_usage_tests(const char* fildesh_exe, const char* bad_filename)
 
   istat = fildesh_compat_fd_spawnlp_wait(
       0, 1, 2, NULL, fildesh_exe, "-as", "elastic_pthread",
-      "-o", NULL);
-  assert(istat == 64);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "elastic_pthread",
       "-o", bad_filename, NULL);
   assert(istat == 73);
 }
@@ -115,10 +47,6 @@ static void
 execfd_usage_tests(const char* fildesh_exe, const char* bad_filename)
 {
   int istat;
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "execfd", NULL);
-  assert(istat == 64);
-
   istat = fildesh_compat_fd_spawnlp_wait(
       0, 1, 2, NULL, fildesh_exe, "-as", "execfd",
       "-stdin", bad_filename, NULL);
@@ -133,46 +61,11 @@ execfd_usage_tests(const char* fildesh_exe, const char* bad_filename)
       0, 1, 2, NULL, fildesh_exe, "-as", "execfd",
       "-o?", bad_filename, NULL);
   assert(istat == 73);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "execfd", "--", NULL);
-  assert(istat == 64);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "execfd",
-      "3", "--", "missing", "index", "three", NULL);
-  assert(istat == 64);
-}
-
-static void
-time2sec_usage_tests(const char* fildesh_exe) {
-  int istat;
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "time2sec",
-      "no_flagless_arg_is_valid", NULL);
-  assert(istat == 64);
-
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "time2sec",
-      "-w", NULL);
-  assert(istat == 64);
 }
 
 static void
 ujoin_usage_tests(const char* fildesh_exe, const char* bad_filename) {
-  const char* good_filename = "/dev/null";
   int istat;
-  /* Not quite enough args.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "ujoin",
-      "-x", "-", NULL);
-  assert(istat == 64);
-
-  /* Delimiter missing.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "ujoin", "-d", NULL);
-  assert(istat == 64);
-
   /* Second open should fail.*/
   istat = fildesh_compat_fd_spawnlp_wait(
       0, 1, 2, NULL, fildesh_exe, "-as", "ujoin",
@@ -194,23 +87,6 @@ ujoin_usage_tests(const char* fildesh_exe, const char* bad_filename) {
       0, 1, 2, NULL, fildesh_exe, "-as", "ujoin",
       "-o-conflicts", bad_filename,  NULL);
   assert(istat == 73);
-
-  /* No default record given.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "ujoin",
-      "-x-lut", good_filename, "-x", good_filename, "-p", NULL);
-  assert(istat == 64);
-}
-
-static void
-xargz_usage_tests(const char* fildesh_exe) {
-  int istat;
-
-  /* Need to give a command.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "xargz",
-      "--", NULL);
-  assert(istat == 64);
 }
 
 static void
@@ -244,17 +120,6 @@ zec_usage_tests(const char* fildesh_exe, const char* bad_filename) {
       0, 1, 2, NULL, fildesh_exe, "-as", "zec",
       "/", "/", good_filename, good_filename, bad_filename, NULL);
   assert(istat == 66);
-
-  /* Need filename after -x.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "zec",
-      "-o", "-", "-x", NULL);
-  assert(istat == 64);
-
-  /* Help.*/
-  istat = fildesh_compat_fd_spawnlp_wait(
-      0, 1, 2, NULL, fildesh_exe, "-as", "zec", "-h", NULL);
-  assert(istat == 1);
 }
 
 int main(int argc, char** argv) {
@@ -265,14 +130,10 @@ int main(int argc, char** argv) {
   bad_filename = fildesh_compat_file_catpath(fildesh_exe, "no_file_here");
   assert(bad_filename);
 
-  add_usage_tests(fildesh_exe);
   bestmatch_usage_tests(fildesh_exe, bad_filename);
-  cmp_usage_tests(fildesh_exe, bad_filename);
   elastic_pthread_usage_tests(fildesh_exe, bad_filename);
   execfd_usage_tests(fildesh_exe, bad_filename);
-  time2sec_usage_tests(fildesh_exe);
   ujoin_usage_tests(fildesh_exe, bad_filename);
-  xargz_usage_tests(fildesh_exe);
   zec_usage_tests(fildesh_exe, bad_filename);
 
   free(bad_filename);

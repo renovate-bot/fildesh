@@ -21,6 +21,7 @@ void push_fildesh_exit_callback(void (*f) (void*), void* x) {
   last_FildeshAT(exit_callbacks).x = x;
 }
 
+#if !defined(UNIT_TESTING)
 static
   void
 fildesh_exit_fn()
@@ -70,4 +71,4 @@ int main(int argc, char** argv)
   fildesh_exit_fn();
   return exstatus;
 }
-
+#endif

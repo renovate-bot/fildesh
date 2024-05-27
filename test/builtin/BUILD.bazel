@@ -54,6 +54,15 @@ spawn_test(
         ":hello_newline_x2.txt",
     ],
 )
+cc_test(
+    name = "cmp_test",
+    srcs = [
+        "cmp_test.c",
+        "//src/builtin:cmp.c",
+    ],
+    defines = ["UNIT_TESTING"],
+    deps = ["//:fildesh_lib"],
+)
 
 #### cmptxt
 
@@ -194,6 +203,16 @@ cc_test(
     deps = ["//:fildesh_compat_lib"],
     data = ["//:fildesh"],
     args = ["$(location //:fildesh)"],
+)
+
+cc_test(
+    name = "main_smoke_test",
+    srcs = [
+      "main_smoke_test.c",
+      "//src/bin:main.c",
+    ],
+    defines = ["UNIT_TESTING"],
+    deps = ["//src:fildesh_builtin_lib"],
 )
 
 #### godo

@@ -3,6 +3,11 @@ exports_files([
 ], visibility = [
     "//src:__pkg__",
 ])
+exports_files([
+    "main.c",
+], visibility = [
+    "//test/builtin:__pkg__",
+])
 
 cc_binary(
     name = "fildesh",
