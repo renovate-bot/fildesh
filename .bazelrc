@@ -1,11 +1,9 @@
-common:bzlmod --experimental_enable_bzlmod
 
 # Development.
 #build:linux_dev_platform --cxxopt='-std=c++17'
 build:linux_dev_platform --copt=-march=native
 
 # Testing.
-build:standard_test_platform --config=bzlmod
 build:standard_test_platform --disk_cache=~/.cache/bazel
 # Ubuntu compiles with native.
 build:linux_test_platform --cxxopt='-std=c++17'

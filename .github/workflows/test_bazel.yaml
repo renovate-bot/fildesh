@@ -27,9 +27,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Remove WORKSPACE.bazel content.
-      run: sed -i -E -e 's/^.*$//' WORKSPACE.bazel
-
     - name: Build
       run: >
         bazel build --config=${{ matrix.platform }}_test_platform
@@ -102,8 +99,7 @@ jobs:
     - name: Setup bazel
       uses: jwlawson/actions-setup-bazel@v2
       with:
-        # Bazel 7 coverage output looks low to Coveralls, so use Bazel 6.
-        bazel-version: '6'
+        bazel-version: 'latest'
     - name: Checkout
       uses: actions/checkout@v4
     - name: Coverage
@@ -114,6 +110,9 @@ jobs:
         --combined_report=lcov
         --
         //...
+    - name: Strip Branch Coverage
+      # Bazel 7 generates branch coverage, but we prefer line coverage reports.
+      run: sed -i '/^BR/d' bazel-out/_coverage/_coverage_report.dat
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
@@ -137,18 +136,3 @@ jobs:
         bazel test --config=linux_test_platform
         --config=asan-libfuzzer
         //test/fuzz/...
-
-
-  test_without_bzlmod:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    steps:
-    - name: Bazel Setup
-      uses: jwlawson/actions-setup-bazel@v2
-      with:
-        bazel-version: '4.2.2'
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Test
-      run: bazel test --test_timeout 10 //...
