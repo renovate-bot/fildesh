@@ -1,0 +1,14 @@
+#!/usr/bin/env fildesh
+
+$(<< common.fildesh)
+
+rm -f \
+  "${dst_root}/${ftdetect_fildesh_filepath}" \
+  "${dst_root}/${ftplugin_fildesh_filepath}" \
+  "${dst_root}/${indent_fildesh_filepath}" \
+  "${dst_root}/${syntax_fildesh_filepath}" \
+  "${dst_root}/${ftdetect_sxproto_filepath}" \
+  "${dst_root}/${ftplugin_sxproto_filepath}" \
+  "${dst_root}/${indent_sxproto_filepath}" \
+  "${dst_root}/${syntax_sxproto_filepath}"
+

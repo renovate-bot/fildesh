@@ -1,2 +1,2 @@
-au BufRead,BufNewFile *.sxpb setlocal ft=lisp lw=nil
-au BufRead,BufNewFile *.sxproto setlocal ft=lisp lw=nil
+au BufRead,BufNewFile *.sxpb  set filetype=sxproto
+au BufRead,BufNewFile *.sxproto  set filetype=sxproto

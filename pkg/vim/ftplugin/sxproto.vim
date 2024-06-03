@@ -1,6 +1,6 @@
 " Vim filetype file
-" Language:     Fildesh
-" Author:       Alex Klinkhamer (about.fildesh@grencez.dev)
+" Language:     Sxproto
+" Author:       Alex Klinkhamer (about.sxproto@grencez.dev)
 " URL:          https://github.com/fildesh/fildesh
 
 " Only do this when not done yet for this buffer

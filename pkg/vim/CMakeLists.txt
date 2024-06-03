@@ -15,3 +15,12 @@ install(FILES syntax/fildesh.vim
 install(FILES ftdetect/sxproto.vim
   COMPONENT "share_vim"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/vim/vimfiles/ftdetect/")
+install(FILES ftplugin/sxproto.vim
+  COMPONENT "share_vim"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/vim/vimfiles/ftplugin/")
+install(FILES indent/sxproto.vim
+  COMPONENT "share_vim"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/vim/vimfiles/indent/")
+install(FILES syntax/sxproto.vim
+  COMPONENT "share_vim"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/vim/vimfiles/syntax/")

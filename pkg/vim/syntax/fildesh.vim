@@ -1,6 +1,6 @@
 " Vim filetype file
 " Language:     Fildesh
-" Author:       Alex Klinkhamer (thru.fildesh@grencez.dev)
+" Author:       Alex Klinkhamer (about.fildesh@grencez.dev)
 " URL:          https://github.com/fildesh/fildesh
 
 if exists("b:current_syntax")

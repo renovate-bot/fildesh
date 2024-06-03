@@ -3,7 +3,13 @@
 (: dst_root Str (?? .self.opt.prefix (++ .self.env.HOME "/.vim/after")))
 
 $(> src_root) "pkg/vim"
-$(> ftdetect_filepath) "ftdetect/fildesh.vim"
-$(> ftplugin_filepath) "ftplugin/fildesh.vim"
-$(> indent_filepath) "indent/fildesh.vim"
-$(> syntax_filepath) "syntax/fildesh.vim"
+
+$(> ftdetect_fildesh_filepath) "ftdetect/fildesh.vim"
+$(> ftplugin_fildesh_filepath) "ftplugin/fildesh.vim"
+$(> indent_fildesh_filepath) "indent/fildesh.vim"
+$(> syntax_fildesh_filepath) "syntax/fildesh.vim"
+
+$(> ftdetect_sxproto_filepath) "ftdetect/sxproto.vim"
+$(> ftplugin_sxproto_filepath) "ftplugin/sxproto.vim"
+$(> indent_sxproto_filepath) "indent/sxproto.vim"
+$(> syntax_sxproto_filepath) "syntax/sxproto.vim"
