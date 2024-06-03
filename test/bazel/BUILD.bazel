@@ -1,0 +1,47 @@
+load("//tool/bazel:cmptxt_test.bzl", "cmptxt_test")
+load("//tool/bazel:sxpb2json.bzl", "sxpb2json")
+load("//tool/bazel:sxpb2txtpb.bzl", "sxpb2txtpb")
+load("//tool/bazel:sxpb2yaml.bzl", "sxpb2yaml")
+
+sxpb2json(
+    name = "content_json",
+    testonly = 1,
+    src = "//test/sxproto/content:message.sxpb",
+    out = "content.json",
+)
+
+cmptxt_test(
+    name = "sxpb2json_test",
+    srcs = [
+        ":content_json",
+        "//test/sxproto/content:message.json",
+    ],
+)
+
+sxpb2txtpb(
+    name = "content_txtpb",
+    testonly = 1,
+    src = "//test/sxproto/content:message.sxpb",
+)
+
+cmptxt_test(
+    name = "sxpb2txtpb_test",
+    srcs = [
+        ":content_txtpb",
+        "//test/sxproto/content:message.txtpb",
+    ],
+)
+
+sxpb2yaml(
+    name = "content_yaml",
+    testonly = 1,
+    src = "//test/sxproto/content:message.sxpb",
+)
+
+cmptxt_test(
+    name = "sxpb2yaml_test",
+    srcs = [
+        ":content_yaml",
+        "//test/sxproto/content:message.yaml",
+    ],
+)

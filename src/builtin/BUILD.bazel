@@ -49,6 +49,13 @@ cc_binary(
 )
 
 cc_binary(
+    name = "cmptxt",
+    srcs = ["cmptxt.c"],
+    deps = ["//:fildesh_lib"],
+    visibility = [ "//tool:__pkg__"],
+)
+
+cc_binary(
     name = "elastic_pthread",
     srcs = [
         "elastic_pthread.c",
