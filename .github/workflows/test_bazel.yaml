@@ -7,8 +7,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+        - platform: ubuntu-latest
+          bazel_build_optstr: --config=linux_test_platform
+          bazel_test_argstr: -- //...
+        - platform: macos-latest
+          bazel_build_optstr: --config=macos_test_platform
+          bazel_test_argstr: -- //...
+        - platform: windows-2019
+          bazel_build_optstr: --config=windows_test_platform
+          # For Windows, we need --enable_runfiles to access data deps.
+          bazel_test_argstr: >
+            --enable_runfiles
+            --
+            //...
 
+    name: ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -29,16 +43,16 @@ jobs:
 
     - name: Build
       run: >
-        bazel build --config=${{ matrix.platform }}_test_platform
+        bazel build
+        ${{ matrix.bazel_build_optstr }}
         //...
 
     - name: Test
-      # --enable_runfiles is for Windows tests to access data deps.
       run: >
-        bazel test --config=${{ matrix.platform }}_test_platform
-        --enable_runfiles
+        bazel test
+        ${{ matrix.bazel_build_optstr }}
         --test_timeout 10
-        //...
+        ${{ matrix.bazel_test_argstr }}
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4

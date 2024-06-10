@@ -8,13 +8,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: ubuntu-latest
-            cmake_build_type: RelOnHost
-          - platform: macos-latest
-            cmake_build_type: RelOnHost
-          - platform: windows-latest
-            cmake_build_type: Release
+        - platform: ubuntu-latest
+          cmake_build_type: RelOnHost
+        - platform: macos-latest
+          cmake_build_type: RelOnHost
+        - platform: windows-latest
+          cmake_build_type: Release
 
+    name: ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}
 
     steps:

@@ -1,8 +1,8 @@
-
 /bazel-*
-/MODULE.bazel.lock
-
 /bld/
+/build/
 /clang/
+/MODULE.bazel.lock
+/out/
 /tags
-
+/.vs*
