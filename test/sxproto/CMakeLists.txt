@@ -34,6 +34,8 @@ add_test(NAME sxpb2json_test COMMAND ${Fildesh_EXECUTABLE}
   "--manyof_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/manyof.sxpb"
   "--message_json=${CMAKE_CURRENT_SOURCE_DIR}/content/message.json"
   "--message_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.sxpb"
+  "--string_json=${CMAKE_CURRENT_SOURCE_DIR}/content/string.json"
+  "--string_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/string.sxpb"
 )
 
 add_test(NAME sxpb2txtpb_test COMMAND ${Fildesh_EXECUTABLE}
@@ -46,6 +48,8 @@ add_test(NAME sxpb2txtpb_test COMMAND ${Fildesh_EXECUTABLE}
   "--manyof_txtpb=${CMAKE_CURRENT_SOURCE_DIR}/content/manyof.txtpb"
   "--message_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.sxpb"
   "--message_txtpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.txtpb"
+  "--string_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/string.sxpb"
+  "--string_txtpb=${CMAKE_CURRENT_SOURCE_DIR}/content/string.txtpb"
 )
 
 add_test(NAME sxpb2yaml_test COMMAND ${Fildesh_EXECUTABLE}
@@ -58,4 +62,6 @@ add_test(NAME sxpb2yaml_test COMMAND ${Fildesh_EXECUTABLE}
   "--manyof_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/manyof.yaml"
   "--message_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/message.sxpb"
   "--message_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/message.yaml"
+  "--string_sxpb=${CMAKE_CURRENT_SOURCE_DIR}/content/string.sxpb"
+  "--string_yaml=${CMAKE_CURRENT_SOURCE_DIR}/content/string.yaml"
 )

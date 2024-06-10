@@ -4,6 +4,7 @@
 # - loneof_sxpb
 # - array_sxpb
 # - manyof_sxpb
+# - string_sxpb
 
 (: message_sxpb Filename .self.opt.message_sxpb)
 (: message_json Filename .self.opt.message_json)
@@ -44,5 +45,16 @@ $(barrier)
 |< zec / / $(XOF manyof_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF manyof_json)
+|> stdout
+
+
+$(barrier)
+
+(: string_sxpb Filename .self.opt.string_sxpb)
+(: string_json Filename .self.opt.string_json)
+
+|< zec / / $(XOF string_sxpb)
+|- sxpb2json
+|- cmptxt $(XOF string_json)
 |> stdout
 

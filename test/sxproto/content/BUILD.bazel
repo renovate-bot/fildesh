@@ -15,4 +15,8 @@ exports_files([
     "message.sxpb",
     "message.txtpb",
     "message.yaml",
+    "string.json",
+    "string.sxpb",
+    "string.txtpb",
+    "string.yaml",
 ])

@@ -4,6 +4,7 @@
 # - loneof_sxpb
 # - array_sxpb
 # - manyof_sxpb
+# - string_sxpb
 
 (: message_sxpb Filename .self.opt.message_sxpb)
 (: message_yaml Filename .self.opt.message_yaml)
@@ -44,5 +45,16 @@ $(barrier)
 |< zec / / $(XOF manyof_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF manyof_yaml)
+|> stdout
+
+
+$(barrier)
+
+(: string_sxpb Filename .self.opt.string_sxpb)
+(: string_yaml Filename .self.opt.string_yaml)
+
+|< zec / / $(XOF string_sxpb)
+|- sxpb2yaml
+|- cmptxt $(XOF string_yaml)
 |> stdout
 
