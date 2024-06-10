@@ -526,14 +526,14 @@ parse_field_FildeshSxpbInfo(
         }
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_STRING;
       }
-      else if (skipstr_FildeshX(in, "true")) {
+      else if (skipstr_FildeshX(in, "+true")) {
         truncate_FildeshO(oslice);
-        putstrlit_FildeshO(oslice, "true");
+        putstrlit_FildeshO(oslice, "+true");
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;
       }
-      else if (skipstr_FildeshX(in, "false")) {
+      else if (skipstr_FildeshX(in, "+false")) {
         truncate_FildeshO(oslice);
-        putstrlit_FildeshO(oslice, "false");
+        putstrlit_FildeshO(oslice, "+false");
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;
       }
       else if (peek_chars_FildeshX(in, "0123456789+-.")) {
@@ -571,11 +571,11 @@ parse_field_FildeshSxpbInfo(
         /* Upgrade type.*/
         if (oslice->size == 2 && oslice->at[0] == '+' && oslice->at[1] == '1') {
           truncate_FildeshO(oslice);
-          putstrlit_FildeshO(oslice, "true");
+          putstrlit_FildeshO(oslice, "+true");
         }
         else if (oslice->size == 2 && oslice->at[0] == '+' && oslice->at[1] == '0') {
           truncate_FildeshO(oslice);
-          putstrlit_FildeshO(oslice, "false");
+          putstrlit_FildeshO(oslice, "+false");
         }
         else {
           syntax_error(info, "Expected a bool, not an int.");

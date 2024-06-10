@@ -32,7 +32,7 @@ bool_value_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it)
     return (x == 1);
   }
   assert(v->field_kind == FildeshSxprotoFieldKind_LITERAL_BOOL);
-  return v->text[0] == 't';
+  return v->text[1] == 't';
 }
 
   unsigned
@@ -114,10 +114,10 @@ assign_bool_subfield_at_FildeshSxpb(
   e = &(*sxpb->values)[(*sxpb->values)[it.elem_id].elem];
   assert(e->field_kind == FildeshSxprotoFieldKind_LITERAL_BOOL);
   if (v) {
-    e->text = ensure_name_FildeshSxpb(sxpb, "true", 4);
+    e->text = ensure_name_FildeshSxpb(sxpb, "+true", 5);
   }
   else {
-    e->text = ensure_name_FildeshSxpb(sxpb, "false", 5);
+    e->text = ensure_name_FildeshSxpb(sxpb, "+false", 6);
   }
   return it;
 }
@@ -310,7 +310,7 @@ default_value_text_FildeshSxpb(FildeshSxpb* sxpb, FildeshSxprotoFieldKind kind)
   unsigned n = 0;
   switch (kind) {
     case FildeshSxprotoFieldKind_LITERAL_BOOL:
-      s = "false";  n = 5;  break;
+      s = "+false";  n = 6;  break;
     case FildeshSxprotoFieldKind_LITERAL_INT:
       s = "+0";  n = 2;  break;
     case FildeshSxprotoFieldKind_LITERAL_FLOAT:

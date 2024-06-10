@@ -39,7 +39,7 @@ assign_to_subfield_test()
       sxpb, top_of_FildeshSxpb(sxpb), "dst_message");
 
   /* dst_message.dst_b := false */
-  *in = FildeshX_of_strlit("(b false)");
+  *in = FildeshX_of_strlit("(b +false)");
   src_sxpb = slurp_sxpb_close_FildeshX(in, message_schema, err_out);
   src_it = lookup_subfield_at_FildeshSxpb(
       src_sxpb, top_of_FildeshSxpb(src_sxpb), "b");
@@ -49,7 +49,7 @@ assign_to_subfield_test()
   assert(!bool_value_at_FildeshSxpb(sxpb, dst_it));
 
   /* dst_message.dst_b := true */
-  *in = FildeshX_of_strlit("(b true)");
+  *in = FildeshX_of_strlit("(b +true)");
   src_sxpb = slurp_sxpb_close_FildeshX(in, message_schema, err_out);
   src_it = lookup_subfield_at_FildeshSxpb(
       src_sxpb, top_of_FildeshSxpb(src_sxpb), "b");
@@ -68,7 +68,7 @@ assign_to_subfield_test()
           sxpb, lookup_subfield_at_FildeshSxpb(sxpb, it, "dst_i")));
 
   /* dst_message := (() (b true) (i 2)) */
-  *in = FildeshX_of_strlit("(m (b true) (i 2))");
+  *in = FildeshX_of_strlit("(m (b +true) (i 2))");
   src_sxpb = slurp_sxpb_close_FildeshX(in, toplevel_schema, err_out);
   src_it = lookup_subfield_at_FildeshSxpb(
       src_sxpb, top_of_FildeshSxpb(src_sxpb), "m");

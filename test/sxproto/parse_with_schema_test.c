@@ -51,7 +51,7 @@ parse_with_schema_test()
 {
   static const char content[] =
     "\
-    (b true)\n\
+    (b +true)\n\
     (n 10)\n\
     (f 2.5)\n\
     (s_alternate_name \"Kappa ¬‿¬\")\n\
@@ -60,7 +60,7 @@ parse_with_schema_test()
      \"beta\"\n\
      \"gamma\"\n\
      \"delta\"\n\
-     (b false)\n\
+     (b +false)\n\
      (((or))\n\
       (b 1)\n\
       (b_alias 0)\n\
@@ -72,7 +72,7 @@ parse_with_schema_test()
      (() (car \"schwam\"))\n\
      (())\n\
      (() (\"car\" \"doo\") (cdr (car \"two and heif\"))))\n\
-    ((fruit_as banana) true)\n\
+    ((fruit_as banana) +true)\n\
     ";
   DECLARE_STRLIT_FildeshX(in, content);
   FildeshO* err_out = open_FildeshOF("/dev/stderr");
