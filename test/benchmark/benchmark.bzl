@@ -1,6 +1,7 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
 
 def cc_benchmark(name, srcs, deps=[], **kwargs):
-  native.cc_test(
+  cc_test(
       name = name,
       srcs = srcs,
       deps = deps + [

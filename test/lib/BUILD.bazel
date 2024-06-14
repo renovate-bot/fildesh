@@ -1,27 +1,25 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
 cc_test(
     name = "alloc_test",
     srcs = ["alloc_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )
 
 cc_test(
     name = "array_test",
     srcs = ["array_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )
 
 cc_test(
     name = "mascii_test",
     srcs = ["mascii_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )
 
 cc_test(
     name = "string_test",
     srcs = ["string_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )

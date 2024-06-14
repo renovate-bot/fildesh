@@ -1,19 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_license//rules:license.bzl", "license")
 
 package(
     default_applicable_licenses = [":license"],
     default_visibility = ["//visibility:public"],
 )
+
 license(
     name = "license",
     license_kinds = ["@rules_license//licenses/spdx:ISC"],
     license_text = "LICENSE",
 )
+
 exports_files([
     "LICENSE",
     "MODULE.bazel",
 ])
-
 
 alias(
     name = "fildesh",
@@ -25,12 +27,11 @@ alias(
     actual = "//src/sxproto:sxproto_lib",
 )
 
-
 cc_library(
     name = "fildesh_compat_lib",
     srcs = [
-        "//compat:errno.c",
         "//compat:env.c",
+        "//compat:errno.c",
         "//compat:fd.c",
         "//compat:fd_exclusive.h",
         "//compat:file.c",
@@ -105,4 +106,3 @@ cc_library(
     includes = ["include"],
     deps = [":fildesh_compat_lib"],
 )
-

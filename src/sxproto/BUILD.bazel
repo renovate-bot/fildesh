@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "sxproto_lib",
@@ -13,7 +14,6 @@ cc_library(
         "yaml.c",
         "//include/fildesh:sxproto.h",
     ],
-    deps = ["//:fildesh_lib"],
     visibility = ["//:__pkg__"],
+    deps = ["//:fildesh_lib"],
 )
-

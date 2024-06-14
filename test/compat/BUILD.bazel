@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
 
 cc_test(
     name = "fd_move_off_stdio_test",
@@ -38,4 +39,3 @@ cc_test(
     srcs = ["tmpdir_test.c"],
     deps = ["//:fildesh_compat_lib"],
 )
-

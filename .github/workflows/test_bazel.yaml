@@ -14,7 +14,7 @@ jobs:
         - platform: macos-latest
           bazel_build_optstr: --config=macos_test_platform
           bazel_test_argstr: -- //...
-        - platform: windows-2019
+        - platform: windows-latest
           bazel_build_optstr: --config=windows_test_platform
           # For Windows, we need --enable_runfiles to access data deps.
           bazel_test_argstr: >
@@ -36,7 +36,7 @@ jobs:
     - name: Bazel Setup
       uses: jwlawson/actions-setup-bazel@v2
       with:
-        bazel-version: 'latest'
+        bazel-version: latest
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -71,10 +71,28 @@ jobs:
           !bazel-bin*/**/*.runfiles*
 
 
+  test_with_old_bazel:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Bazel Setup
+      uses: jwlawson/actions-setup-bazel@v2
+      with:
+        bazel-version: "5.4.1"
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Prepare
+      run: touch WORKSPACE
+    - name: Test
+      run: >
+        bazel test
+        --check_direct_dependencies=error
+        --experimental_enable_bzlmod
+        --ignore_dev_dependency
+        -- //... -//test/benchmark/...
+
+
   benchmark:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     steps:
     - name: Cache Setup
       uses: actions/cache@v4
@@ -85,7 +103,7 @@ jobs:
     - name: Bazel Setup
       uses: jwlawson/actions-setup-bazel@v2
       with:
-        bazel-version: 'latest'
+        bazel-version: latest
     - name: Checkout
       uses: actions/checkout@v4
     - name: Build
@@ -101,8 +119,6 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     steps:
     - name: Cache Setup
       uses: actions/cache@v4
@@ -113,7 +129,7 @@ jobs:
     - name: Setup bazel
       uses: jwlawson/actions-setup-bazel@v2
       with:
-        bazel-version: 'latest'
+        bazel-version: latest
     - name: Checkout
       uses: actions/checkout@v4
     - name: Coverage
@@ -136,13 +152,11 @@ jobs:
 
   fuzz:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     steps:
     - name: Bazel Setup
       uses: jwlawson/actions-setup-bazel@v2
       with:
-        bazel-version: 'latest'
+        bazel-version: latest
     - name: Checkout
       uses: actions/checkout@v4
     - name: Fuzz

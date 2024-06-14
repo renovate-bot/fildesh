@@ -1,0 +1,23 @@
+#!/usr/bin/env fildesh
+
+(: buildtools_dir Str .self.opt.buildtools_dir)
+
+(: buildifier_exe Str
+ (++ buildtools_dir "/bazel-bin/buildifier/buildifier_/buildifier"))
+
+"${buildifier_exe}" \
+  "BUILD.bazel" \
+  "MODULE.bazel" \
+  "include/BUILD.bazel" \
+  "include/fildesh/BUILD.bazel" \
+  "src/sxproto/BUILD.bazel" \
+  "test/bazel/BUILD.bazel" \
+  "test/builtin/BUILD.bazel" \
+  "test/cc/BUILD.bazel" \
+  "test/compat/BUILD.bazel" \
+  "test/lib/BUILD.bazel" \
+  "test/lib/kv/BUILD.bazel" \
+  "test/src/BUILD.bazel" \
+  "test/sxproto/BUILD.bazel" \
+  "test/tool/BUILD.bazel" \
+  "tool/bazel/BUILD.bazel" \

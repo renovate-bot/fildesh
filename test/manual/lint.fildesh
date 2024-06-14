@@ -11,3 +11,16 @@ $(barrier)
 |> zec -o /dev/stderr
 expect_failure -x? $(XF status)
 
+$(barrier)
+# Bazel C++ rules should depend on rules_cc.
+|< find \
+  "compat" "include" "src" "test" "tool" \
+  -regextype "egrep" -regex ".*[.](bazel|bzl)" \
+  -exec \
+  grep -l -E -e "cc_(binary|library|test)\\((\$|[^)])" "{}" \
+  ";"
+|- elastic $(OF cc_build_files) -
+|- xargs -d "\n" -- grep -l -F -e "@rules_cc//cc:defs.bzl"
+|- cmptxt $(XF cc_build_files) -
+|> stdout
+

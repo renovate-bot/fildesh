@@ -33,6 +33,7 @@ def _run_script(ctx, script_file):
       inputs = [script_file] + ctx.files.inputs,
       outputs = ctx.outputs.outs,
       tools = ctx.files.tools,
+      toolchain = None,
   )
 
 

@@ -1,16 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
 load("//test/tool:fildespawn_test.bzl", "fildespawn_test")
 load("//tool/bazel:fildesh_run.bzl", "fildesh_run")
 load("//tool/bazel:spawn_test.bzl", "spawn_test")
 
 cc_binary(
     name = "success",
-    srcs = ["success.c"],
     testonly = True,
+    srcs = ["success.c"],
 )
+
 cc_binary(
     name = "failure",
-    srcs = ["failure.c"],
     testonly = True,
+    srcs = ["failure.c"],
 )
 
 cc_test(
@@ -22,34 +24,44 @@ cc_test(
 
 spawn_test(
     name = "comparispawn_diff_test",
-    expect_failure = True,
-    binary = "//tool:comparispawn",
     args = [
         "$(location //test/expect:literal_hello.txt)",
-        "$(location //tool:shout)", "-", "hel", "lo",
+        "$(location //tool:shout)",
+        "-",
+        "hel",
+        "lo",
     ],
+    binary = "//tool:comparispawn",
     data = [
-        "//tool:shout",
         "//test/expect:literal_hello.txt",
+        "//tool:shout",
     ],
+    expect_failure = True,
 )
+
 spawn_test(
     name = "comparispawn_failure_test",
-    expect_failure = True,
+    args = [
+        "/dev/null",
+        "$(location :failure)",
+    ],
     binary = "//tool:comparispawn",
-    args = ["/dev/null", "$(location :failure)"],
     data = [":failure"],
+    expect_failure = True,
 )
+
 spawn_test(
     name = "comparispawn_shout_hello_test",
-    binary = "//tool:comparispawn",
     args = [
         "$(location //test/expect:literal_hello.txt)",
-        "$(location //tool:shout)", "-", "hello",
+        "$(location //tool:shout)",
+        "-",
+        "hello",
     ],
+    binary = "//tool:comparispawn",
     data = [
-        "//tool:shout",
         "//test/expect:literal_hello.txt",
+        "//tool:shout",
     ],
 )
 
@@ -58,7 +70,10 @@ spawn_test(
 cc_test(
     name = "expectish_hello_test",
     srcs = ["//tool:expectish.c"],
-    args = ["$(location //test/expect:literal_hello.txt)", "hello"],
+    args = [
+        "$(location //test/expect:literal_hello.txt)",
+        "hello",
+    ],
     data = ["//test/expect:literal_hello.txt"],
 )
 
@@ -72,16 +87,19 @@ fildespawn_test(
     ],
     data = [":success"],
 )
+
 fildespawn_test(
     name = "fildespawn_stdin_test",
     args = [
         "stdin=open_readonly:$(location //test/expect:literal_hello.txt)",
         "--",
-        "$(location //tool:expectish)", "-", "hello",
+        "$(location //tool:expectish)",
+        "-",
+        "hello",
     ],
     data = [
-        "//tool:expectish",
         "//test/expect:literal_hello.txt",
+        "//tool:expectish",
     ],
 )
 
@@ -94,8 +112,11 @@ cc_test(
         "$(location //tool:shout)",
         "$(location //tool:expectish)",
     ],
+    data = [
+        "//tool:expectish",
+        "//tool:shout",
+    ],
     deps = ["//:fildesh_tool_lib"],
-    data = ["//tool:expectish", "//tool:shout"],
 )
 
 #### spawn
@@ -104,42 +125,54 @@ cc_test(
 cc_test(
     name = "spawn_not_not_test",
     srcs = ["//tool:spawn.c"],
-    args = ["!", "!"],
-    size = "small",
+    args = [
+        "!",
+        "!",
+    ],
 )
+
 # spawn spawn ! !
 spawn_test(
     name = "spawn_spawn_not_not_test",
+    args = [
+        "!",
+        "!",
+    ],
     binary = "//tool:spawn",
-    args = ["!", "!"],
 )
+
 # spawn ! spawn !
 spawn_test(
     name = "spawn_not_spawn_not_test",
-    expect_failure = True,
-    binary = "//tool:spawn",
     args = ["!"],
+    binary = "//tool:spawn",
+    expect_failure = True,
 )
+
 # spawn ! spawn
 spawn_test(
     name = "spawn_not_spawn_nothing_test",
-    expect_failure = True,
     binary = "//tool:spawn",
+    expect_failure = True,
 )
 
 # spawn ! spawn file_that.doesnotexist
 spawn_test(
     name = "spawn_not_spawn_absent_test",
-    expect_failure = True,
-    binary = "//tool:spawn",
     args = ["$(location //tool:spawn).doesnotexist"],
+    binary = "//tool:spawn",
+    expect_failure = True,
 )
+
 # spawn ! spawn ! file_that.doesnotexist
 spawn_test(
     name = "spawn_not_spawn_not_absent_test",
-    expect_failure = True,
+    args = [
+        "!",
+        "$(location //tool:spawn).doesnotexist",
+    ],
     binary = "//tool:spawn",
-    args = ["!", "$(location //tool:spawn).doesnotexist"],
+    expect_failure = True,
 )
 
 cc_test(
@@ -148,21 +181,25 @@ cc_test(
         "spawn_status_test.c",
         "//tool:spawn.c",
     ],
-    defines = ["UNIT_TESTING"],
-    args = ["$(location :success)", "$(location :failure)"],
+    args = [
+        "$(location :success)",
+        "$(location :failure)",
+    ],
     data = [
         ":failure",
         ":success",
     ],
+    defines = ["UNIT_TESTING"],
 )
 
 #### cembed & cswitch
 
 fildesh_run(
     name = "embed_test_cembed_h",
+    testonly = True,
     input_by_option = {
-      "x_127": "//test/expect:literal_127.txt",
-      "x_hello": "//test/expect:literal_hello.txt",
+        "x_127": "//test/expect:literal_127.txt",
+        "x_hello": "//test/expect:literal_hello.txt",
     },
     output_by_option = {"o": ":embed_test.cembed.h"},
     src_content = """
@@ -172,18 +209,17 @@ fildesh_run(
 cembed -o $(XOF out_file) $(XOF literal_127_file) $(XOF literal_hello_file)
     """,
     tool_by_alias = {"cembed": "//tool:cembed"},
-    testonly = 1,
 )
 
 fildesh_run(
     name = "embed_test_cswitch_h",
+    testonly = True,
     input_by_xof = {"item_file": ":embed_test.txt"},
     output_by_xof = {"out": ":embed_test.cswitch.h"},
     src_content = """
 cswitch key -case-pfx "fn = item_" -x $(XOF item_file) -o $(XOF out)
     """,
     tool_by_alias = {"cswitch": "//tool:cswitch"},
-    testonly = 1,
 )
 
 cc_test(

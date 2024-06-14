@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
 load("//test/example:example.bzl", "fildesh_expect_test")
 load("//tool/bazel:fildesh_test.bzl", "fildesh_test")
 load("//tool/bazel:spawn_test.bzl", "spawn_test")
@@ -6,9 +7,15 @@ load("//tool/bazel:spawn_test.bzl", "spawn_test")
 
 cc_test(
     name = "add_float_test",
-    srcs = ["add_float_test.c", "//src/builtin:add.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
+    srcs = [
+        "add_float_test.c",
+        "//src/builtin:add.c",
+    ],
     defines = ["FILDESH_BUILTIN_LIBRARY"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 #### bestmatch
@@ -16,9 +23,12 @@ cc_test(
 cc_test(
     name = "bestmatch_test",
     srcs = ["bestmatch_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//src/builtin:bestmatch"],
     args = ["$(location //src/builtin:bestmatch)"],
+    data = ["//src/builtin:bestmatch"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 fildesh_test(
@@ -30,30 +40,34 @@ fildesh_test(
 
 spawn_test(
     name = "cmp_equal_test",
-    binary = "//src/builtin:cmp",
     args = [
         "$(location :hello_newline.txt)",
         "$(location :hello_newline.txt)",
-        "-o", "-",
+        "-o",
+        "-",
     ],
+    binary = "//src/builtin:cmp",
     data = [
         ":hello_newline.txt",
     ],
 )
+
 spawn_test(
     name = "cmp_diff_test",
-    expect_failure = True,
-    binary = "//src/builtin:cmp",
     args = [
-        "-o", "-",
+        "-o",
+        "-",
         "$(location :hello_newline.txt)",
         "$(location :hello_newline_x2.txt)",
     ],
+    binary = "//src/builtin:cmp",
     data = [
         ":hello_newline.txt",
         ":hello_newline_x2.txt",
     ],
+    expect_failure = True,
 )
+
 cc_test(
     name = "cmp_test",
     srcs = [
@@ -73,7 +87,10 @@ cc_test(
         "//src/builtin:cmptxt.c",
     ],
     defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 #### elastic
@@ -93,23 +110,34 @@ fildesh_expect_test(
 cc_test(
     name = "elastic_aio_tee_test",
     srcs = ["elastic_alt_tee_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//src:elastic_aio"],
     args = ["$(location //src:elastic_aio)"],
+    data = ["//src:elastic_aio"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
+
 cc_test(
     name = "elastic_poll_tee_test",
     srcs = ["elastic_alt_tee_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//src:elastic_poll"],
     args = ["$(location //src:elastic_poll)"],
+    data = ["//src:elastic_poll"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
+
 cc_test(
     name = "elastic_pthread_tee_test",
     srcs = ["elastic_alt_tee_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//src/builtin:elastic_pthread"],
     args = ["$(location //src/builtin:elastic_pthread)"],
+    data = ["//src/builtin:elastic_pthread"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 #### execfd
@@ -118,26 +146,32 @@ cc_test(
     name = "execfd_test",
     srcs = [
         "execfd_test.c",
-        "//src/builtin:fildesh_builtin.h",
         "//src:execfd.c",
+        "//src/builtin:fildesh_builtin.h",
     ],
-    defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//tool:shout"],
     args = ["$(location //tool:shout)"],
+    data = ["//tool:shout"],
+    defines = ["UNIT_TESTING"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 cc_test(
     name = "execfd_cat_test",
     srcs = [
         "execfd_cat_test.c",
-        "//src/builtin:fildesh_builtin.h",
         "//src:execfd.c",
+        "//src/builtin:fildesh_builtin.h",
     ],
-    defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//tool:shout"],
     args = ["$(location //tool:shout)"],
+    data = ["//tool:shout"],
+    defines = ["UNIT_TESTING"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 fildesh_test(
@@ -155,25 +189,24 @@ cc_test(
         "//src/builtin:expect_failure.c",
         "//src/builtin:fildesh_builtin.h",
     ],
-    defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib"],
-    data = [
-        ":hello_newline.txt",
-        "//test/expect:literal_0.txt",
-        "//test/expect:literal_127.txt",
-    ],
     args = [
         "$(location //test/expect:literal_0.txt)",
         "$(location //test/expect:literal_127.txt)",
         "$(location :hello_newline.txt)",
     ],
+    data = [
+        ":hello_newline.txt",
+        "//test/expect:literal_0.txt",
+        "//test/expect:literal_127.txt",
+    ],
+    defines = ["UNIT_TESTING"],
+    deps = ["//:fildesh_lib"],
 )
 
 #### fildesh
 
 spawn_test(
     name = "fildesh_as_add_test",
-    binary = "//tool:comparispawn",
     args = [
         "$(location summed_integers.txt)",
         "$(location //:fildesh)",
@@ -182,6 +215,7 @@ spawn_test(
         "-as",
         "add",
     ],
+    binary = "//tool:comparispawn",
     data = [
         "integers.txt",
         "summed_integers.txt",
@@ -192,24 +226,27 @@ spawn_test(
 cc_test(
     name = "fildesh_cli_hello_test",
     srcs = ["fildesh_cli_hello_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
-    data = ["//:fildesh"],
     args = ["$(location //:fildesh)"],
+    data = ["//:fildesh"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 cc_test(
     name = "fildesh_usage_test",
     srcs = ["fildesh_usage_test.c"],
-    deps = ["//:fildesh_compat_lib"],
-    data = ["//:fildesh"],
     args = ["$(location //:fildesh)"],
+    data = ["//:fildesh"],
+    deps = ["//:fildesh_compat_lib"],
 )
 
 cc_test(
     name = "main_smoke_test",
     srcs = [
-      "main_smoke_test.c",
-      "//src/bin:main.c",
+        "main_smoke_test.c",
+        "//src/bin:main.c",
     ],
     defines = ["UNIT_TESTING"],
     deps = ["//src:fildesh_builtin_lib"],
@@ -223,17 +260,17 @@ cc_test(
         "godo_test.c",
         "//src:godo.c",
     ],
-    defines = ["FILDESH_BUILTIN_LIBRARY"],
-    deps = [
-        "//:fildesh_lib",
+    args = [
+        "$(location //tool:expectish)",
+        "$(location hello_newline.txt)",
     ],
     data = [
         "hello_newline.txt",
         "//tool:expectish",
     ],
-    args = [
-        "$(location //tool:expectish)",
-        "$(location hello_newline.txt)",
+    defines = ["FILDESH_BUILTIN_LIBRARY"],
+    deps = [
+        "//:fildesh_lib",
     ],
 )
 
@@ -276,14 +313,15 @@ sh_test(
 
 cc_binary(
     name = "echocat",
+    testonly = True,
     srcs = [
         "echocat.c",
         "//src/builtin:zec.c",
     ],
-    deps = ["//:fildesh_lib"],
     defines = ["FILDESH_BUILTIN_LIBRARY"],
-    testonly = True,
+    deps = ["//:fildesh_lib"],
 )
+
 fildesh_test(
     name = "echocat_test",
     srcs = ["echocat_test.fildesh"],
@@ -293,14 +331,17 @@ fildesh_test(
 cc_test(
     name = "sshall_test",
     srcs = ["sshall_test.c"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
+    args = [
+        "$(location //src:sshall)",
+        "$(location :echocat)",
+    ],
     data = [
         ":echocat",
         "//src:sshall",
     ],
-    args = [
-        "$(location //src:sshall)",
-        "$(location :echocat)"
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
     ],
 )
 
@@ -325,8 +366,8 @@ cc_test(
     name = "transpose_test",
     srcs = [
         "transpose_test.c",
-        "//src/builtin:transpose.c",
         "//src/builtin:fildesh_builtin.h",
+        "//src/builtin:transpose.c",
     ],
     defines = ["FILDESH_BUILTIN_LIBRARY"],
     deps = [
@@ -346,12 +387,16 @@ cc_test(
     name = "ujoin_test",
     srcs = [
         "ujoin_test.c",
-        "//src/builtin:ujoin.c",
         "//src/builtin:fildesh_builtin.h",
+        "//src/builtin:ujoin.c",
     ],
     defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
+
 fildesh_test(
     name = "ujoin_misdup_test",
     srcs = ["ujoin_misdup_test.fildesh"],
@@ -366,22 +411,28 @@ cc_test(
         "//src/builtin:void.c",
     ],
     defines = ["UNIT_TESTING"],
-    deps = ["//:fildesh_lib", "//:fildesh_tool_lib"],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
+    ],
 )
 
 #### waitdo
 
 cc_test(
     name = "waitdo_test",
-    args = ["$(location //src:waitdo)", "$(location //tool:shout)"],
     srcs = ["waitdo_test.c"],
-    deps = [
-        "//:fildesh_lib",
-        "//:fildesh_tool_lib",
+    args = [
+        "$(location //src:waitdo)",
+        "$(location //tool:shout)",
     ],
     data = [
         "//src:waitdo",
         "//tool:shout",
+    ],
+    deps = [
+        "//:fildesh_lib",
+        "//:fildesh_tool_lib",
     ],
 )
 
@@ -410,6 +461,9 @@ fildesh_expect_test(
 
 spawn_test(
     name = "zec_nop_test",
+    args = [
+        "/",
+        "/",
+    ],
     binary = "//src/builtin:zec",
-    args = ["/", "/"],
 )

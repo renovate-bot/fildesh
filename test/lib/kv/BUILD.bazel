@@ -1,35 +1,32 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 cc_library(
     name = "kv_validation_lib",
+    testonly = True,
     srcs = [
         "brbtree_validation.c",
         "brbtree_validation.h",
         "rbtree_validation.c",
         "rbtree_validation.h",
     ],
-    deps = ["//:fildesh_lib"],
     visibility = ["//test:__subpackages__"],
-    testonly = True,
+    deps = ["//:fildesh_lib"],
 )
 
 cc_test(
     name = "kve_test",
     srcs = ["kve_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )
 
 cc_test(
     name = "rbtree_test",
     srcs = ["rbtree_test.c"],
     deps = [":kv_validation_lib"],
-    size = "small",
 )
 
 cc_test(
     name = "single_list_test",
     srcs = ["single_list_test.c"],
     deps = ["//:fildesh_lib"],
-    size = "small",
 )
-

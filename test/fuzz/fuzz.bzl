@@ -1,10 +1,11 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
 
 def cc_smoke_test(name, srcs, deps):
   srcs = srcs + [
       "//test/fuzz:fuzz_common.h",
       "//test/fuzz:smoke_common.h",
   ]
-  native.cc_test(
+  cc_test(
       name = name,
       srcs = srcs,
       deps = deps,
@@ -17,7 +18,7 @@ def cc_fuzz_test(name, srcs, deps, max_guesses):
       "//test/fuzz:fuzz_common.h",
   ]
   libfuzzer_compile_flags = ["-fsanitize=address,fuzzer"]
-  native.cc_test(
+  cc_test(
       name = name,
       args = select({
           "//test:full_fuzzing_on": ["-runs=" + str(max_guesses)],
@@ -38,15 +39,15 @@ def cc_fuzz_test(name, srcs, deps, max_guesses):
           "//conditions:default": [],
       }),
   )
-  native.cc_binary(
+  cc_binary(
       name = name + "_full",
       srcs = srcs,
       deps = deps,
       copts = libfuzzer_compile_flags,
       linkopts = libfuzzer_compile_flags,
-      testonly = 1,
+      testonly = True,
       target_compatible_with = select({
           "//test:full_fuzzing_on": [],
           "//conditions:default": ["@platforms//:incompatible"],
-      })
+      }),
   )
