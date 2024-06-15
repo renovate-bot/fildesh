@@ -305,6 +305,12 @@ insert_next_FildeshSxpb(
   if (cons_kind == FildeshSxprotoFieldKind_MESSAGE) {
     FildeshSxpbIT e_it = direct_ensure_subfield_FildeshSxpb(
         sxpb, m_it, text, text_slice.size);
+    if (e_it.field_kind == kind && kind == FildeshSxprotoFieldKind_ARRAY) {
+      return e_it;
+    }
+    if (e_it.field_kind == kind && kind == FildeshSxprotoFieldKind_MANYOF) {
+      return e_it;
+    }
     if (e_it.field_kind != FildeshSxprotoFieldKind_UNKNOWN) {
       syntax_error(info, "Duplicate field name. Use array syntax for repeated fields.");
       return FildeshSxpbIT_of_NULL();
@@ -444,6 +450,19 @@ parse_field_FildeshSxpbInfo(
   }
   p_it.cons_id = p_it.elem_id;
   p_it.elem_id = ~(FildeshSxpb_id)0;
+
+  /* Prepare to append more elements if field already a non-empty array.*/
+  if (field_kind == FildeshSxprotoFieldKind_ARRAY ||
+      field_kind == FildeshSxprotoFieldKind_MANYOF)
+  {
+    FildeshSxpbIT e_it;
+    for (e_it = first_at_FildeshSxpb(sxpb, p_it);
+         !nullish_FildeshSxpbIT(e_it);
+         e_it = next_at_FildeshSxpb(sxpb, p_it))
+    {
+      p_it = e_it;
+    }
+  }
 
   if (schema) {
     if (field->kind == FildeshSxprotoFieldKind_MESSAGE) {

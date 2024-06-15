@@ -122,6 +122,8 @@ append_to_manyof_from_manyof_test()
     "(((things))\n\
     1\n\
     0\n\
+    )\n\
+    ((things)\n\
     (b +true)\n\
     (b +false)\n\
     (u 10)\n\

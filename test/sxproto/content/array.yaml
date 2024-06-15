@@ -6,7 +6,10 @@ my_floats:
 my_strings:
   - "yo"
   - "howdy"
-  - "sup"
+  - "moin"
+  - "ciao"
+  - "adios"
+  - "farewell"
 my_integers:
   - 1
   - 2

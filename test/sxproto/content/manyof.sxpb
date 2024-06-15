@@ -1,13 +1,15 @@
 ((expressions)
-
  (value +true)
-
  (not (value +false))
+)
 
+((expressions)
  ((or) (() (value +false)) (() (value +true)))
  ((or) (value +false) (value +true))
  (((or)) +false +true)
+)
 
+((expressions)
  (((or))
   +false
   (((and)) +true +false)
