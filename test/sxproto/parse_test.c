@@ -10,19 +10,27 @@ static void parse_string_test() {
 
 #define expectparse(expect, text) do { \
   FildeshX slice = FildeshX_of_strlit(text); \
-  bool good = parse_string_FildeshSxpbInfo(info, &slice, oslice); \
+  bool good = parse_concat_string_FildeshSxpbInfo(info, &slice, oslice); \
   assert(good); \
   putc_FildeshO(oslice, '\0'); \
   fildesh_log_trace(oslice->at); \
   oslice->size -= 1; \
   assert(strlen(expect) == oslice->size); \
   assert(0 == memcmp(expect, oslice->at, oslice->size)); \
+  truncate_FildeshO(oslice); \
 } while (0)
 
+  /* Quoted.*/
+  expectparse("abcdef", "\"abcdef\"");
   expectparse("abcdef", "\"abcdef\"");
   expectparse("ab\"cd", "\"ab\\\"cd\"");
   expectparse("ab\\", "\"ab\\\\\"");
   expectparse("a  \n b", "\"a  \\n b\"");
+
+  /* Unquoted.*/
+  expectparse("abcdef", "abcdef");
+  expectparse("ab'cd", "ab'cd");
+  expectparse("ab\\cd", "ab\\cd");
 
 #undef expectparse
   close_FildeshO(oslice);
@@ -91,7 +99,7 @@ static void parse_field_test() {
   FildeshSxpbInfo info[1] = {DEFAULT_FildeshSxpbInfo};
   FildeshO oslice[1] = {DEFAULT_FildeshO};
   FildeshSxpb* sxpb = open_FildeshSxpb();
-  FildeshSxpbIT p_it = top_of_FildeshSxpb(sxpb);
+  const FildeshSxpbIT p_it = top_of_FildeshSxpb(sxpb);
   info->err_out = open_FildeshOF("/dev/stderr");
 
 #define tryparse(text) do { \
@@ -100,8 +108,8 @@ static void parse_field_test() {
   assert(good); \
   assert(info->line_count == 0); \
   assert(info->column_count == strlen(text)); \
-  remove_at_FildeshSxpb(sxpb, first_at_FildeshSxpb(sxpb, top_of_FildeshSxpb(sxpb))); \
-  assert(nullish_FildeshSxpbIT(first_at_FildeshSxpb(sxpb, top_of_FildeshSxpb(sxpb)))); \
+  remove_at_FildeshSxpb(sxpb, first_at_FildeshSxpb(sxpb, p_it)); \
+  assert(nullish_FildeshSxpbIT(first_at_FildeshSxpb(sxpb, p_it))); \
   info->column_count = 0; \
 } while (0)
 
@@ -123,10 +131,46 @@ static void parse_field_test() {
   close_FildeshSxpb(sxpb);
 }
 
+static void parse_string_field_test() {
+  FildeshSxpbInfo info[1] = {DEFAULT_FildeshSxpbInfo};
+  FildeshO oslice[1] = {DEFAULT_FildeshO};
+  FildeshSxpb* sxpb = open_FildeshSxpb();
+  const FildeshSxpbIT p_it = top_of_FildeshSxpb(sxpb);
+  info->err_out = open_FildeshOF("/dev/stderr");
+#define expectparse(expect, text) do { \
+  FildeshX slice = FildeshX_of_strlit("(s " text ")"); \
+  const char* result = NULL; \
+  assert(parse_field_FildeshSxpbInfo(info, NULL,  &slice, sxpb, p_it, oslice)); \
+  assert(lone_subfield_at_FildeshSxpb_to_str(&result, sxpb, p_it, "s")); \
+  fildesh_log_trace(result); \
+  assert(strlen(expect) == strlen(result)); \
+  assert(0 == memcmp(expect, result, strlen(expect))); \
+  remove_at_FildeshSxpb(sxpb, first_at_FildeshSxpb(sxpb, p_it)); \
+  assert(nullish_FildeshSxpbIT(first_at_FildeshSxpb(sxpb, p_it))); \
+  info->column_count = 0; \
+} while (0)
+
+  expectparse("AA BB CC", "\"AA BB CC\"");
+  expectparse("AA BB CC", "\"AA B\" \"B CC\"");
+  expectparse("AA BB CC", "AA BB CC");
+  expectparse("AA BB CC", "\"\" AA BB CC");
+  expectparse("AA BB CC", "\"AA \" BB CC");
+  expectparse("AA BB CC", "AA \" BB \" CC");
+  expectparse("AA BB CC", "AA BB \" CC\"");
+
+  expectparse("1 2 3", "\"\" 1 2 3");
+
+#undef expectparse
+  close_FildeshO(oslice);
+  close_FildeshO(info->err_out);
+  close_FildeshSxpb(sxpb);
+}
+
 int main() {
   parse_string_test();
   parse_number_test();
   parse_name_test();
   parse_field_test();
+  parse_string_field_test();
   return 0;
 }

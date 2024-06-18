@@ -78,15 +78,15 @@ skip_separation(FildeshX* in, FildeshSxpbInfo* info)
   } while (slice.size > 0);
 }
 
+static
   bool
-parse_string_FildeshSxpbInfo(
+parse_quoted_string_FildeshSxpbInfo(
     FildeshSxpbInfo* info,
     FildeshX* in,
     FildeshO* oslice)
 {
   FildeshX slice;
 
-  truncate_FildeshO(oslice);
   assert(in->off < in->size && in->at[in->off] == '"');
   skipstr_FildeshSxpbInfo(info, in, "\"");
 
@@ -116,7 +116,44 @@ parse_string_FildeshSxpbInfo(
     syntax_error(info, "Expected closing double quote.");
     return false;
   }
+  info->unquoted_value_separation_on = false;
   return true;
+}
+
+static
+  bool
+parse_unquoted_string_FildeshSxpbInfo(
+    FildeshSxpbInfo* info,
+    FildeshX* in,
+    FildeshO* oslice)
+{
+  FildeshX xslice = until_chars_FildeshSxpbInfo(info, in, sxpb_delim_bytes);
+  assert(xslice.size > 0);
+  if (info->unquoted_value_separation_on) {
+    putc_FildeshO(oslice, ' ');
+  }
+  putslice_FildeshO(oslice, xslice);
+  info->unquoted_value_separation_on = true;
+  return true;
+}
+
+  bool
+parse_concat_string_FildeshSxpbInfo(
+    FildeshSxpbInfo* info,
+    FildeshX* in,
+    FildeshO* oslice)
+{
+  if (oslice->size == 0) {
+    info->unquoted_value_separation_on = false;
+  }
+  if (peek_char_FildeshX(in, '"')) {
+    return parse_quoted_string_FildeshSxpbInfo(info, in, oslice);
+  }
+  if (info->quoted_names_on) {
+    syntax_error(info, "Strings must be quoted when field names are.");
+    return false;
+  }
+  return parse_unquoted_string_FildeshSxpbInfo(info, in, oslice);
 }
 
 static void skip_leading_zeroes(FildeshX* in) {
@@ -224,7 +261,7 @@ parse_name_FildeshSxpbInfo(
   truncate_FildeshO(oslice);
   if (slice.size == 0) {
     if (peek_char_FildeshX(in, '"')) {
-      if (!parse_string_FildeshSxpbInfo(info, in, oslice)) {
+      if (!parse_quoted_string_FildeshSxpbInfo(info, in, oslice)) {
         return false;
       }
       info->quoted_names_on = true;
@@ -539,11 +576,31 @@ parse_field_FildeshSxpbInfo(
         syntax_error(info, "Message can only hold fields.");
         return false;
       }
-      if (peek_char_FildeshX(in, '"')) {
-        if (!parse_string_FildeshSxpbInfo(info, in, oslice)) {
+      if (!avail_FildeshX(in)) {
+        syntax_error(info, "Expected a literal or closing paren.");
+        return false;
+      }
+      if (elem_kind == FildeshSxprotoFieldKind_LITERAL_STRING ||
+          !peek_chars_FildeshX(in, "0123456789+-.")) {
+        tmp_kind = FildeshSxprotoFieldKind_LITERAL_STRING;
+        truncate_FildeshO(oslice);
+        if (!parse_concat_string_FildeshSxpbInfo(info, in, oslice)) {
           return false;
         }
-        tmp_kind = FildeshSxprotoFieldKind_LITERAL_STRING;
+        if (field_kind == FildeshSxprotoFieldKind_LITERAL) {
+          for (skip_separation(in, info);
+               avail_FildeshX(in) && !peek_char_FildeshX(in, ')');
+               skip_separation(in, info))
+          {
+            if (peek_char_FildeshX(in, '(')) {
+              syntax_error(info, "Unexpected open paren in string.");
+              return false;
+            }
+            if (!parse_concat_string_FildeshSxpbInfo(info, in, oslice)) {
+              return false;
+            }
+          }
+        }
       }
       else if (skipstr_FildeshX(in, "+true")) {
         truncate_FildeshO(oslice);
@@ -555,7 +612,7 @@ parse_field_FildeshSxpbInfo(
         putstrlit_FildeshO(oslice, "+false");
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;
       }
-      else if (peek_chars_FildeshX(in, "0123456789+-.")) {
+      else {
         if (!parse_number_FildeshSxpbInfo(info, in, oslice)) {
           return false;
         }
@@ -563,10 +620,6 @@ parse_field_FildeshSxpbInfo(
         if (oslice->size > 2 && oslice->at[2] == '.') {
           tmp_kind = FildeshSxprotoFieldKind_LITERAL_FLOAT;
         }
-      }
-      else {
-        syntax_error(info, "Expected a literal or closing paren.");
-        return false;
       }
 
       if (elem_kind == FildeshSxprotoFieldKind_UNKNOWN) {

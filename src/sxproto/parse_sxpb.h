@@ -4,16 +4,17 @@ typedef struct FildeshSxpbInfo FildeshSxpbInfo;
 
 struct FildeshSxpbInfo {
   bool quoted_names_on;
+  bool unquoted_value_separation_on;
   unsigned line_count;
   unsigned column_count;
   FildeshO* err_out;
 };
 #define DEFAULT_FildeshSxpbInfo \
-{ false, 0, 0, NULL }
+{ false, false, 0, 0, NULL }
 
 
 bool
-parse_string_FildeshSxpbInfo(
+parse_concat_string_FildeshSxpbInfo(
     FildeshSxpbInfo* info,
     FildeshX* in,
     FildeshO* oslice);

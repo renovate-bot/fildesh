@@ -8,6 +8,18 @@ NEXT_FUZZ_DATA
 "Unknown escape sequence. Only very basic ones are supported.\n"
 "(\"a\" (\"b\\.\" 5))"
 NEXT_FUZZ_DATA
+"1,5,"
+"Expected closing double quote.\n"
+"(k \""
+NEXT_FUZZ_DATA
+"1,6,"
+"Strings must be quoted when field names are.\n"
+"(\"k\" v)"
+NEXT_FUZZ_DATA
+"1,20,"
+"Strings must be quoted when field names are.\n"
+"((\"a\") \"5\" \"6\" \"7\" 8)"
+NEXT_FUZZ_DATA
 "1,8,"
 "Expected subfield name to be quoted too.\n"
 "(\"a\" (b 5))"
@@ -36,10 +48,6 @@ NEXT_FUZZ_DATA
 "Literal field can only hold 1 value.\n"
 "(k 5 (w"
 NEXT_FUZZ_DATA
-"1,5,"
-"Expected closing double quote.\n"
-"(k \""
-NEXT_FUZZ_DATA
 "1,4,"
 "Message can only hold fields.\n"
 "(()"
@@ -50,7 +58,15 @@ NEXT_FUZZ_DATA
 NEXT_FUZZ_DATA
 "1,5,"
 "Expected a literal or closing paren.\n"
+"((x)"
+NEXT_FUZZ_DATA
+"1,6,"
+"Expected a literal or closing paren.\n"
 "((x)\0"
+NEXT_FUZZ_DATA
+"1,6,"
+"Unexpected open paren in string.\n"
+"(a b ("
 NEXT_FUZZ_DATA
 "1,1,"
 "Expected open paren to start field.\n"
@@ -79,8 +95,4 @@ NEXT_FUZZ_DATA
 "1,15,"
 "Unexpected literal type.\n"
 "((a) 5 6 7 \"8\")"
-NEXT_FUZZ_DATA
-"1,19,"
-"Unexpected literal type.\n"
-"((a) \"5\" \"6\" \"7\" 8)"
 END_FUZZ_DATA
