@@ -26,6 +26,7 @@ static void parse_string_test() {
   expectparse("ab\"cd", "\"ab\\\"cd\"");
   expectparse("ab\\", "\"ab\\\\\"");
   expectparse("a  \n b", "\"a  \\n b\"");
+  expectparse("a\nb\nc", "\"a\nb\r\nc\"");
 
   /* Unquoted.*/
   expectparse("abcdef", "abcdef");

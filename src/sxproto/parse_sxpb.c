@@ -86,16 +86,25 @@ parse_quoted_string_FildeshSxpbInfo(
     FildeshO* oslice)
 {
   FildeshX slice;
+  bool multiline_on = false;
 
   assert(in->off < in->size && in->at[in->off] == '"');
   skipstr_FildeshSxpbInfo(info, in, "\"");
+  multiline_on = skipstr_FildeshSxpbInfo(info, in, "\"\"");
 
-  for (slice = until_chars_FildeshSxpbInfo(info, in, "\\\"");
-       in->off < in->size && in->at[in->off] != '"';
-       slice = until_chars_FildeshSxpbInfo(info, in, "\\\""))
+  for (slice = until_chars_FildeshSxpbInfo(info, in, "\\\"\r");
+       avail_FildeshX(in);
+       slice = until_chars_FildeshSxpbInfo(info, in, "\\\"\r"))
   {
     putslice_FildeshO(oslice, slice);
-    if (skipstr_FildeshSxpbInfo(info, in, "\\\"")) {
+    if (skipstr_FildeshSxpbInfo(info, in, "\"")) {
+      if (!multiline_on || skipstr_FildeshSxpbInfo(info, in, "\"\"")) {
+        info->unquoted_value_separation_on = false;
+        return true;
+      }
+      putc_FildeshO(oslice, '"');
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\\"")) {
       putc_FildeshO(oslice, '"');
     }
     else if (skipstr_FildeshSxpbInfo(info, in, "\\\\")) {
@@ -104,20 +113,22 @@ parse_quoted_string_FildeshSxpbInfo(
     else if (skipstr_FildeshSxpbInfo(info, in, "\\n")) {
       putc_FildeshO(oslice, '\n');
     }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\\n") ||
+             skipstr_FildeshSxpbInfo(info, in, "\\\r\n")) {
+      /* Ignore escaped newline.*/
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\r")) {
+      /* Ignore carriage return.*/
+    }
     else {
       syntax_error(info, "Unknown escape sequence. Only very basic ones are supported.");
       return false;
     }
   }
-  putslice_FildeshO(oslice, slice);
 
-  if (!skipstr_FildeshSxpbInfo(info, in, "\"")) {
-    truncate_FildeshO(oslice);
-    syntax_error(info, "Expected closing double quote.");
-    return false;
-  }
-  info->unquoted_value_separation_on = false;
-  return true;
+  truncate_FildeshO(oslice);
+  syntax_error(info, "Expected closing double quote.");
+  return false;
 }
 
 static
