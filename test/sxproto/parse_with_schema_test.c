@@ -21,12 +21,12 @@ static const char loneof_test_content[] = "\
 ((fruit_as banana) +true)\n\
 ";
 static const char array_test_content[] = "\
-((messages)\n\
+(messages (())\n\
  (() (car \"schwam\"))\n\
- (())\n\
+ ()\n\
  (() (\"car\" \"doo\") (cdr (car \"two and heif\")))\n\
 )\n\
-((a) 0.5e1 4 30e-1 2.e0 1)\n\
+(a (()) 0.5e1 4 30e-1 2.e0 1)\n\
 ";
 static const char manyof_test_content[] = "\
 ((predicates)\n\
@@ -41,10 +41,15 @@ static const char manyof_test_content[] = "\
   (u 1)\n\
   (u 0)\n\
 ))\n\
+((many_fruits) (() (banana +true)) () (() (apple +false)))\n\
 ";
 static const char manyof_coercion_test_content[] = "\
+((b) 1)\n\
+((n) 2)\n\
+((f) 2.5)\n\
+((s_alternate_name) seven)\n\
 ((cons) (car kappa))\n\
-((predicates) alpha beta gamma)\n\
+(predicates (()) alpha beta gamma)\n\
 ((a) 1 2 3)\n\
 ";
 
@@ -73,6 +78,7 @@ sxproto_schema()
     {"f", FILL_FildeshSxprotoField_FLOAT(0, 10)},
     {"a", FILL_DEFAULT_FildeshSxprotoField_FLOATS},
     {"cons", FILL_FildeshSxprotoField_MESSAGE(m_fields)},
+    {"many_fruits", FILL_FildeshSxprotoField_MANYOF(fruit_loneof)},
     {"messages", FILL_FildeshSxprotoField_MESSAGES(m_fields)},
     {"predicates", FILL_FildeshSxprotoField_MANYOF(predicates_manyof)},
     {"s", FILL_FildeshSxprotoField_STRING(1, 64)},
@@ -316,6 +322,23 @@ manyof_test()
     assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
   }
 
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "many_fruits");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "many_fruits"));
+  {
+    FildeshSxpbIT val_it;
+    it = first_at_FildeshSxpb(sxpb, it);
+    val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "banana");
+    assert(bool_value_at_FildeshSxpb(sxpb, val_it));
+
+    it = next_at_FildeshSxpb(sxpb, it);
+
+    it = next_at_FildeshSxpb(sxpb, it);
+    val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "apple");
+    assert(!bool_value_at_FildeshSxpb(sxpb, val_it));
+
+    assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
+  }
+
   close_FildeshSxpb(sxpb);
   close_FildeshO(err_out);
 }
@@ -333,6 +356,15 @@ manyof_coercion_test()
   FildeshSxpbIT val_it;
 
   assert(sxpb);
+
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "b");
+  assert(bool_value_at_FildeshSxpb(sxpb, val_it));
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "n");
+  assert(2 == unsigned_value_at_FildeshSxpb(sxpb, val_it));
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "f");
+  assert(2.5f == float_value_at_FildeshSxpb(sxpb, val_it));
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "s");
+  assert(0 == strcmp("seven", str_value_at_FildeshSxpb(sxpb, val_it)));
 
   it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "cons");
   assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cons"));

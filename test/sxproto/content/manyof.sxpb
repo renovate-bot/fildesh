@@ -4,24 +4,24 @@
 )
 
 ((expressions)
- ((or) (() (value +false)) (() (value +true)))
- ((or) (value +false) (value +true))
- (((or)) +false +true)
+ (or (()) (() (value +false)) (() (value +true)))
+ (or (()) (value +false) (value +true))
+ ((or) +false +true)
 )
 
 ((expressions)
- (((or))
+ ((or)
   +false
-  (((and)) +true +false)
-  (((or)) +false +false +true))
+  ((and) +true +false)
+  ((or) +false +false +true))
 )
 
 ; An empty manyof.
-(((empty_manyof)))
+((empty_manyof))
 
 ; A manyof with empty elements.
 ((empty_manyof_elements)
- ((empty_array))
- (((empty_manyof)))
+ (empty_array (()))
+ ((empty_manyof))
  (empty_message)
 )

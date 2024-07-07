@@ -16,29 +16,37 @@ NEXT_FUZZ_DATA
 "Strings must be quoted when field names are.\n"
 "(\"k\" v)"
 NEXT_FUZZ_DATA
-"1,20,"
+"1,21,"
 "Strings must be quoted when field names are.\n"
-"((\"a\") \"5\" \"6\" \"7\" 8)"
+"(\"a\" () \"5\" \"6\" \"7\" 8)"
 NEXT_FUZZ_DATA
 "1,8,"
 "Expected subfield name to be quoted too.\n"
 "(\"a\" (b 5))"
 NEXT_FUZZ_DATA
 "1,6,"
-"Expected 2 closing parens after manyof name; got 1.\n"
-"(((u)"
+"Expected closing paren after loneof selection name.\n"
+"((x y"
 NEXT_FUZZ_DATA
-"1,3,"
-"Expected closing paren after array name.\n"
-"(("
-NEXT_FUZZ_DATA
-"1,2,"
-"Denote empty message in array as (()), not ().\n"
-"("
+"1,4,"
+"Expected closing paren after loneof selection name.\n"
+"((x()"
 NEXT_FUZZ_DATA
 "1,7,"
-"Denote empty message in array as (()), not ().\n"
-"((a) ())"
+"Expected closing paren after loneof selection name.\n"
+"((x y z)"
+NEXT_FUZZ_DATA
+"1,6,"
+"Unexpected space between opening and closing parentheses.\n"
+"((  ) (x 5))"
+NEXT_FUZZ_DATA
+"1,3,"
+"Expected loneof field name.\n"
+"(("
+NEXT_FUZZ_DATA
+"1,3,"
+"Expected loneof field name.\n"
+"((()) ((()) 6 6 7))"
 NEXT_FUZZ_DATA
 "1,6,"
 "Literal field can only hold 1 value.\n"
@@ -48,6 +56,9 @@ NEXT_FUZZ_DATA
 "Literal field can only hold 1 value.\n"
 "(k 5 (w"
 NEXT_FUZZ_DATA
+"1,5,"
+"Message can only hold fields.\n"
+"(() 7 7 7)"
 "1,4,"
 "Expected a literal or closing paren.\n"
 "(()"
@@ -56,13 +67,9 @@ NEXT_FUZZ_DATA
 "Expected a literal or closing paren.\n"
 "(a"
 NEXT_FUZZ_DATA
-"1,5,"
+"1,4,"
 "Expected a literal or closing paren.\n"
-"((x)"
-NEXT_FUZZ_DATA
-"1,6,"
-"Expected a literal or closing paren.\n"
-"((x)\0"
+"(a\0"
 NEXT_FUZZ_DATA
 "1,6,"
 "Unexpected open paren in string.\n"
@@ -80,19 +87,15 @@ NEXT_FUZZ_DATA
 "Cannot parse exponent.\n"
 "(x 5e+bad)"
 NEXT_FUZZ_DATA
-"1,12,"
-"Manyof cannot hold nameless message values yet.\n"
-"(((a)) (() (x 5)))"
-NEXT_FUZZ_DATA
 "1,10,"
 "Duplicate field name. Use array syntax for repeated fields.\n"
 "(x 5) (x 6)"
 NEXT_FUZZ_DATA
-"1,8,"
+"1,11,"
 "Unexpected message.\n"
-"((a) 5 (() (a 1)))"
+"(a (()) 5 (() (a 1)))"
 NEXT_FUZZ_DATA
-"1,15,"
+"1,18,"
 "Unexpected literal type.\n"
-"((a) 5 6 7 \"8\")"
+"(a (()) 5 6 7 \"8\")"
 END_FUZZ_DATA

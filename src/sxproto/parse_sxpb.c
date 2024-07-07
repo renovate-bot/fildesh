@@ -259,13 +259,13 @@ parse_name_FildeshSxpbInfo(
   FildeshX slice;
   unsigned nesting_depth = *ret_nesting_depth;
   if (nesting_depth != 3) {
-    if (skipstr_FildeshSxpbInfo(info, in, "(")) {
+    if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("()"))) {
+      /* Will parse this later.*/
+      nesting_depth = 0;
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "(")) {
       nesting_depth = 1;
       skip_separation(in, info);
-      if (skipstr_FildeshSxpbInfo(info, in, "(")) {
-        nesting_depth = 2;
-        skip_separation(in, info);
-      }
     }
   }
   slice = until_chars_FildeshSxpbInfo(info, in, sxpb_delim_bytes);
@@ -286,29 +286,68 @@ parse_name_FildeshSxpbInfo(
     putslice_FildeshO(oslice, slice);
   }
 
-  if (nesting_depth > 0) {
+  if (nesting_depth == 3) {
+    nesting_depth = 0;
     skip_separation(in, info);
-    if (skipstr_FildeshSxpbInfo(info, in, ")")) {
-      if (nesting_depth == 3) {
+    if (!skipstr_FildeshSxpbInfo(info, in, ")")) {
+      syntax_error(info, "Expected closing paren after loneof selection name.");
+      return false;
+    }
+    if (oslice->size == 0) {
+      syntax_error(info, "Expected loneof selection name.");
+      return false;
+    }
+  }
+
+  skip_separation(in, info);
+  if (nesting_depth == 0) {
+    if (skipstr_FildeshSxpbInfo(info, in, "()")) {
+      skip_separation(in, info);
+      if (oslice->size == 0) {
+        nesting_depth = 0;
+      }
+      else if (!peek_char_FildeshX(in, '(')) {
         nesting_depth = 1;
       }
-      else if (nesting_depth == 2) {
-        skip_separation(in, info);
-        if (!skipstr_FildeshSxpbInfo(info, in, ")")) {
-          syntax_error(info, "Expected 2 closing parens after manyof name; got 1.");
-          return false;
-        }
+      else if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
+        nesting_depth = 1;
       }
       else {
-        assert(nesting_depth == 1);
+        nesting_depth = 0;
       }
     }
-    else {
-      if (nesting_depth != 1) {
-        syntax_error(info, "Expected closing paren after array name.");
-        return false;
+    else if (skipstr_FildeshSxpbInfo(info, in, "(())")) {
+      skip_separation(in, info);
+      if (oslice->size == 0) {
+        nesting_depth = 1;
       }
+      else if (!peek_char_FildeshX(in, '(')) {
+        nesting_depth = 1;
+      }
+      else if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
+        nesting_depth = 1;
+      }
+      else {
+        nesting_depth = 2;
+      }
+    }
+  }
+  else {
+    assert(nesting_depth == 1);
+    if (skipstr_FildeshSxpbInfo(info, in, ")")) {
+      nesting_depth = 2;
+    }
+    else {
       nesting_depth = 3;
+    }
+    if (oslice->size == 0) {
+      if (nesting_depth == 2) {
+        syntax_error(info, "Unexpected space between opening and closing parentheses.");
+      }
+      else {
+        syntax_error(info, "Expected loneof field name.");
+      }
+      return false;
     }
   }
   *ret_nesting_depth = nesting_depth;
@@ -340,10 +379,6 @@ insert_next_FildeshSxpb(
        kind == FildeshSxprotoFieldKind_MANYOF))
   {
     syntax_error(info, "Array cannot hold fields.");
-    return FildeshSxpbIT_of_NULL();
-  }
-  if (cons_kind == FildeshSxprotoFieldKind_MANYOF && text_slice.size == 0) {
-    syntax_error(info, "Manyof cannot hold nameless message values yet.");
     return FildeshSxpbIT_of_NULL();
   }
 
@@ -418,8 +453,8 @@ parse_field_FildeshSxpbInfo(
 
   if (nesting_depth == 0) {
     if (oslice->size == 0) {
-      syntax_error(info, "Denote empty message in array as (()), not ().");
-      return false;
+      field_kind = FildeshSxprotoFieldKind_MESSAGE;
+      field = schema;
     }
     else if (peek_chars_FildeshX(in, "()")) {
       field_kind = FildeshSxprotoFieldKind_MESSAGE;
@@ -429,19 +464,7 @@ parse_field_FildeshSxpbInfo(
     }
   }
   else if (nesting_depth == 1) {
-    if (oslice->size == 0) {
-      field_kind = FildeshSxprotoFieldKind_MESSAGE;
-      field = schema;
-    }
-    else if (!peek_char_FildeshX(in, '(')) {
-      field_kind = FildeshSxprotoFieldKind_ARRAY;
-    }
-    else if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
-      field_kind = FildeshSxprotoFieldKind_ARRAY;
-    }
-    else {
-      field_kind = FildeshSxprotoFieldKind_MANYOF;
-    }
+    field_kind = FildeshSxprotoFieldKind_ARRAY;
   }
   else if (nesting_depth == 2) {
     field_kind = FildeshSxprotoFieldKind_MANYOF;
@@ -470,9 +493,11 @@ parse_field_FildeshSxpbInfo(
     if (!parse_name_FildeshSxpbInfo(info, in, oslice, &nesting_depth)) {
       return false;
     }
-    assert(nesting_depth == 1);
     skip_separation(in, info);
-    if (peek_chars_FildeshX(in, "()")) {
+    if (nesting_depth == 1) {
+      field_kind = FildeshSxprotoFieldKind_ARRAY;
+    }
+    else if (peek_chars_FildeshX(in, "()")) {
       field_kind = FildeshSxprotoFieldKind_MESSAGE;
     }
     else {
@@ -539,6 +564,9 @@ parse_field_FildeshSxpbInfo(
       }
     }
     else {
+      if (field_kind == FildeshSxprotoFieldKind_MANYOF) {
+        field_kind = FildeshSxprotoFieldKind_LITERAL;
+      }
       if (field_kind != FildeshSxprotoFieldKind_LITERAL) {
         syntax_error(info, "Expected field to be a literal.");
         return false;

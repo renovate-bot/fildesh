@@ -88,13 +88,17 @@ static void parse_name_test() {
 } while (0)
 
   expectparse("x", 0, "x");
-  expectparse("y", 1, "(y)");
-  expectparse("z", 2, "((z))");
-  expectparse("", 1, "()");
-  expectparse("", 2, "(())");
+  expectparse("x", 0, "x () (x 5)");
+  expectparse("x", 1, "x ()");
+  expectparse("y", 1, "y (())");
+  expectparse("y", 1, "y (()) (() (x 5))");
+  expectparse("y", 2, "y (()) (x 5)");
+  expectparse("", 0, "()");
+  expectparse("", 0, "() (x 5)");
+  expectparse("", 0, "() (() (x 5))");
   /* Quoted names.*/
   expectparse("abc", 0, "\"abc\"");
-  expectparse("(a\"bc", 1, "( \"(a\\\"bc\")");
+  expectparse("(a\"bc", 1, "\"(a\\\"bc\" ()");
 
 #undef expectparse
   close_FildeshO(oslice);
@@ -126,9 +130,10 @@ static void parse_field_test() {
   tryparse("((do_with x) 5)");
   tryparse("((do_with m) (x 1) (y 2))");
   tryparse("((do_with empty_m))");
-  tryparse("((a) 1 2 3 4 5)");
-  tryparse("((a) (() (x 5)) (() (y 7)) (()) (() (z 12)))");
-  tryparse("(((b)) 1 2 3 4 5)");
+  tryparse("(a (()) 1 2 3 4 5)");
+  tryparse("(a (()) (() (x 5)) (() (y 7)) () (() (z 12)))");
+  tryparse("((a) (() (x 5)) (() (y 7)) () (() (z 12)))");
+  tryparse("((b) 1 2 3 4 5)");
 
 #undef tryparse
   close_FildeshO(oslice);
