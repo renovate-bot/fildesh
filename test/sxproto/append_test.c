@@ -119,7 +119,7 @@ append_to_manyof_from_manyof_test()
   };
   DECLARE_TOPLEVEL_FildeshSxprotoField(toplevel_schema, toplevel_fields);
   static const char content[] =
-    "(((things))\n\
+    "((things)\n\
     1\n\
     0\n\
     )\n\

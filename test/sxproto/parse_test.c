@@ -33,6 +33,10 @@ static void parse_string_test() {
   expectparse("ab'cd", "ab'cd");
   expectparse("ab\\cd", "ab\\cd");
 
+  /* Empty.*/
+  expectparse("", "\"\"");
+  expectparse("", "\"\"\"\"\"\"");
+
 #undef expectparse
   close_FildeshO(oslice);
 }

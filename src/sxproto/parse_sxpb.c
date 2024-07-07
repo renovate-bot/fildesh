@@ -492,6 +492,61 @@ parse_field_FildeshSxpbInfo(
     putstr_FildeshO(oslice, field->name);
   }
 
+  if (schema) {
+    if (field->kind == FildeshSxprotoFieldKind_MESSAGE) {
+      if (field_kind == FildeshSxprotoFieldKind_MANYOF) {
+        field_kind = FildeshSxprotoFieldKind_MESSAGE;
+      }
+      if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
+        syntax_error(info, "Expected field to be a message.");
+        return false;
+      }
+    }
+    else if (field == schema && field->kind == FildeshSxprotoFieldKind_ARRAY) {
+      if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
+        syntax_error(info, "Expected array element to be a message.");
+        return false;
+      }
+    }
+    else if (field->kind == FildeshSxprotoFieldKind_ARRAY) {
+      if (field_kind == FildeshSxprotoFieldKind_MANYOF) {
+        field_kind = FildeshSxprotoFieldKind_ARRAY;
+      }
+      if (field_kind != FildeshSxprotoFieldKind_ARRAY) {
+        syntax_error(info, "Expected field to be an array.");
+        return false;
+      }
+      if (field->subfields) {
+        elem_kind = FildeshSxprotoFieldKind_MESSAGE;
+      }
+      else {
+        elem_kind = (FildeshSxprotoFieldKind)field->hi;
+      }
+    }
+    else if (field == schema && field->kind == FildeshSxprotoFieldKind_MANYOF) {
+      if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
+        syntax_error(info, "Expected manyof element to be a message.");
+        return false;
+      }
+    }
+    else if (field->kind == FildeshSxprotoFieldKind_MANYOF) {
+      if (field_kind == FildeshSxprotoFieldKind_ARRAY) {
+        field_kind = FildeshSxprotoFieldKind_MANYOF;
+      }
+      if (field_kind != FildeshSxprotoFieldKind_MANYOF) {
+        syntax_error(info, "Expected field to be a manyof.");
+        return false;
+      }
+    }
+    else {
+      if (field_kind != FildeshSxprotoFieldKind_LITERAL) {
+        syntax_error(info, "Expected field to be a literal.");
+        return false;
+      }
+      elem_kind = field->kind;
+    }
+  }
+
   p_it = insert_next_FildeshSxpb(sxpb, p_it, field_kind, oslice, info);
   if (nullish_FildeshSxpbIT(p_it)) {
     return false;
@@ -509,48 +564,6 @@ parse_field_FildeshSxpbInfo(
          e_it = next_at_FildeshSxpb(sxpb, p_it))
     {
       p_it = e_it;
-    }
-  }
-
-  if (schema) {
-    if (field->kind == FildeshSxprotoFieldKind_MESSAGE) {
-      if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
-        syntax_error(info, "Expected field to be a message.");
-        return false;
-      }
-    }
-    else if (field->kind == FildeshSxprotoFieldKind_ARRAY) {
-      if (field != schema) {
-        if (field_kind != FildeshSxprotoFieldKind_ARRAY) {
-          syntax_error(info, "Expected field to be an array.");
-          return false;
-        }
-        if (field->subfields) {
-          elem_kind = FildeshSxprotoFieldKind_MESSAGE;
-        }
-        else {
-          elem_kind = (FildeshSxprotoFieldKind)field->hi;
-        }
-      }
-      else {
-        if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
-          syntax_error(info, "Expected array element to be a message.");
-          return false;
-        }
-      }
-    }
-    else if (field->kind == FildeshSxprotoFieldKind_MANYOF) {
-      if (field_kind != FildeshSxprotoFieldKind_MANYOF) {
-        syntax_error(info, "Expected field to be a manyof.");
-        return false;
-      }
-    }
-    else {
-      if (field_kind != FildeshSxprotoFieldKind_LITERAL) {
-        syntax_error(info, "Expected field to be a literal.");
-        return false;
-      }
-      elem_kind = field->kind;
     }
   }
 
@@ -583,12 +596,12 @@ parse_field_FildeshSxpbInfo(
     }
     else {
       FildeshSxprotoFieldKind tmp_kind = FildeshSxprotoFieldKind_UNKNOWN;
-      if (field_kind == FildeshSxprotoFieldKind_MESSAGE) {
-        syntax_error(info, "Message can only hold fields.");
-        return false;
-      }
       if (!avail_FildeshX(in)) {
         syntax_error(info, "Expected a literal or closing paren.");
+        return false;
+      }
+      if (field_kind == FildeshSxprotoFieldKind_MESSAGE) {
+        syntax_error(info, "Message can only hold fields.");
         return false;
       }
       if (elem_kind == FildeshSxprotoFieldKind_LITERAL_STRING ||
@@ -613,12 +626,12 @@ parse_field_FildeshSxpbInfo(
           }
         }
       }
-      else if (skipstr_FildeshX(in, "+true")) {
+      else if (skipstr_FildeshSxpbInfo(info, in, "+true")) {
         truncate_FildeshO(oslice);
         putstrlit_FildeshO(oslice, "+true");
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;
       }
-      else if (skipstr_FildeshX(in, "+false")) {
+      else if (skipstr_FildeshSxpbInfo(info, in, "+false")) {
         truncate_FildeshO(oslice);
         putstrlit_FildeshO(oslice, "+false");
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;

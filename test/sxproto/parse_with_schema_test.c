@@ -3,6 +3,51 @@
 
 #include <fildesh/sxproto.h>
 
+static const char literal_test_content[] = "\
+(b +true)\n\
+(n 10)\n\
+(f 2.5)\n\
+(s_alternate_name \"Kappa ¬‿¬\")\n\
+";
+static const char message_test_content[] = "\
+(cons\n\
+ (car \"first\")\n\
+ (cdr\n\
+  (car \"second\")\n\
+  (cdr (car \"third\") (cdr))\n\
+))\n\
+";
+static const char loneof_test_content[] = "\
+((fruit_as banana) +true)\n\
+";
+static const char array_test_content[] = "\
+((messages)\n\
+ (() (car \"schwam\"))\n\
+ (())\n\
+ (() (\"car\" \"doo\") (cdr (car \"two and heif\")))\n\
+)\n\
+((a) 0.5e1 4 30e-1 2.e0 1)\n\
+";
+static const char manyof_test_content[] = "\
+((predicates)\n\
+ \"alpha\"\n\
+ \"beta\"\n\
+ \"gamma\"\n\
+ \"delta\"\n\
+ (b +false)\n\
+ ((or)\n\
+  (b 1)\n\
+  (b_alias 0)\n\
+  (u 1)\n\
+  (u 0)\n\
+))\n\
+";
+static const char manyof_coercion_test_content[] = "\
+((cons) (car kappa))\n\
+((predicates) alpha beta gamma)\n\
+((a) 1 2 3)\n\
+";
+
 static
   const FildeshSxprotoField*
 sxproto_schema()
@@ -47,41 +92,15 @@ sxproto_schema()
 
 static
   void
-parse_with_schema_test()
+literal_test()
 {
-  static const char content[] =
-    "\
-    (b +true)\n\
-    (n 10)\n\
-    (f 2.5)\n\
-    (s_alternate_name \"Kappa ¬‿¬\")\n\
-    (((predicates))\n\
-     \"alpha\"\n\
-     \"beta\"\n\
-     \"gamma\"\n\
-     \"delta\"\n\
-     (b +false)\n\
-     (((or))\n\
-      (b 1)\n\
-      (b_alias 0)\n\
-      (u 1)\n\
-      (u 0)))\n\
-    ((a) 0.5e1 4 30e-1 2.e0 1)\n\
-    (cons (car \"first\") (cdr (car \"second\") (cdr (car \"third\") (cdr))))\n\
-    ((messages)\n\
-     (() (car \"schwam\"))\n\
-     (())\n\
-     (() (\"car\" \"doo\") (cdr (car \"two and heif\"))))\n\
-    ((fruit_as banana) +true)\n\
-    ";
-  DECLARE_STRLIT_FildeshX(in, content);
+  DECLARE_STRLIT_FildeshX(in, literal_test_content);
   FildeshO* err_out = open_FildeshOF("/dev/stderr");
   const FildeshSxprotoField* const schema = (
       (void)sxproto_schema(),
       sxproto_schema());
   FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
   const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
-  FildeshSxpbIT it;
   bool tmp_b;
   unsigned tmp_u;
   float tmp_f;
@@ -89,7 +108,6 @@ parse_with_schema_test()
   bool good;
 
   assert(sxpb);
-
   assert(name_at_FildeshSxpb(sxpb, top_it));
   assert(!name_at_FildeshSxpb(sxpb, top_it)[0]);
 
@@ -108,6 +126,150 @@ parse_with_schema_test()
   good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, top_it, "s");
   assert(good);
   assert(0 == strcmp(tmp_s, "Kappa ¬‿¬"));
+
+  close_FildeshSxpb(sxpb);
+  close_FildeshO(err_out);
+}
+
+static
+  void
+message_test()
+{
+  DECLARE_STRLIT_FildeshX(in, message_test_content);
+  FildeshO* err_out = open_FildeshOF("/dev/stderr");
+  const FildeshSxprotoField* const schema = sxproto_schema();
+  FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  FildeshSxpbIT it;
+  const char* tmp_s;
+  bool good;
+
+  assert(sxpb);
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "cons");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cons"));
+
+  good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
+  assert(good);
+  assert(0 == strcmp(tmp_s, "first"));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cdr"));
+  good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
+  assert(good);
+  assert(0 == strcmp(tmp_s, "second"));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
+  assert(good);
+  assert(0 == strcmp(tmp_s, "third"));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cdr"));
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  assert(nullish_FildeshSxpbIT(it));
+
+  close_FildeshSxpb(sxpb);
+  close_FildeshO(err_out);
+}
+
+static
+  void
+loneof_test()
+{
+  DECLARE_STRLIT_FildeshX(in, loneof_test_content);
+  FildeshO* err_out = open_FildeshOF("/dev/stderr");
+  const FildeshSxprotoField* const schema = sxproto_schema();
+  FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  FildeshSxpbIT it;
+  bool tmp_b;
+
+  assert(sxpb);
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "fruit_as");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "fruit_as"));
+  assert(lone_subfield_at_FildeshSxpb_to_bool(&tmp_b, sxpb, it, "banana"));
+  assert(tmp_b);
+
+  close_FildeshSxpb(sxpb);
+  close_FildeshO(err_out);
+}
+
+static
+  void
+array_test()
+{
+  DECLARE_STRLIT_FildeshX(in, array_test_content);
+  FildeshO* err_out = open_FildeshOF("/dev/stderr");
+  const FildeshSxprotoField* const schema = sxproto_schema();
+  FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  FildeshSxpbIT it;
+  FildeshSxpbIT val_it;
+
+  assert(sxpb);
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "a");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "a"));
+  /* Message fields are stored in lexicographic order. This one is first.*/
+  assert(it.elem_id == first_at_FildeshSxpb(sxpb, top_it).elem_id);
+  /* Check all elements in the array.*/
+  it = first_at_FildeshSxpb(sxpb, it);
+  assert(!nullish_FildeshSxpbIT(it));
+  assert(5.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(!nullish_FildeshSxpbIT(it));
+  assert(4.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(3.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(2.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(1.0f == float_value_at_FildeshSxpb(sxpb, it));
+  assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
+
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "messages");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "messages"));
+
+  it = first_at_FildeshSxpb(sxpb, it);
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "car");
+  assert(0 == strcmp("schwam", str_value_at_FildeshSxpb(sxpb, val_it)));
+
+  it = next_at_FildeshSxpb(sxpb, it);
+  /* Empty message.*/
+  assert(nullish_FildeshSxpbIT(first_at_FildeshSxpb(sxpb, it)));
+
+  it = next_at_FildeshSxpb(sxpb, it);
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "car");
+  assert(0 == strcmp("doo", str_value_at_FildeshSxpb(sxpb, val_it)));
+  assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "car");
+  assert(0 == strcmp("two and heif", str_value_at_FildeshSxpb(sxpb, val_it)));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
+  assert(nullish_FildeshSxpbIT(it));
+
+  close_FildeshSxpb(sxpb);
+  close_FildeshO(err_out);
+}
+
+
+static
+  void
+manyof_test()
+{
+  DECLARE_STRLIT_FildeshX(in, manyof_test_content);
+  FildeshO* err_out = open_FildeshOF("/dev/stderr");
+  const FildeshSxprotoField* const schema = sxproto_schema();
+  FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  FildeshSxpbIT it;
+
+  assert(sxpb);
 
   it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "predicates");
   assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "predicates"));
@@ -154,98 +316,59 @@ parse_with_schema_test()
     assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
   }
 
-  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "a");
-    assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "a"));
-  /* Message fields are stored in lexicographic order. This one is first.*/
-  assert(it.elem_id == first_at_FildeshSxpb(sxpb, top_it).elem_id);
-  {
-    it = first_at_FildeshSxpb(sxpb, it);
-    assert(!nullish_FildeshSxpbIT(it));
-    assert(5.0f == float_value_at_FildeshSxpb(sxpb, it));
+  close_FildeshSxpb(sxpb);
+  close_FildeshO(err_out);
+}
 
-    it = next_at_FildeshSxpb(sxpb, it);
-    assert(!nullish_FildeshSxpbIT(it));
-    assert(4.0f == float_value_at_FildeshSxpb(sxpb, it));
+static
+  void
+manyof_coercion_test()
+{
+  DECLARE_STRLIT_FildeshX(in, manyof_coercion_test_content);
+  FildeshO* err_out = open_FildeshOF("/dev/stderr");
+  const FildeshSxprotoField* const schema = sxproto_schema();
+  FildeshSxpb* const sxpb = slurp_sxpb_close_FildeshX(in, schema, err_out);
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  FildeshSxpbIT it;
+  FildeshSxpbIT val_it;
 
-    it = next_at_FildeshSxpb(sxpb, it);
-    assert(!nullish_FildeshSxpbIT(it));
-    assert(3.0f == float_value_at_FildeshSxpb(sxpb, it));
-
-    it = next_at_FildeshSxpb(sxpb, it);
-    assert(!nullish_FildeshSxpbIT(it));
-    assert(2.0f == float_value_at_FildeshSxpb(sxpb, it));
-
-    it = next_at_FildeshSxpb(sxpb, it);
-    assert(!nullish_FildeshSxpbIT(it));
-    assert(1.0f == float_value_at_FildeshSxpb(sxpb, it));
-
-    assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
-  }
+  assert(sxpb);
 
   it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "cons");
   assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cons"));
-  {
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "first"));
+  val_it = lookup_subfield_at_FildeshSxpb(sxpb, it, "car");
+  assert(0 == strcmp("kappa", str_value_at_FildeshSxpb(sxpb, val_it)));
 
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cdr"));
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "second"));
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "predicates");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "predicates"));
+  it = first_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(str_value_at_FildeshSxpb(sxpb, it), "alpha"));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(str_value_at_FildeshSxpb(sxpb, it), "beta"));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(str_value_at_FildeshSxpb(sxpb, it), "gamma"));
+  assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
 
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "third"));
-
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "cdr"));
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    assert(nullish_FildeshSxpbIT(it));
-  }
-
-  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "messages");
-  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "messages"));
-  {
-    it = first_at_FildeshSxpb(sxpb, it);
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "schwam"));
-
-    it = next_at_FildeshSxpb(sxpb, it);
-    /* Empty message.*/
-    assert(nullish_FildeshSxpbIT(first_at_FildeshSxpb(sxpb, it)));
-
-    it = next_at_FildeshSxpb(sxpb, it);
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "doo"));
-    assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
-
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    good = lone_subfield_at_FildeshSxpb_to_str(&tmp_s, sxpb, it, "car");
-    assert(good);
-    assert(0 == strcmp(tmp_s, "two and heif"));
-
-    it = lookup_subfield_at_FildeshSxpb(sxpb, it, "cdr");
-    assert(nullish_FildeshSxpbIT(it));
-  }
-
-  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "fruit_as");
-  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "fruit_as"));
-  {
-    good = lone_subfield_at_FildeshSxpb_to_bool(&tmp_b, sxpb, it, "banana");
-    assert(good);
-    assert(tmp_b);
-  }
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "a");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "a"));
+  it = first_at_FildeshSxpb(sxpb, it);
+  assert(1.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(2.0f == float_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(3.0f == float_value_at_FildeshSxpb(sxpb, it));
+  assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
 
   close_FildeshSxpb(sxpb);
   close_FildeshO(err_out);
 }
 
 int main() {
-  parse_with_schema_test();
+  literal_test();
+  message_test();
+  loneof_test();
+  array_test();
+  manyof_test();
+  manyof_coercion_test();
   return 0;
 }

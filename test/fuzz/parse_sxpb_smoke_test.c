@@ -49,7 +49,7 @@ NEXT_FUZZ_DATA
 "(k 5 (w"
 NEXT_FUZZ_DATA
 "1,4,"
-"Message can only hold fields.\n"
+"Expected a literal or closing paren.\n"
 "(()"
 NEXT_FUZZ_DATA
 "1,3,"
