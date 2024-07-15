@@ -5,8 +5,8 @@
 #include <string.h>
 
 
-static const char sxpb_delim_bytes[] = " \n\t\r\v\"();";
-static const char sxpb_blank_bytes[] = " \n\t\r\v";
+static const char sxpb_delim_bytes[] = " \t\n\v\f\r\"();";
+static const char sxpb_blank_bytes[] = " \t\n\v\f\r";
 
 static void
 syntax_error(const FildeshSxpbInfo* info, const char* msg)
@@ -133,7 +133,7 @@ parse_quoted_string_FildeshSxpbInfo(
 
 static
   bool
-parse_unquoted_string_FildeshSxpbInfo(
+parse_bare_string_FildeshSxpbInfo(
     FildeshSxpbInfo* info,
     FildeshX* in,
     FildeshO* oslice)
@@ -164,7 +164,7 @@ parse_concat_string_FildeshSxpbInfo(
     syntax_error(info, "Strings must be quoted when field names are.");
     return false;
   }
-  return parse_unquoted_string_FildeshSxpbInfo(info, in, oslice);
+  return parse_bare_string_FildeshSxpbInfo(info, in, oslice);
 }
 
 static void skip_leading_zeroes(FildeshX* in) {
@@ -249,6 +249,19 @@ parse_number_FildeshSxpbInfo(
   return true;
 }
 
+static
+  bool
+on_array_content(FildeshX* in)
+{
+  if (!peek_char_FildeshX(in, '(')) {
+    return true;
+  }
+  if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
+    return true;
+  }
+  return false;
+}
+
   bool
 parse_name_FildeshSxpbInfo(
     FildeshSxpbInfo* info,
@@ -303,13 +316,13 @@ parse_name_FildeshSxpbInfo(
   if (nesting_depth == 0) {
     if (skipstr_FildeshSxpbInfo(info, in, "()")) {
       skip_separation(in, info);
-      if (oslice->size == 0) {
-        nesting_depth = 0;
-      }
-      else if (!peek_char_FildeshX(in, '(')) {
+      if (peek_char_FildeshX(in, ')')) {
         nesting_depth = 1;
       }
-      else if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
+      else if (oslice->size == 0) {
+        nesting_depth = 0;
+      }
+      else if (on_array_content(in)) {
         nesting_depth = 1;
       }
       else {
@@ -321,10 +334,7 @@ parse_name_FildeshSxpbInfo(
       if (oslice->size == 0) {
         nesting_depth = 1;
       }
-      else if (!peek_char_FildeshX(in, '(')) {
-        nesting_depth = 1;
-      }
-      else if (peek_bytestring_FildeshX(in, fildesh_bytestrlit("(()"))) {
+      else if (on_array_content(in)) {
         nesting_depth = 1;
       }
       else {
@@ -422,6 +432,7 @@ static FildeshSxpbIT freshtail_FildeshSxpb(
   }
   assert(!fildesh_nullid(it.elem_id));
   assert(fildesh_nullid((*sxpb->values)[it.elem_id].next));
+  it.field_kind = (*sxpb->values)[it.elem_id].field_kind;
   return it;
 }
 
@@ -436,7 +447,6 @@ parse_field_FildeshSxpbInfo(
 {
   const bool info_quoted_names_on = info->quoted_names_on;
   unsigned nesting_depth = 0;
-  size_t elem_count = 0;
   const FildeshSxprotoField* field = NULL;
   FildeshSxprotoFieldKind field_kind = FildeshSxprotoFieldKind_UNKNOWN;
   FildeshSxprotoFieldKind elem_kind = FildeshSxprotoFieldKind_UNKNOWN;
@@ -595,12 +605,45 @@ parse_field_FildeshSxpbInfo(
     }
   }
 
-  while (!skipstr_FildeshSxpbInfo(info, in, ")")) {
+  if (!parse_field_content_FildeshSxpbInfo(
+          info, in, sxpb, p_it, field, elem_kind, oslice)) {
+    return false;
+  }
+
+  info->quoted_names_on = info_quoted_names_on;
+  if (avail_FildeshX(in)) {
+    if (skipstr_FildeshSxpbInfo(info, in, ")")) {
+      return true;
+    }
+  }
+  syntax_error(info, "Expected a literal or closing paren.");
+  return false;
+}
+
+  bool
+parse_field_content_FildeshSxpbInfo(
+    FildeshSxpbInfo* info,
+    FildeshX* in,
+    FildeshSxpb* sxpb,
+    FildeshSxpbIT p_it,
+    const FildeshSxprotoField* schema,
+    FildeshSxprotoFieldKind elem_kind,
+    FildeshO* oslice)
+{
+  const FildeshSxprotoFieldKind field_kind = p_it.field_kind;
+  size_t elem_count = 0;
+  bool in_avail;
+  for (in_avail = peek_bytestring_FildeshX(in, NULL, 2);
+       in_avail && in->at[in->off] != ')';
+       in_avail = peek_bytestring_FildeshX(in, NULL, 2))
+  {
+    const char c0 = in->at[in->off];
+    const char c1 = in->at[in->off+1];
     if (elem_count > 0 && field_kind == FildeshSxprotoFieldKind_LITERAL) {
       syntax_error(info, "Literal field can only hold 1 value.");
       return false;
     }
-    if (peek_char_FildeshX(in, '(')) {
+    if (c0 == '(') {
       assert(field_kind != FildeshSxprotoFieldKind_LITERAL);
       if (field_kind == FildeshSxprotoFieldKind_ARRAY) {
         if (elem_kind == FildeshSxprotoFieldKind_UNKNOWN) {
@@ -611,29 +654,29 @@ parse_field_FildeshSxpbInfo(
           return false;
         }
       }
-      if (!parse_field_FildeshSxpbInfo(info, field, in, sxpb, p_it, oslice)) {
+      if (!parse_field_FildeshSxpbInfo(info, schema, in, sxpb, p_it, oslice)) {
         return false;
       }
       if (field_kind != FildeshSxprotoFieldKind_MESSAGE) {
         p_it = freshtail_FildeshSxpb(sxpb, p_it);
-        assert(
-            (field_kind != FildeshSxprotoFieldKind_ARRAY ||
-             (*sxpb->values)[p_it.elem_id].field_kind != field_kind)
-            && "Arrays cannot be nested.");
+        if (field_kind == FildeshSxprotoFieldKind_ARRAY &&
+            p_it.field_kind == FildeshSxprotoFieldKind_ARRAY) {
+          syntax_error(info, "Arrays cannot be nested.");
+          return false;
+        }
       }
     }
     else {
       FildeshSxprotoFieldKind tmp_kind = FildeshSxprotoFieldKind_UNKNOWN;
-      if (!avail_FildeshX(in)) {
-        syntax_error(info, "Expected a literal or closing paren.");
-        return false;
-      }
       if (field_kind == FildeshSxprotoFieldKind_MESSAGE) {
         syntax_error(info, "Message can only hold fields.");
         return false;
       }
       if (elem_kind == FildeshSxprotoFieldKind_LITERAL_STRING ||
-          !peek_chars_FildeshX(in, "0123456789+-.")) {
+          (c0 != '+' && c0 != '-' && c0 != '.' && !('0' <= c0 && c0 <= '9')) ||
+          (c0 == '-' && c1 != '.' && c1 != '+' && !('0' <= c1 && c1 <= '9')) ||
+          (c0 == '.' && c1 != '-' && c1 != '+' && !('0' <= c1 && c1 <= '9')))
+      {
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_STRING;
         truncate_FildeshO(oslice);
         if (!parse_concat_string_FildeshSxpbInfo(info, in, oslice)) {
@@ -654,6 +697,17 @@ parse_field_FildeshSxpbInfo(
           }
         }
       }
+      else if (('0' <= c0 && c0 <= '9') ||  c1 == '.' ||
+               ('0' <= c1 && c1 <= '9'))
+      {
+        if (!parse_number_FildeshSxpbInfo(info, in, oslice)) {
+          return false;
+        }
+        tmp_kind = FildeshSxprotoFieldKind_LITERAL_INT;
+        if (oslice->size > 2 && oslice->at[2] == '.') {
+          tmp_kind = FildeshSxprotoFieldKind_LITERAL_FLOAT;
+        }
+      }
       else if (skipstr_FildeshSxpbInfo(info, in, "+true")) {
         truncate_FildeshO(oslice);
         putstrlit_FildeshO(oslice, "+true");
@@ -665,13 +719,8 @@ parse_field_FildeshSxpbInfo(
         tmp_kind = FildeshSxprotoFieldKind_LITERAL_BOOL;
       }
       else {
-        if (!parse_number_FildeshSxpbInfo(info, in, oslice)) {
-          return false;
-        }
-        tmp_kind = FildeshSxprotoFieldKind_LITERAL_INT;
-        if (oslice->size > 2 && oslice->at[2] == '.') {
-          tmp_kind = FildeshSxprotoFieldKind_LITERAL_FLOAT;
-        }
+        parse_number_FildeshSxpbInfo(info, in, oslice);
+        return false;
       }
 
       if (elem_kind == FildeshSxprotoFieldKind_UNKNOWN) {
@@ -717,8 +766,6 @@ parse_field_FildeshSxpbInfo(
     elem_count += 1;
     skip_separation(in, info);
   }
-
-  info->quoted_names_on = info_quoted_names_on;
   return true;
 }
 
@@ -734,25 +781,31 @@ slurp_sxpb_close_FildeshX(
   FildeshO oslice[1] = {DEFAULT_FildeshO};
 
   info->err_out = err_out;
-
-  for (skip_separation(in, info);
-       avail_FildeshX(in) && peek_char_FildeshX(in, '(');
-       skip_separation(in, info))
-  {
-    if (!parse_field_FildeshSxpbInfo(info, schema, in, sxpb, p_it, oslice)) {
-      close_FildeshSxpb(sxpb);
-      sxpb = NULL;
-      break;
+  skip_separation(in, info);
+  if (skipstr_FildeshSxpbInfo(info, in, "(())")) {
+    skip_separation(in, info);
+    if (on_array_content(in)) {
+      p_it.field_kind = FildeshSxprotoFieldKind_ARRAY;
     }
+    else {
+      p_it.field_kind = FildeshSxprotoFieldKind_MANYOF;
+    }
+    (*sxpb->values)[p_it.cons_id].field_kind = p_it.field_kind;
   }
 
-  if (sxpb) {
-    FildeshX slice = until_char_FildeshX(in, '\n');
-    if (slice.size > 0) {
-      syntax_error(info, "Expected open paren to start field.");
-      close_FildeshSxpb(sxpb);
-      sxpb = NULL;
-    }
+  if (!parse_field_content_FildeshSxpbInfo(
+          info, in, sxpb, p_it, schema,
+          FildeshSxprotoFieldKind_UNKNOWN,
+          oslice))
+  {
+    close_FildeshSxpb(sxpb);
+    sxpb = NULL;
+  }
+
+  if (sxpb && avail_FildeshX(in)) {
+    syntax_error(info, "Expected open paren to start field.");
+    close_FildeshSxpb(sxpb);
+    sxpb = NULL;
   }
 
   close_FildeshX(in);

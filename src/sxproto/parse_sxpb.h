@@ -37,3 +37,12 @@ parse_field_FildeshSxpbInfo(
     FildeshSxpb* sxpb,
     FildeshSxpbIT a,
     FildeshO* oslice);
+bool
+parse_field_content_FildeshSxpbInfo(
+    FildeshSxpbInfo* info,
+    FildeshX* in,
+    FildeshSxpb* sxpb,
+    FildeshSxpbIT p_it,
+    const FildeshSxprotoField* field,
+    FildeshSxprotoFieldKind elem_kind,
+    FildeshO* oslice);

@@ -1,53 +1,75 @@
-{
-  "expressions": [{
-    "value": true
-  }, {
-    "not": {
-      "value": false
-    }
-  }, {
-    "or": [{
-      "value": false
-    }, {
-      "value": true
-    }]
-  }, {
-    "or": [{
-      "value": false
-    }, {
-      "value": true
-    }]
-  }, {
-    "or": [{
-      "value": false
-    }, {
-      "value": true
-    }]
-  }, {
-    "or": [{
-      "value": false
-    }, {
-      "and": [{
-        "value": true
+[{
+  "identical_expressions": [{
+    "add": [{
+      "add": [{
+        "value": 1
       }, {
-        "value": false
+        "value": 2
       }]
     }, {
-      "or": [{
-        "value": false
+      "mul": [{
+        "value": 3
       }, {
-        "value": false
-      }, {
-        "value": true
+        "value": 4
       }]
+    }, {
+      "neg": {
+        "div": [{
+          "value": 56
+        }, {
+          "value": 7
+        }]
+      }
     }]
-  }],
-  "empty_manyof": [],
-  "empty_manyof_elements": [{
-    "empty_array": []
   }, {
-    "empty_manyof": []
+    "add": [{
+      "add": [{
+        "value": 1
+      }, {
+        "value": 2
+      }]
+    }, {
+      "mul": [{
+        "value": 3
+      }, {
+        "value": 4
+      }]
+    }, {
+      "neg": {
+        "div": [{
+          "value": 56
+        }, {
+          "value": 7
+        }]
+      }
+    }]
   }, {
-    "empty_message": {}
+    "add": [{
+      "add": [{
+        "value": 1
+      }, {
+        "value": 2
+      }]
+    }, {
+      "mul": [{
+        "value": 3
+      }, {
+        "value": 4
+      }]
+    }, {
+      "neg": {
+        "div": [{
+          "value": 56
+        }, {
+          "value": 7
+        }]
+      }
+    }]
   }]
-}
+}, {
+  "empty_manyof": []
+}, {
+  "another_empty_manyof": []
+}, {
+  "empty_message": {}
+}]

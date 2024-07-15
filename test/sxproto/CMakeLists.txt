@@ -24,6 +24,11 @@ add_executable(sxproto_parse_with_schema_test
 target_link_libraries(sxproto_parse_with_schema_test ${FildeshSxproto_LIBRARIES})
 add_test(NAME sxproto_parse_with_schema_test COMMAND sxproto_parse_with_schema_test)
 
+add_executable(sxproto_toplevel_test
+  "toplevel_test.c")
+target_link_libraries(sxproto_toplevel_test ${FildeshSxproto_LIBRARIES})
+add_test(NAME sxproto_toplevel_test COMMAND sxproto_toplevel_test)
+
 add_test(NAME sxpb2json_test COMMAND ${Fildesh_EXECUTABLE}
   -f "${CMAKE_CURRENT_SOURCE_DIR}/sxpb2json_test.fildesh"
   "--array_json=${CMAKE_CURRENT_SOURCE_DIR}/content/array.json"

@@ -146,11 +146,17 @@ write_json_FildeshO(
   void
 print_json_FildeshO(FildeshO* out, FildeshSxpb* sxpb)
 {
-  putstrlit_FildeshO(out, "{");
+  const FildeshSxpbIT top_it = top_of_FildeshSxpb(sxpb);
+  const FildeshSxprotoFieldKind top_kind = top_it.field_kind;
+  const bool on_message = (top_kind == FildeshSxprotoFieldKind_MESSAGE);
+
+  putc_FildeshO(out, on_message ? '{' : '[');
   write_json_FildeshO(
       out, sxpb,
-      top_of_FildeshSxpb(sxpb),
-      1);
-  putstrlit_FildeshO(out, "\n}\n");
+      top_it,
+      on_message ? 1 : 0);
+  if (on_message) {putc_FildeshO(out, '\n');}
+  putc_FildeshO(out, on_message ? '}' : ']');
+  putc_FildeshO(out, '\n');
 }
 

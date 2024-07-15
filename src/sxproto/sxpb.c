@@ -139,6 +139,23 @@ lookup_subfield_at_FildeshSxpb(
   return pos;
 }
 
+static inline
+  FildeshSxprotoFieldKind
+kind_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it)
+{
+  FildeshSxpb_id eid = fildesh_nullid(it.elem_id) ? it.cons_id : it.elem_id;
+  return (*sxpb->values)[eid].field_kind;
+}
+
+  FildeshSxpbIT
+top_of_FildeshSxpb(const FildeshSxpb* sxpb)
+{
+  FildeshSxpbIT it = DEFAULT_FildeshSxpbIT;
+  it.cons_id = 0;
+  it.field_kind = kind_at_FildeshSxpb(sxpb, it);
+  return it;
+}
+
   FildeshSxpbIT
 first_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it)
 {
@@ -150,9 +167,9 @@ first_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it)
     it.elem_id = (*sxpb->values)[it.elem_id].elem;
   }
   if (fildesh_nullid(it.elem_id)) {
-    const FildeshSxpbIT end = DEFAULT_FildeshSxpbIT;
-    return end;
+    return FildeshSxpbIT_of_NULL();
   }
+  it.field_kind = kind_at_FildeshSxpb(sxpb, it);
   return it;
 }
 
@@ -164,9 +181,9 @@ next_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it)
 
   it.elem_id = (*sxpb->values)[it.elem_id].next;
   if (fildesh_nullid(it.elem_id)) {
-    const FildeshSxpbIT end = DEFAULT_FildeshSxpbIT;
-    return end;
+    return FildeshSxpbIT_of_NULL();
   }
+  it.field_kind = kind_at_FildeshSxpb(sxpb, it);
   return it;
 }
 

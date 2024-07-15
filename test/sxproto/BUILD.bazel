@@ -31,6 +31,12 @@ cc_test(
     deps = ["//:sxproto_lib"],
 )
 
+cc_test(
+    name = "toplevel_test",
+    srcs = ["toplevel_test.c"],
+    deps = ["//:sxproto_lib"],
+)
+
 fildesh_test(
     name = "sxpb2json_test",
     srcs = ["sxpb2json_test.fildesh"],

@@ -8,9 +8,9 @@ NEXT_FUZZ_DATA
 "Unknown escape sequence. Only very basic ones are supported.\n"
 "(\"a\" (\"b\\.\" 5))"
 NEXT_FUZZ_DATA
-"1,5,"
+"1,6,"
 "Expected closing double quote.\n"
-"(k \""
+"(k \"v"
 NEXT_FUZZ_DATA
 "1,6,"
 "Strings must be quoted when field names are.\n"
@@ -59,17 +59,6 @@ NEXT_FUZZ_DATA
 "1,5,"
 "Message can only hold fields.\n"
 "(() 7 7 7)"
-"1,4,"
-"Expected a literal or closing paren.\n"
-"(()"
-NEXT_FUZZ_DATA
-"1,3,"
-"Expected a literal or closing paren.\n"
-"(a"
-NEXT_FUZZ_DATA
-"1,4,"
-"Expected a literal or closing paren.\n"
-"(a\0"
 NEXT_FUZZ_DATA
 "1,6,"
 "Unexpected open paren in string.\n"
@@ -95,7 +84,23 @@ NEXT_FUZZ_DATA
 "Unexpected message.\n"
 "(a (()) 5 (() (a 1)))"
 NEXT_FUZZ_DATA
+"1,10,"
+"Arrays cannot be nested.\n"
+"(()) (())"
+NEXT_FUZZ_DATA
 "1,18,"
 "Unexpected literal type.\n"
 "(a (()) 5 6 7 \"8\")"
+NEXT_FUZZ_DATA
+"1,4,"
+"Expected a literal or closing paren.\n"
+"(()"
+NEXT_FUZZ_DATA
+"1,3,"
+"Expected a literal or closing paren.\n"
+"(a"
+NEXT_FUZZ_DATA
+"1,4,"
+"Expected a literal or closing paren.\n"
+"(a\0"
 END_FUZZ_DATA

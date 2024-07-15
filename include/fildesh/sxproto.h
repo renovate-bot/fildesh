@@ -140,6 +140,8 @@ lookup_subfield_at_FildeshSxpb(
     FildeshSxpbIT m,
     const char* k);
 FildeshSxpbIT
+top_of_FildeshSxpb(const FildeshSxpb* sxpb);
+FildeshSxpbIT
 first_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it);
 FildeshSxpbIT
 next_at_FildeshSxpb(const FildeshSxpb* sxpb, FildeshSxpbIT it);
@@ -199,12 +201,5 @@ static inline FildeshSxpbIT FildeshSxpbIT_of_NULL() {
   it.field_kind = FildeshSxprotoFieldKind_UNKNOWN;
   return it;
 }
-static inline FildeshSxpbIT top_of_FildeshSxpb(const FildeshSxpb* sxpb) {
-  FildeshSxpbIT pos = DEFAULT_FildeshSxpbIT;
-  (void)sxpb;
-  pos.cons_id = 0;
-  return pos;
-}
-
 
 END_EXTERN_C
