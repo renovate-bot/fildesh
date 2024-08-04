@@ -12,39 +12,64 @@ fildesh_builtin_replace_string_main(
   FildeshO* out = NULL;
   int exstatus = 0;
   unsigned argi = 1;
-  const unsigned char* needle;
+  const unsigned char* needle = NULL;
   const unsigned char* replacement = NULL;
-  size_t needle_size;
+  size_t needle_size = 0;
   size_t replacement_size = 0;
 
-  if (argi < argc && 0 == strcmp("--", argv[argi])) {
-    argi += 1;
+  for (argi = 1; argi < argc && exstatus == 0; ++argi) {
+    const char* arg = argv[argi];
+    if (0 == strcmp(arg, "--")) {
+      argi += 1;
+      break;
+    }
+    else if (0 == strcmp(argv[argi], "-x")) {
+      in = open_arg_FildeshXF(++argi, argv, inputv);
+      if (!in) {
+        fildesh_log_errorf("Cannot open file for reading: %s", argv[argi]);
+        exstatus = 66;
+      }
+    }
+    else if (0 == strcmp(argv[argi], "-o")) {
+      out = open_arg_FildeshOF(++argi, argv, outputv);
+      if (!out) {
+        fildesh_log_errorf("Cannot open file for writing: %s", argv[argi]);
+        exstatus = 73;
+      }
+    }
+    else {
+      break;
+    }
   }
 
-  if (argc <= argi || argi + 2 < argc) {
+  if (exstatus == 0 && (argc <= argi || argi + 2 < argc)) {
     fildesh_log_error("Need 1 or 2 arguments.");
-    return 64;
+    exstatus = 64;
   }
-  needle = (const unsigned char*) argv[argi++];
-  needle_size = strlen((char*)needle);
-  if (needle_size == 0) {needle_size = 1;}
-
-  if (argc == 3) {
+  if (exstatus == 0) {
+    needle = (const unsigned char*) argv[argi++];
+    needle_size = strlen((char*)needle);
+    if (needle_size == 0) {needle_size = 1;}
+  }
+  if (exstatus == 0 && argi < argc) {
     replacement = (const unsigned char*) argv[argi++];
     replacement_size = strlen((char*)replacement);
     if (replacement_size == 0) {replacement_size = 1;}
   }
 
-  in = open_arg_FildeshXF(0, argv, inputv);
-  out = open_arg_FildeshOF(0, argv, outputv);
-
   if (exstatus == 0 && !in) {
-    fildesh_log_error("Cannot open stdin");
-    exstatus = 66;
+    in = open_arg_FildeshXF(0, argv, inputv);
+    if (!in) {
+      fildesh_log_error("Cannot open stdin.");
+      exstatus = 66;
+    }
   }
   if (exstatus == 0 && !out) {
-    fildesh_log_error("Cannot open stdout");
-    exstatus = 70;
+    out = open_arg_FildeshOF(0, argv, outputv);
+    if (!out) {
+      fildesh_log_error("Cannot open stdout.");
+      exstatus = 70;
+    }
   }
 
   while (exstatus == 0 && 0 < read_FildeshX(in)) {

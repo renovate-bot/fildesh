@@ -13,28 +13,50 @@ fildesh_builtin_sponge_main(unsigned argc, char** argv,
   FildeshX* in = NULL;
   FildeshO* out = NULL;
   int exstatus = 0;
+  unsigned argi = 1;
 
-  if (argc > 2) {
-    fildesh_log_errorf("At most one argument expected.");
-    return 64;
+  for (argi = 1; argi < argc && exstatus == 0; ++argi) {
+    const char* arg = argv[argi];
+    if (0 == strcmp(arg, "--")) {
+      argi += 1;
+      break;
+    }
+    else if (0 == strcmp(argv[argi], "-x")) {
+      in = open_arg_FildeshXF(++argi, argv, inputv);
+      if (!in) {
+        fildesh_log_errorf("Cannot open file for reading: %s", argv[argi]);
+        exstatus = 66;
+      }
+    }
+    else {
+      break;
+    }
   }
 
-  in = open_arg_FildeshXF(0, argv, inputv);
-  if (!in) {
-    fildesh_log_errorf("Cannot open stdin");
-    exstatus = 66;
+  if (exstatus == 0 && (argc <= argi || argi + 1 < argc)) {
+    fildesh_log_errorf("At most one argument expected.");
+    exstatus = 64;
+  }
+
+  if (exstatus == 0 && !in) {
+    in = open_arg_FildeshXF(0, argv, inputv);
+    if (!in) {
+      fildesh_log_errorf("Cannot open stdin");
+      exstatus = 66;
+    }
   }
 
   if (exstatus == 0) {
     slurp_FildeshX(in);
 
-    if (argc == 2) {
-      out = open_arg_FildeshOF(1, argv, outputv);
+    if (argi < argc) {
+      out = open_arg_FildeshOF(argi, argv, outputv);
       if (!out) {
-        fildesh_log_errorf("Cannot open output file: %s", argv[1]);
-        exstatus = 70;
+        fildesh_log_errorf("Cannot open output file: %s", argv[argi]);
+        exstatus = 73;
       }
-    } else {
+    }
+    else {
       out = open_arg_FildeshOF(0, argv, outputv);
       if (!out) {
         fildesh_log_errorf("Cannot open stdout");
