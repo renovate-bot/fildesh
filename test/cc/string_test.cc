@@ -29,7 +29,12 @@ static void append_assign_test() {
   close_FildeshO(oslice);
 
   s = "text that should be cleared";
-  fildesh::slurp_file_to_string(s, "/dev/null");
+  assert(fildesh::slurp_file_to_string(s, "/dev/null"));
+  assert(s.empty());
+
+  s = "text that should still be cleared";
+  assert(!fildesh::slurp_file_to_string(s, "/dev/null2"));
+  assert(s.empty());
 }
 
 static void ostringstream_test() {
@@ -48,30 +53,30 @@ static void ostringstream_test() {
   assert(oss.str() == "456");
 }
 
-static void sibling_pathname_test() {
+static void sibling_filepath_test() {
   std::string s;
-  s = fildesh::sibling_pathname(NULL, "path/to/b.txt");
+  s = fildesh::sibling_filepath(NULL, "path/to/b.txt");
   assert(s == "path/to/b.txt");
-  s = fildesh::sibling_pathname("path/to/", "b.txt");
+  s = fildesh::sibling_filepath("path/to/", "b.txt");
   assert(s == "path/to/b.txt");
-  s = fildesh::sibling_pathname("path/to/a.txt", "b.txt");
+  s = fildesh::sibling_filepath("path/to/a.txt", "b.txt");
   assert(s == "path/to/b.txt");
-  s = fildesh::sibling_pathname("path/to/a.txt", "./b.txt");
+  s = fildesh::sibling_filepath("path/to/a.txt", "./b.txt");
   assert(s == "path/to/b.txt");
 
-  s = fildesh::sibling_pathname("path/to", "b.txt");
+  s = fildesh::sibling_filepath("path/to", "b.txt");
   assert(s == "path/b.txt");
-  s = fildesh::sibling_pathname("a.txt", "b.txt");
+  s = fildesh::sibling_filepath("a.txt", "b.txt");
   assert(s == "b.txt");
-  s = fildesh::sibling_pathname("path/to/a.txt", "/tmp/b.txt");
+  s = fildesh::sibling_filepath("path/to/a.txt", "/tmp/b.txt");
   assert(s == "/tmp/b.txt");
-  s = fildesh::sibling_pathname("path/to/a.txt", "-");
+  s = fildesh::sibling_filepath("path/to/a.txt", "-");
   assert(s == "-");
 
   fildesh::ostringstream oss;
   oss << "path/to/a.txt";
   oss.c_struct()->off += 2;
-  sibling_pathname_bytestring_FildeshO(
+  sibling_filepath_bytestring_FildeshO(
       oss.c_struct(), (const unsigned char*)"b.txt", 5);
   assert(oss.str() == "th/to/b.txt");
 }
@@ -79,7 +84,7 @@ static void sibling_pathname_test() {
 int main() {
   append_assign_test();
   ostringstream_test();
-  sibling_pathname_test();
+  sibling_filepath_test();
   return 0;
 }
 

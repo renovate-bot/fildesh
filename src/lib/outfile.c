@@ -133,7 +133,7 @@ open_sibling_FildeshOF(const char* sibling, const char* filename)
   {
     FildeshO oss[1] = {DEFAULT_FildeshO};
     if (sibling) {putstr_FildeshO(oss, sibling);}
-    sibling_pathname_bytestring_FildeshO(
+    sibling_filepath_bytestring_FildeshO(
         oss, (const unsigned char*)filename, filename_length);
     if (oss->size > 0) {
       putc_FildeshO(oss, '\0');

@@ -79,10 +79,10 @@ private:
   FildeshO oslice_;
 };
 
-inline std::string sibling_pathname(const char* sibling, const char* filename) {
+inline std::string sibling_filepath(const char* sibling, const char* filename) {
   ostringstream oss;
   if (sibling) {oss << sibling;}
-  sibling_pathname_bytestring_FildeshO(
+  sibling_filepath_bytestring_FildeshO(
       oss.c_struct(),
       (const unsigned char*)filename,
       strlen(filename));

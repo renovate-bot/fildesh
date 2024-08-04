@@ -146,7 +146,7 @@ repeat_byte_FildeshO(FildeshO* out, unsigned char b, size_t n)
 }
 
   void
-sibling_pathname_bytestring_FildeshO(
+sibling_filepath_bytestring_FildeshO(
     FildeshO* sibling,
     const unsigned char* filename,
     size_t filename_size)
