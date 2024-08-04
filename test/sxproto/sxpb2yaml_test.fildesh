@@ -6,10 +6,10 @@
 # - manyof_sxpb
 # - string_sxpb
 
-(: message_sxpb Filename .self.opt.message_sxpb)
-(: message_yaml Filename .self.opt.message_yaml)
+(: message_sxpb Filepath .self.opt.message_sxpb)
+(: message_yaml Filepath .self.opt.message_yaml)
 
-|< zec / / $(XOF message_sxpb)
+|< splice / / $(XOF message_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF message_yaml)
 |> stdout
@@ -17,10 +17,10 @@
 
 $(barrier)
 
-(: loneof_sxpb Filename .self.opt.loneof_sxpb)
-(: loneof_yaml Filename .self.opt.loneof_yaml)
+(: loneof_sxpb Filepath .self.opt.loneof_sxpb)
+(: loneof_yaml Filepath .self.opt.loneof_yaml)
 
-|< zec / / $(XOF loneof_sxpb)
+|< splice / / $(XOF loneof_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF loneof_yaml)
 |> stdout
@@ -28,10 +28,10 @@ $(barrier)
 
 $(barrier)
 
-(: array_sxpb Filename .self.opt.array_sxpb)
-(: array_yaml Filename .self.opt.array_yaml)
+(: array_sxpb Filepath .self.opt.array_sxpb)
+(: array_yaml Filepath .self.opt.array_yaml)
 
-|< zec / / $(XOF array_sxpb)
+|< splice / / $(XOF array_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF array_yaml)
 |> stdout
@@ -39,10 +39,10 @@ $(barrier)
 
 $(barrier)
 
-(: manyof_sxpb Filename .self.opt.manyof_sxpb)
-(: manyof_yaml Filename .self.opt.manyof_yaml)
+(: manyof_sxpb Filepath .self.opt.manyof_sxpb)
+(: manyof_yaml Filepath .self.opt.manyof_yaml)
 
-|< zec / / $(XOF manyof_sxpb)
+|< splice / / $(XOF manyof_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF manyof_yaml)
 |> stdout
@@ -50,10 +50,10 @@ $(barrier)
 
 $(barrier)
 
-(: string_sxpb Filename .self.opt.string_sxpb)
-(: string_yaml Filename .self.opt.string_yaml)
+(: string_sxpb Filepath .self.opt.string_sxpb)
+(: string_yaml Filepath .self.opt.string_yaml)
 
-|< zec / / $(XOF string_sxpb)
+|< splice / / $(XOF string_sxpb)
 |- sxpb2yaml
 |- cmptxt $(XOF string_yaml)
 |> stdout

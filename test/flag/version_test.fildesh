@@ -1,5 +1,5 @@
 
-(: bazel_module_file Filename .self.opt.bazel_module_file)
+(: bazel_module_file Filepath .self.opt.bazel_module_file)
 
 capture_string \
  -x $(XOF bazel_module_file) \

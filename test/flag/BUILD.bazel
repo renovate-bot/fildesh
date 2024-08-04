@@ -15,8 +15,8 @@ fildesh_test(
 )
 
 fildesh_test(
-    name = "option_filename_test",
-    srcs = ["option_filename_test.fildesh"],
+    name = "option_filepath_test",
+    srcs = ["option_filepath_test.fildesh"],
 )
 
 fildesh_test(

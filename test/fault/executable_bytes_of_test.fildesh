@@ -1,12 +1,12 @@
 # Like //test/syntax:executable_bytes_ofxf_test
-# but I forgot to move the `$(OF exe)` to be an arg of `zec`,
+# but I forgot to move the `$(OF exe)` to be an arg of `splice`,
 # so the output file would be interpreted as the program to execute.
 # Totally nonsensical.
 
-(: executable_bytes_file Filename .self.opt.input_exe)
+(: executable_bytes_file Filepath .self.opt.input_exe)
 
-$(OF exe) zec / / $(XOF executable_bytes_file)
-$(O expect) zec / "hello there world\n" /
+$(OF exe) splice / / $(XOF executable_bytes_file)
+$(O expect) splice / "hello there world\n" /
 
 |< $(XF exe) - "hello" "there" "world"
 |- cmp $(XF expect)

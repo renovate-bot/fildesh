@@ -1,11 +1,11 @@
 # Same test as //test/builtin:execfd_test
 
-(: executable_bytes_file Filename .self.opt.input_exe)
+(: executable_bytes_file Filepath .self.opt.input_exe)
 
-$(O exe) zec / / $(XOF executable_bytes_file)
-$(O hello) zec / "hello" /
-$(O world) zec / "world" /
-$(O expect) zec / "hello there world\n" /
+$(O exe) splice / / $(XOF executable_bytes_file)
+$(O hello) splice / "hello" /
+$(O world) splice / "world" /
+$(O expect) splice / "hello there world\n" /
 
 |< $(XF exe) - $(XA hello) "there" $(XA world)
 |- cmp $(XF expect)

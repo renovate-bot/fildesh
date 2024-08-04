@@ -6,10 +6,10 @@
 # - manyof_sxpb
 # - string_sxpb
 
-(: message_sxpb Filename .self.opt.message_sxpb)
-(: message_txtpb Filename .self.opt.message_txtpb)
+(: message_sxpb Filepath .self.opt.message_sxpb)
+(: message_txtpb Filepath .self.opt.message_txtpb)
 
-|< zec / / $(XOF message_sxpb)
+|< splice / / $(XOF message_sxpb)
 |- sxpb2txtpb
 |- cmptxt $(XOF message_txtpb)
 |> stdout
@@ -17,10 +17,10 @@
 
 $(barrier)
 
-(: loneof_sxpb Filename .self.opt.loneof_sxpb)
-(: loneof_txtpb Filename .self.opt.loneof_txtpb)
+(: loneof_sxpb Filepath .self.opt.loneof_sxpb)
+(: loneof_txtpb Filepath .self.opt.loneof_txtpb)
 
-|< zec / / $(XOF loneof_sxpb)
+|< splice / / $(XOF loneof_sxpb)
 |- sxpb2txtpb
 |- cmptxt $(XOF loneof_txtpb)
 |> stdout
@@ -28,10 +28,10 @@ $(barrier)
 
 $(barrier)
 
-(: array_sxpb Filename .self.opt.array_sxpb)
-(: array_txtpb Filename .self.opt.array_txtpb)
+(: array_sxpb Filepath .self.opt.array_sxpb)
+(: array_txtpb Filepath .self.opt.array_txtpb)
 
-|< zec / / $(XOF array_sxpb)
+|< splice / / $(XOF array_sxpb)
 |- sxpb2txtpb
 |- cmptxt $(XOF array_txtpb)
 |> stdout
@@ -39,10 +39,10 @@ $(barrier)
 
 $(barrier)
 
-(: manyof_sxpb Filename .self.opt.manyof_sxpb)
-(: manyof_txtpb Filename .self.opt.manyof_txtpb)
+(: manyof_sxpb Filepath .self.opt.manyof_sxpb)
+(: manyof_txtpb Filepath .self.opt.manyof_txtpb)
 
-|< zec / / $(XOF manyof_sxpb)
+|< splice / / $(XOF manyof_sxpb)
 |- sxpb2txtpb
 |- cmptxt $(XOF manyof_txtpb)
 |> stdout
@@ -50,10 +50,10 @@ $(barrier)
 
 $(barrier)
 
-(: string_sxpb Filename .self.opt.string_sxpb)
-(: string_txtpb Filename .self.opt.string_txtpb)
+(: string_sxpb Filepath .self.opt.string_sxpb)
+(: string_txtpb Filepath .self.opt.string_txtpb)
 
-|< zec / / $(XOF string_sxpb)
+|< splice / / $(XOF string_sxpb)
 |- sxpb2txtpb
 |- cmptxt $(XOF string_txtpb)
 |> stdout

@@ -3,7 +3,7 @@ def _write_script(ctx):
   script_file = ctx.actions.declare_file(ctx.label.name + ".fildesh")
   src_preamble = ""
   for k in ctx.attr.output_names + ctx.attr.input_names:
-    src_preamble += "(: " + k + " Filename .self.opt." + k + ")\n"
+    src_preamble += "(: " + k + " Filepath .self.opt." + k + ")\n"
   ctx.actions.write(
       output = script_file,
       content = src_preamble + ctx.attr.src_content,

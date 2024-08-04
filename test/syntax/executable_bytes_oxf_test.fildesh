@@ -1,10 +1,10 @@
 # Like //test/builtin:execfd_test
 # but without the extra parameter args.
 
-(: executable_bytes_file Filename .self.opt.input_exe)
+(: executable_bytes_file Filepath .self.opt.input_exe)
 
-$(O exe) zec / / $(XOF executable_bytes_file)
-$(O expect) zec / "hello there world\n" /
+$(O exe) splice / / $(XOF executable_bytes_file)
+$(O expect) splice / "hello there world\n" /
 
 |< $(XF exe) - "hello" "there" "world"
 |- cmp $(XF expect)

@@ -96,8 +96,8 @@ fildesh_test(
 )
 
 fildesh_test(
-    name = "filename_xofxof_test",
-    srcs = ["filename_xofxof_test.fildesh"],
+    name = "filepath_xofxof_test",
+    srcs = ["filepath_xofxof_test.fildesh"],
 )
 
 fildesh_test(

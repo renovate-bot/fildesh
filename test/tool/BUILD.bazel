@@ -203,9 +203,9 @@ fildesh_run(
     },
     output_by_option = {"o": ":embed_test.cembed.h"},
     src_content = """
-(: literal_127_file Filename .self.opt.x_127)
-(: literal_hello_file Filename .self.opt.x_hello)
-(: out_file Filename .self.opt.o)
+(: literal_127_file Filepath .self.opt.x_127)
+(: literal_hello_file Filepath .self.opt.x_hello)
+(: out_file Filepath .self.opt.o)
 cembed -o $(XOF out_file) $(XOF literal_127_file) $(XOF literal_hello_file)
     """,
     tool_by_alias = {"cembed": "//tool:cembed"},

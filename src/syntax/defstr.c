@@ -239,7 +239,7 @@ parse_fildesh_string_definition(
   sym_name = strdup_FildeshX(&slice, alloc);
   skip_blank_bytes(in, text_nlines);
 
-  if (skipstr_FildeshX(in, "Filename")) {
+  if (skipstr_FildeshX(in, "Filepath")) {
     sym_kind = IOFileVal;
   }
   else if (skipstr_FildeshX(in, "Str")) {
@@ -247,7 +247,7 @@ parse_fildesh_string_definition(
   }
 
   if (sym_kind == NSymValKinds || !skip_blank_bytes(in, text_nlines)) {
-    return "Expected Filename or Str type.";
+    return "Expected Filepath or Str type.";
   }
   emsg = parse_double_quoted_fildesh_string_or_variable(
       in, tmp_out, text_nlines, map);

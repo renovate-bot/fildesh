@@ -6,10 +6,10 @@
 # - manyof_sxpb
 # - string_sxpb
 
-(: message_sxpb Filename .self.opt.message_sxpb)
-(: message_json Filename .self.opt.message_json)
+(: message_sxpb Filepath .self.opt.message_sxpb)
+(: message_json Filepath .self.opt.message_json)
 
-|< zec / / $(XOF message_sxpb)
+|< splice / / $(XOF message_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF message_json)
 |> stdout
@@ -17,10 +17,10 @@
 
 $(barrier)
 
-(: loneof_sxpb Filename .self.opt.loneof_sxpb)
-(: loneof_json Filename .self.opt.loneof_json)
+(: loneof_sxpb Filepath .self.opt.loneof_sxpb)
+(: loneof_json Filepath .self.opt.loneof_json)
 
-|< zec / / $(XOF loneof_sxpb)
+|< splice / / $(XOF loneof_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF loneof_json)
 |> stdout
@@ -28,10 +28,10 @@ $(barrier)
 
 $(barrier)
 
-(: array_sxpb Filename .self.opt.array_sxpb)
-(: array_json Filename .self.opt.array_json)
+(: array_sxpb Filepath .self.opt.array_sxpb)
+(: array_json Filepath .self.opt.array_json)
 
-|< zec / / $(XOF array_sxpb)
+|< splice / / $(XOF array_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF array_json)
 |> stdout
@@ -39,10 +39,10 @@ $(barrier)
 
 $(barrier)
 
-(: manyof_sxpb Filename .self.opt.manyof_sxpb)
-(: manyof_json Filename .self.opt.manyof_json)
+(: manyof_sxpb Filepath .self.opt.manyof_sxpb)
+(: manyof_json Filepath .self.opt.manyof_json)
 
-|< zec / / $(XOF manyof_sxpb)
+|< splice / / $(XOF manyof_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF manyof_json)
 |> stdout
@@ -50,10 +50,10 @@ $(barrier)
 
 $(barrier)
 
-(: string_sxpb Filename .self.opt.string_sxpb)
-(: string_json Filename .self.opt.string_json)
+(: string_sxpb Filepath .self.opt.string_sxpb)
+(: string_json Filepath .self.opt.string_json)
 
-|< zec / / $(XOF string_sxpb)
+|< splice / / $(XOF string_sxpb)
 |- sxpb2json
 |- cmptxt $(XOF string_json)
 |> stdout

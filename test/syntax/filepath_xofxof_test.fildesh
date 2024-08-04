@@ -1,0 +1,9 @@
+
+(: f Filepath (++ .self.env.TEST_TMPDIR "/filepath_xofxof_test_file.txt"))
+
+splice -o $(XOF f) / "hello there world" /
+
+$(barrier)
+|< splice / "hello there world" /
+|- cmp - $(XOF f)
+|> stdout

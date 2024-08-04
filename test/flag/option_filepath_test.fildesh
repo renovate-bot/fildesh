@@ -2,8 +2,8 @@
 (: expect Str "something\n")
 
 $(H script)
-(: out Filename .self.opt.out)
-zec -o $(XOF out) / "something\n"
+(: out Filepath .self.opt.out)
+splice -o $(XOF out) / "something\n"
 $(H script)
 
 $(tmpfile f)
