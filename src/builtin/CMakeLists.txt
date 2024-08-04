@@ -26,6 +26,9 @@ target_link_libraries(replace_string fildesh_lib)
 add_executable(seq "seq.c")
 target_link_libraries(seq fildesh_lib)
 
+add_executable(splice "splice.c")
+target_link_libraries(splice fildesh_lib)
+
 add_executable(sponge "sponge.c")
 target_link_libraries(sponge fildesh_lib)
 
@@ -46,6 +49,3 @@ target_link_libraries(ujoin fildesh_lib)
 
 add_executable(void "void.c")
 target_link_libraries(void fildesh_lib)
-
-add_executable(zec "zec.c")
-target_link_libraries(zec fildesh_lib)

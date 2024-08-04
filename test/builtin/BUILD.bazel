@@ -36,6 +36,13 @@ fildesh_test(
     srcs = ["bestmatch_edge_test.fildesh"],
 )
 
+#### capture_string
+
+fildesh_test(
+    name = "capture_string_test",
+    srcs = ["capture_string_test.fildesh"],
+)
+
 #### cmp
 
 spawn_test(
@@ -291,9 +298,27 @@ cc_test(
 )
 
 #### replace_string
+
 fildesh_test(
     name = "replace_string_test",
     srcs = ["replace_string_test.fildesh"],
+)
+
+#### splice
+
+fildesh_expect_test(
+    name = "splice_cat_test",
+    srcs = ["splice_cat.fildesh"],
+    expect = ":hello_newline.txt",
+)
+
+spawn_test(
+    name = "splice_nop_test",
+    args = [
+        "/",
+        "/",
+    ],
+    binary = "//src/builtin:splice",
 )
 
 #### sponge
@@ -316,7 +341,7 @@ cc_binary(
     testonly = True,
     srcs = [
         "echocat.c",
-        "//src/builtin:zec.c",
+        "//src/builtin:splice.c",
     ],
     defines = ["FILDESH_BUILTIN_LIBRARY"],
     deps = ["//:fildesh_lib"],
@@ -449,21 +474,4 @@ fildesh_test(
 fildesh_test(
     name = "xpipe_nested_test",
     srcs = ["xpipe_nested_test.fildesh"],
-)
-
-#### zec
-
-fildesh_expect_test(
-    name = "zec_cat_test",
-    srcs = ["zec_cat.fildesh"],
-    expect = ":hello_newline.txt",
-)
-
-spawn_test(
-    name = "zec_nop_test",
-    args = [
-        "/",
-        "/",
-    ],
-    binary = "//src/builtin:zec",
 )

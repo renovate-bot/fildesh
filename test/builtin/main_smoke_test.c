@@ -63,6 +63,9 @@ int main() {
   /* Bad flag.*/
   MAIN_TEST(64, "bestmatch\0--invalid-flag");
 
+  MAIN_TEST(64, "capture_string");
+  MAIN_TEST(64, "capture_string\0--");
+
   builtin_cmp_test();
 
   MAIN_TEST(64, "delimend");
@@ -73,7 +76,15 @@ int main() {
   MAIN_TEST(64, "execfd\0--");
   MAIN_TEST(64, "execfd\0""3\0--\0missing\0index\0three");
 
+  /* Help.*/
+  MAIN_TEST(1, "splice\0-h");
+  /* Need filename after -x.*/
+  MAIN_TEST(64, "splice\0-o\0/dev/null\0-x");
+  /* Need string after -unless.*/
+  MAIN_TEST(64, "splice\0-unless");
+
   MAIN_TEST(64, "replace_string");
+  MAIN_TEST(64, "replace_string\0--");
 
   MAIN_TEST(64, "sponge\0too\0many");
 
@@ -99,13 +110,6 @@ int main() {
 
   /* Need to give a command.*/
   MAIN_TEST(64, "xargz\0--");
-
-  /* Help.*/
-  MAIN_TEST(1, "zec\0-h");
-  /* Need filename after -x.*/
-  MAIN_TEST(64, "zec\0-o\0/dev/null\0-x");
-  /* Need string after -unless.*/
-  MAIN_TEST(64, "zec\0-unless");
 
   return 0;
 }

@@ -2,10 +2,10 @@
 #add_test(NAME elastic_catfile_test COMMAND
 #  comparispawn "${CMAKE_CURRENT_SOURCE_DIR}/hello_newline.txt"
 #  "${Fildesh_EXECUTABLE}" --
-#  "|< zec"
+#  "|< splice"
 #  "|- waitdo -- rm -f ${CMAKE_CURRENT_BINARY_DIR}/elastic_catfile_output.txt"
 #  "|- waitdo -- elastic -x ${CMAKE_CURRENT_SOURCE_DIR}/hello_newline.txt -o ${CMAKE_CURRENT_BINARY_DIR}/elastic_catfile_output.txt"
-#  "|- waitdo -- zec ${CMAKE_CURRENT_BINARY_DIR}/elastic_catfile_output.txt"
+#  "|- waitdo -- splice ${CMAKE_CURRENT_BINARY_DIR}/elastic_catfile_output.txt"
 #  "|> stdout"
 #  )
 
@@ -26,6 +26,12 @@ add_test(NAME builtin_bestmatch_test COMMAND
 
 add_test(NAME builtin_bestmatch_edge_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/bestmatch_edge_test.fildesh")
+
+#### capture_string
+
+add_test(NAME builtin_capture_string_test COMMAND ${Fildesh_EXECUTABLE}
+  "${CMAKE_CURRENT_SOURCE_DIR}/capture_string_test.fildesh"
+)
 
 #### cmp
 
@@ -173,6 +179,20 @@ add_test(NAME builtin_oargz_test COMMAND builtin_oargz_test)
 add_test(NAME builtin_replace_string_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/replace_string_test.fildesh")
 
+#### splice
+
+add_test(NAME builtin_splice_cat_test COMMAND
+  comparispawn "${CMAKE_CURRENT_SOURCE_DIR}/hello_newline.txt"
+  "${Fildesh_EXECUTABLE}" -f "${CMAKE_CURRENT_SOURCE_DIR}/splice_cat.fildesh"
+)
+
+# Only CMake test here that actually uses `spawn`.
+# However, Bazel tests rely on it heavily.
+add_test(NAME builtin_splice_nop_test COMMAND
+  ${FildeshTool_spawn_EXECUTABLE}
+  "$<TARGET_FILE:splice>" "/" "/"
+)
+
 #### sponge
 
 if (UNIX)
@@ -182,7 +202,7 @@ endif()
 
 #### sshall
 
-add_executable(echocat "echocat.c" "${PROJECT_SOURCE_DIR}/src/builtin/zec.c")
+add_executable(echocat "echocat.c" "${PROJECT_SOURCE_DIR}/src/builtin/splice.c")
 set_property(TARGET echocat
   APPEND PROPERTY COMPILE_DEFINITIONS FILDESH_BUILTIN_LIBRARY)
 target_link_libraries(echocat fildesh_lib)
@@ -257,19 +277,6 @@ add_test(NAME builtin_xargz_alias_test COMMAND ${Fildesh_EXECUTABLE}
 
 #### xpipe
 
-add_test(NAME builtin_xpipe_nested_test COMMAND fildesh -f
-  "${CMAKE_CURRENT_SOURCE_DIR}/xpipe_nested_test.fildesh")
-
-#### zec
-
-add_test(NAME builtin_zec_cat_test COMMAND
-  comparispawn "${CMAKE_CURRENT_SOURCE_DIR}/hello_newline.txt"
-  "${Fildesh_EXECUTABLE}" -f "${CMAKE_CURRENT_SOURCE_DIR}/zec_cat.fildesh"
-)
-
-# Only CMake test here that actually uses `spawn`.
-# However, Bazel tests rely on it heavily.
-add_test(NAME builtin_zec_nop_test COMMAND
-  ${FildeshTool_spawn_EXECUTABLE}
-  "$<TARGET_FILE:zec>" "/" "/"
+add_test(NAME builtin_xpipe_nested_test COMMAND ${Fildesh_EXECUTABLE}
+  "${CMAKE_CURRENT_SOURCE_DIR}/xpipe_nested_test.fildesh"
 )

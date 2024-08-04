@@ -7,6 +7,7 @@
 
 int fildesh_builtin_add_main(unsigned, char**, FildeshX**, FildeshO**);
 int fildesh_builtin_bestmatch_main(unsigned, char**, FildeshX**, FildeshO**);
+int fildesh_builtin_capture_string_main(unsigned, char**, FildeshX**, FildeshO**);
 int fildesh_builtin_cmp_main(unsigned, char**, FildeshX**, FildeshO**);
 int fildesh_builtin_cmptxt_main(unsigned, char**, FildeshX**, FildeshO**);
 int fildesh_builtin_delimend_main(unsigned, char**, FildeshX**, FildeshO**);

@@ -3,6 +3,7 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 exports_files([
     "add.c",
     "bestmatch.c",
+    "capture_string.c",
     "cmp.c",
     "cmptxt.c",
     "delimend.c",
@@ -13,6 +14,7 @@ exports_files([
     "replace_string.c",
     "oargz.c",
     "seq.c",
+    "splice.c",
     "sponge.c",
     "sxpb2json.c",
     "sxpb2txtpb.c",
@@ -21,7 +23,6 @@ exports_files([
     "transpose.c",
     "ujoin.c",
     "void.c",
-    "zec.c",
 ], visibility = [
     "//test/builtin:__pkg__",
     "//tool:__pkg__",
@@ -92,6 +93,13 @@ cc_binary(
 )
 
 cc_binary(
+    name = "splice",
+    srcs = ["splice.c"],
+    deps = ["//:fildesh_lib"],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
     name = "sponge",
     srcs = ["sponge.c"],
     deps = ["//:fildesh_lib"],
@@ -146,11 +154,3 @@ cc_binary(
     deps = ["//:fildesh_lib"],
     visibility = ["//visibility:public"],
 )
-
-cc_binary(
-    name = "zec",
-    srcs = ["zec.c"],
-    deps = ["//:fildesh_lib"],
-    visibility = ["//visibility:public"],
-)
-

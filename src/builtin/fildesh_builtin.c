@@ -34,6 +34,9 @@ static int fildesh_main_add(unsigned argc, char** argv) {
 static int fildesh_main_bestmatch(unsigned argc, char** argv) {
   return fildesh_builtin_bestmatch_main(argc, argv, NULL, NULL);
 }
+static int fildesh_main_capture_string(unsigned argc, char** argv) {
+  return fildesh_builtin_capture_string_main(argc, argv, NULL, NULL);
+}
 static int fildesh_main_cmp(unsigned argc, char** argv) {
   return fildesh_builtin_cmp_main(argc, argv, NULL, NULL);
 }
@@ -118,6 +121,7 @@ int (* fildesh_builtin_threadsafe_fn_lookup(const char* name)
   static const FildeshBuiltinMainMap builtins[] = {
     {"add", fildesh_builtin_add_main},
     {"bestmatch", fildesh_builtin_bestmatch_main},
+    {"capture_string", fildesh_builtin_capture_string_main},
     {"cmp", fildesh_builtin_cmp_main},
     {"cmptxt", fildesh_builtin_cmptxt_main},
     {"delimend", fildesh_builtin_delimend_main},
@@ -130,6 +134,7 @@ int (* fildesh_builtin_threadsafe_fn_lookup(const char* name)
     {"oargz", fildesh_builtin_oargz_main},
     {"replace_string", fildesh_builtin_replace_string_main},
     {"seq", fildesh_builtin_seq_main},
+    {"splice", fildesh_builtin_zec_main},
     {"sponge", fildesh_builtin_sponge_main},
     {"sxpb2json", fildesh_builtin_sxpb2json_main},
     {"sxpb2txtpb", fildesh_builtin_sxpb2txtpb_main},
@@ -162,6 +167,7 @@ int (* fildesh_builtin_main_fn_lookup(const char* name)
     {"add", fildesh_main_add},
     {"best-match", fildesh_main_bestmatch},
     {"bestmatch", fildesh_main_bestmatch},
+    {"capture_string", fildesh_main_capture_string},
     {"cmp", fildesh_main_cmp},
     {"cmptxt", fildesh_main_cmptxt},
     {"delimend", fildesh_main_delimend},
@@ -180,6 +186,7 @@ int (* fildesh_builtin_main_fn_lookup(const char* name)
     {"oargz", fildesh_main_oargz},
     {"replace_string", fildesh_main_replace_string},
     {"seq", fildesh_main_seq},
+    {"splice", fildesh_main_zec},
     {"sponge", fildesh_main_sponge},
     {"ssh-all", main_ssh_all},
     {"sxpb2json", fildesh_main_sxpb2json},

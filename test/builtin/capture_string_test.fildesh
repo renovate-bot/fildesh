@@ -1,0 +1,22 @@
+
+(: expect_content Str """\
+100
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1100
+""")
+
+splice -o $(OF expect) / $(XA expect_content) /
+
+|< seq 0 2000
+|- capture_string "100" "\n"
+|- cmp $(XF expect) -
+|> stdout
