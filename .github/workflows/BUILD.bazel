@@ -1,0 +1,17 @@
+load("//tool/bazel:cmptxt_test.bzl", "cmptxt_test")
+load("//tool/bazel:sxpb2yaml.bzl", "sxpb2yaml")
+
+sxpb2yaml(
+    name = "pkg_docker_yaml",
+    testonly = 1,
+    src = "pkg_docker.sxpb",
+    out = "pkg_docker_sxpb.yaml",
+)
+
+cmptxt_test(
+    name = "pkg_docker_cmptxt_test",
+    srcs = [
+        "pkg_docker.yaml",
+        "pkg_docker_sxpb.yaml",
+    ],
+)

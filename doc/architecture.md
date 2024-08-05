@@ -4,8 +4,6 @@ Remarks on where and why things are in this repository.
 
 ## Layout
 
-
-
 ### Spawn tool
 The `spawn` tool (at `tool/spawn.c`) is meant to be a minimal, robust, and self-contained example of how to spawn another program.
 There are several reasons for this:
@@ -29,7 +27,7 @@ There are several reasons for this:
 A bunch of functions that wrap functionality provided by the operating system.
 
 ### Tool directory
-Utilities for testing.
+Utilities for testing that may also be used in dependent projects.
 
 ### Src directory
 Code for the fildesh library and program itself.

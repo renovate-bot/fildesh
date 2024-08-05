@@ -3,14 +3,14 @@ load("//tool/bazel:fildesh_test.bzl", "fildesh_test")
 fildesh_test(
     name = "alias_ofxf_test",
     srcs = ["alias_ofxf_test.fildesh"],
-    tool_by_alias = {
-        "expectish": "//tool:expectish",
-        "shout": "//tool:shout",
-    },
     target_compatible_with = select({
         "@platforms//os:windows": ["@platforms//:incompatible"],
         "//conditions:default": [],
     }),
+    tool_by_alias = {
+        "expectish": "//tool:expectish",
+        "shout": "//tool:shout",
+    },
 )
 
 fildesh_test(
@@ -27,6 +27,7 @@ fildesh_test(
     name = "concatenate_axfxax_test",
     srcs = ["concatenate_axfxax_test.fildesh"],
 )
+
 fildesh_test(
     name = "concatenate_hxfxax_test",
     srcs = ["concatenate_hxfxax_test.fildesh"],
@@ -36,6 +37,7 @@ fildesh_test(
     name = "concatenate_oooxfxax_test",
     srcs = ["concatenate_oooxfxax_test.fildesh"],
 )
+
 fildesh_test(
     name = "concatenate_forkonly_oooxfxax_test",
     srcs = ["concatenate_oooxfxax_test.fildesh"],
@@ -46,6 +48,7 @@ fildesh_test(
     name = "concatenate_inline_hhh_test",
     srcs = ["concatenate_inline_hhh_test.fildesh"],
 )
+
 fildesh_test(
     name = "concatenate_inline_named_arg_test",
     srcs = ["concatenate_inline_named_arg_test.fildesh"],
@@ -80,6 +83,7 @@ fildesh_test(
     srcs = ["executable_bytes_oxf_test.fildesh"],
     input_by_option = {"input_exe": "//tool:shout"},
 )
+
 fildesh_test(
     name = "executable_bytes_ofxf_test",
     srcs = ["executable_bytes_ofxf_test.fildesh"],
@@ -90,6 +94,7 @@ fildesh_test(
     name = "expect_failure_oxf_test",
     srcs = ["expect_failure_oxf_test.fildesh"],
 )
+
 fildesh_test(
     name = "expect_failure_message_oxoxoxox_test",
     srcs = ["expect_failure_message_oxoxoxox_test.fildesh"],
@@ -109,14 +114,17 @@ fildesh_test(
     name = "pump_ofxf_test",
     srcs = ["pump_ofxf_test.fildesh"],
 )
+
 fildesh_test(
     name = "pump_oxf_test",
     srcs = ["pump_oxf_test.fildesh"],
 )
+
 fildesh_test(
     name = "pump_ofx_test",
     srcs = ["pump_ofx_test.fildesh"],
 )
+
 fildesh_test(
     name = "pump_ox_test",
     srcs = ["pump_ox_test.fildesh"],
@@ -126,6 +134,7 @@ fildesh_test(
     name = "redefine_hhxhhx_test",
     srcs = ["redefine_hhxhhx_test.fildesh"],
 )
+
 fildesh_test(
     name = "redefine_hxahxfhxh_test",
     srcs = ["redefine_hxahxfhxh_test.fildesh"],
@@ -135,6 +144,7 @@ fildesh_test(
     name = "stderr_ooox_test",
     srcs = ["stderr_ooox_test.fildesh"],
 )
+
 fildesh_test(
     name = "stdout_ooox_test",
     srcs = ["stdout_ooox_test.fildesh"],
@@ -149,6 +159,7 @@ fildesh_test(
     name = "wait_xaxaxa_test",
     srcs = ["wait_xaxaxa_test.fildesh"],
 )
+
 fildesh_test(
     name = "wait_forkonly_xaxaxa_test",
     srcs = ["wait_xaxaxa_test.fildesh"],

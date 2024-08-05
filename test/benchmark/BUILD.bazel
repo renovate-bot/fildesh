@@ -1,6 +1,5 @@
 load("//test/benchmark:benchmark.bzl", "cc_benchmark")
 
-
 cc_benchmark(
     name = "file_write_read_benchmark",
     srcs = ["file_write_read_benchmark.cc"],
@@ -36,4 +35,3 @@ cc_benchmark(
     srcs = ["strdup_benchmark.cc"],
     deps = ["//:fildesh_lib"],
 )
-

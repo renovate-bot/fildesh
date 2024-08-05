@@ -1,0 +1,11 @@
+(services ()
+ (app
+  ; Name the image.
+  (image fildesh)
+  (build
+   (context ../../bazel-bin)
+   ; Relative to context.
+   (dockerfile ../pkg/docker/Dockerfile)
+  )
+))
+

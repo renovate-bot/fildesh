@@ -1,0 +1,17 @@
+load("//tool/bazel:cmptxt_test.bzl", "cmptxt_test")
+load("//tool/bazel:sxpb2yaml.bzl", "sxpb2yaml")
+
+sxpb2yaml(
+    name = "compose_yaml",
+    testonly = 1,
+    src = "compose.sxpb",
+    out = "compose_sxpb.yaml",
+)
+
+cmptxt_test(
+    name = "compose_cmptxt_test",
+    srcs = [
+        "compose.yaml",
+        "compose_sxpb.yaml",
+    ],
+)

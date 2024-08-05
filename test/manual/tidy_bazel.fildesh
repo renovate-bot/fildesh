@@ -8,10 +8,14 @@
 "${buildifier_exe}" \
   "BUILD.bazel" \
   "MODULE.bazel" \
+  ".github/BUILD.bazel" \
+  ".github/workflows/BUILD.bazel" \
   "include/BUILD.bazel" \
   "include/fildesh/BUILD.bazel" \
+  "pkg/docker/BUILD.bazel" \
   "src/sxproto/BUILD.bazel" \
   "test/bazel/BUILD.bazel" \
+  "test/benchmark/BUILD.bazel" \
   "test/builtin/BUILD.bazel" \
   "test/cc/BUILD.bazel" \
   "test/compat/BUILD.bazel" \
@@ -19,5 +23,6 @@
   "test/lib/kv/BUILD.bazel" \
   "test/src/BUILD.bazel" \
   "test/sxproto/BUILD.bazel" \
+  "test/syntax/BUILD.bazel" \
   "test/tool/BUILD.bazel" \
   "tool/bazel/BUILD.bazel" \
