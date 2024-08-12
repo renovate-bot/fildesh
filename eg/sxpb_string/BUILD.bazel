@@ -1,0 +1,24 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+load("//tool/bazel:fildesh_run.bzl", "fildesh_run")
+
+fildesh_run(
+    name = "grammar_embed_h",
+    testonly = True,
+    input_by_option = {"x": "grammar.sxpb"},
+    output_by_option = {"o": ":grammar.embed.h"},
+    src_content = """
+(: sxpb_file Filepath .self.opt.x)
+(: out_file Filepath .self.opt.o)
+cembed -o $(XOF out_file) $(XOF sxpb_file)
+    """,
+    tool_by_alias = {"cembed": "//tool:cembed"},
+)
+
+cc_test(
+    name = "string_grammar_test",
+    srcs = [
+        "grammar_test.c",
+        ":grammar.embed.h",
+    ],
+    deps = ["//:sxproto_lib"],
+)

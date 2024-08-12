@@ -10,6 +10,7 @@
   "MODULE.bazel" \
   ".github/BUILD.bazel" \
   ".github/workflows/BUILD.bazel" \
+  "eg/sxpb_string/BUILD.bazel" \
   "include/BUILD.bazel" \
   "include/fildesh/BUILD.bazel" \
   "pkg/docker/BUILD.bazel" \

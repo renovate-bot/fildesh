@@ -127,6 +127,7 @@ if (NOT PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 if (BUILD_TESTING)
+  add_subdirectory(eg)
   add_subdirectory(test)
 endif()
 add_subdirectory(pkg)

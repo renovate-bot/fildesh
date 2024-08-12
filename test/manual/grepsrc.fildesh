@@ -2,5 +2,6 @@
 
 (: pattern Str .self.opt.e)
 
-|< grep -E -e "${pattern}" -R compat include src test tool
+|< grep -E -e "${pattern}" -R \
+  compat eg example include src test tool
 |> stdout

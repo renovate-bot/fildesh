@@ -51,6 +51,7 @@ static const char manyof_coercion_test_content[] = "\
 ((cons) (car kappa))\n\
 (predicates (()) alpha beta gamma)\n\
 ((a) 1 2 3)\n\
+(many_fruits (banana +true) (apple +true) (banana +false))\n\
 ";
 
 static
@@ -197,6 +198,9 @@ loneof_test()
   assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "fruit_as"));
   assert(lone_subfield_at_FildeshSxpb_to_bool(&tmp_b, sxpb, it, "banana"));
   assert(tmp_b);
+  it = first_at_FildeshSxpb(sxpb, it);
+  assert(!nullish_FildeshSxpbIT(it));
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "banana"));
 
   close_FildeshSxpb(sxpb);
   close_FildeshO(err_out);
@@ -389,6 +393,19 @@ manyof_coercion_test()
   assert(2.0f == float_value_at_FildeshSxpb(sxpb, it));
   it = next_at_FildeshSxpb(sxpb, it);
   assert(3.0f == float_value_at_FildeshSxpb(sxpb, it));
+  assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
+
+  it = lookup_subfield_at_FildeshSxpb(sxpb, top_it, "many_fruits");
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "many_fruits"));
+  it = first_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "banana"));
+  assert(bool_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "apple"));
+  assert(bool_value_at_FildeshSxpb(sxpb, it));
+  it = next_at_FildeshSxpb(sxpb, it);
+  assert(0 == strcmp(name_at_FildeshSxpb(sxpb, it), "banana"));
+  assert(!bool_value_at_FildeshSxpb(sxpb, it));
   assert(nullish_FildeshSxpbIT(next_at_FildeshSxpb(sxpb, it)));
 
   close_FildeshSxpb(sxpb);

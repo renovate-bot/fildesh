@@ -61,7 +61,7 @@ subfield_initialization_FildeshSxprotoField(const FildeshSxprotoField* path)
     }
     if (subfield->kind == FildeshSxprotoFieldKind_MESSAGE ||
         subfield->kind == FildeshSxprotoFieldKind_MANYOF) {
-      if (subfield->kind == path->kind && !subfield->subfields) {
+      if (!subfield->subfields) {
         subfield->hi = n;
         subfield->subfields = path->subfields;
       }

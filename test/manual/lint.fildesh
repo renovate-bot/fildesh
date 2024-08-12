@@ -1,20 +1,22 @@
 #!/usr/bin/env fildesh
 
 # Casting function pointers is usually unsafe (https://stackoverflow.com/a/559671/5039395).
-|< $(O? status) grep -E -e '\([^()]*\(\*\) *\([^()]*\)' -R compat include src test tool
-|> zec -o /dev/stderr
+|< $(O? status) grep -E -e '\([^()]*\(\*\) *\([^()]*\)' -R \
+  compat eg include src test tool
+|> splice -o /dev/stderr
 expect_failure -x? $(XF status)
 
 $(barrier)
 # No line ending with space.
-|< $(O? status) grep -E -e ' $' -R compat include src test tool
-|> zec -o /dev/stderr
+|< $(O? status) grep -E -e ' $' -R \
+  compat eg example include src test tool
+|> splice -o /dev/stderr
 expect_failure -x? $(XF status)
 
 $(barrier)
 # Bazel C++ rules should depend on rules_cc.
 |< find \
-  "compat" "include" "src" "test" "tool" \
+  "compat" "eg" "include" "src" "test" "tool" \
   -regextype "egrep" -regex ".*[.](bazel|bzl)" \
   -exec \
   grep -l -E -e "cc_(binary|library|test)\\((\$|[^)])" "{}" \

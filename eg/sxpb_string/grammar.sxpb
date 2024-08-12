@@ -1,0 +1,69 @@
+(())
+
+; Main rule. Unnamed.
+(()
+ ((as one)
+  (lone BLANK)
+  STRING
+  (lone BLANK)
+))
+
+; BLANK = ( [ \t\n\v\f\r] | [;][^\n]*[\n] )+ ;
+(()
+ (name BLANK)
+ ((as someof)
+  (char " \t\n\v\f\r")
+  (one (char ";") (many (charnot "\n")) (char "\n"))
+))
+
+; PLAIN = [^ \t\n\v\f\r;"()]+ ;
+(() (name PLAIN) ((as some) (char " \t\n\v\f\r;\"()")))
+
+; BARE_PREFIX
+; = [-.]? [^-+.0123456789 \t\n\v\f\r;"()]
+; | [-][-]
+; | [.][.]
+; ;
+; BARE = BARE_PREFIX PLAIN? | [-.] ;
+(()
+ (name BARE_PREFIX)
+ ((as oneof)
+  (one (lone (char "-.")) (charnot "-+.0123456789 \t\n\v\f\r;\"()"))
+  (one (char "-") (char "-"))
+  (one (char ".") (char "."))
+))
+(() (name BARE) ((as oneof) (one BARE_PREFIX (lone PLAIN)) (char "-.")))
+
+; ANY_CHAR = . ;
+; ESCAPED = [\\] ANY_CHAR ;
+; QUOTE_CHAR = ["] ;
+; TRIPLE_QUOTED = ["]["]["] ( ["]?["]? ( [^"\\] | ESCAPED ) )* ["]["]["] ;
+; QUOTED = TRIPLE_QUOTED | ["] ( [^"\\]+ | ESCAPED )* ["] ;
+(() (name ANY_CHAR) ((as charnot) ""))
+(() (name ESCAPED) ((as one) (char "\\") ANY_CHAR))
+(() (name QUOTE_CHAR) ((as char) "\""))
+(()
+ (name TRIPLE_QUOTED)
+ ((as one)
+  QUOTE_CHAR QUOTE_CHAR QUOTE_CHAR
+  (many
+   (lone QUOTE_CHAR)
+   (lone QUOTE_CHAR)
+   (oneof (charnot "\"\\") ESCAPED)
+  )
+  QUOTE_CHAR QUOTE_CHAR QUOTE_CHAR
+))
+(()
+ (name QUOTED)
+ ((as oneof)
+  TRIPLE_QUOTED
+  (one QUOTE_CHAR (manyof (charnot "\"\\") ESCAPED) QUOTE_CHAR)
+))
+
+; STRING = ( QUOTED | BARE ) ( BLANK ( QUOTED | PLAIN ) )* ;
+(()
+ (name STRING)
+ ((as one)
+  (oneof QUOTED BARE)
+  (many BLANK (oneof QUOTED PLAIN))
+))

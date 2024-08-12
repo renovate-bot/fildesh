@@ -10,7 +10,7 @@ endif
 syn case match
 
 syn match   sxprotoComment /;.*$/
-syn match   sxprotoStringEscape display contained "\\\([\"\\0nrt]\)"
+syn match   sxprotoStringEscape display contained "\\\([\"\\0tnvfr]\)"
 syn region  sxprotoString start=/"/ skip=/\\"/ end=/"/ contains=sxprotoStringEscape
 syn region  sxprotoString start=/"""/ skip=/\\"/ end=/"""/ contains=sxprotoStringEscape
 

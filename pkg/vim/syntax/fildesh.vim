@@ -12,9 +12,10 @@ syn case match
 syn match   fildeshComment /#.*$/
 syn match   fildeshInclude /\$(<< [^)]*)/
 syn match   fildeshKeyword "$(barrier)"
-syn match   fildeshStringEscape display contained "\\\([\"\\0nrt]\)"
+syn match   fildeshStringEscape display contained "\\\([\"\\0tnvfr]\)"
 syn region  fildeshString start=/"/ skip=/\\"/ end=/"/ contains=fildeshStringEscape
 syn region  fildeshString start=/"""/ skip=/\\"/ end=/"""/ contains=fildeshStringEscape
+syn region  fildeshString start=/'/ end=/'/
 
 hi def link fildeshComment Comment
 hi def link fildeshInclude Include

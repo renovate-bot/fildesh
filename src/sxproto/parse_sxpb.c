@@ -110,8 +110,20 @@ parse_quoted_string_FildeshSxpbInfo(
     else if (skipstr_FildeshSxpbInfo(info, in, "\\\\")) {
       putc_FildeshO(oslice, '\\');
     }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\t")) {
+      putc_FildeshO(oslice, '\t');
+    }
     else if (skipstr_FildeshSxpbInfo(info, in, "\\n")) {
       putc_FildeshO(oslice, '\n');
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\v")) {
+      putc_FildeshO(oslice, '\v');
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\f")) {
+      putc_FildeshO(oslice, '\f');
+    }
+    else if (skipstr_FildeshSxpbInfo(info, in, "\\r")) {
+      putc_FildeshO(oslice, '\r');
     }
     else if (skipstr_FildeshSxpbInfo(info, in, "\\\n") ||
              skipstr_FildeshSxpbInfo(info, in, "\\\r\n")) {
@@ -565,13 +577,7 @@ parse_field_FildeshSxpbInfo(
       }
     }
     else if (field->kind == FildeshSxprotoFieldKind_MANYOF) {
-      if (field_kind == FildeshSxprotoFieldKind_ARRAY) {
-        field_kind = FildeshSxprotoFieldKind_MANYOF;
-      }
-      if (field_kind != FildeshSxprotoFieldKind_MANYOF) {
-        syntax_error(info, "Expected field to be a manyof.");
-        return false;
-      }
+      field_kind = FildeshSxprotoFieldKind_MANYOF;
     }
     else {
       if (field_kind == FildeshSxprotoFieldKind_MANYOF) {
