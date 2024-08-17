@@ -44,27 +44,45 @@ comparison_test()
   FildeshO* err_out = open_FildeshOF("/dev/stderr");
   char* output_data = NULL;
   size_t output_size;
-  CallbackParam pa[1];
-  FildeshX expect[1];
 
-  *pa->lhs = FildeshX_of_strlit("a\nb\nc\nd");
-  *pa->rhs = FildeshX_of_strlit("a\nb\nc");
-  *expect = FildeshX_of_strlit(
-      "Difference found. No RHS line 4.\n LHS: d\n");
-  output_size = fildesh_tool_pipem(0, NULL, run_cmptxt, pa, &output_data);
-  assert(pa->exstatus == 1);
-  print_skip_output(err_out, expect, output_data, output_size);
-  assert(!avail_FildeshX(expect));
+#define expect_cmptxt(expect_txt, lhs_txt, rhs_txt) do { \
+  DECLARE_STRLIT_FildeshX(expect, expect_txt); \
+  int expect_status = avail_FildeshX(expect) ? 1 : 0; \
+  CallbackParam pa[1]; \
+  *pa->lhs = FildeshX_of_strlit(lhs_txt); \
+  *pa->rhs = FildeshX_of_strlit(rhs_txt); \
+  output_size = fildesh_tool_pipem(0, NULL, run_cmptxt, pa, &output_data); \
+  print_skip_output(err_out, expect, output_data, output_size); \
+  assert(pa->exstatus == expect_status); \
+  assert(!avail_FildeshX(expect)); \
+} while (0)
 
-  *pa->lhs = FildeshX_of_strlit("a\nb\nc\n");
-  *pa->rhs = FildeshX_of_strlit("a\nb\nc\nd\n");
-  *expect = FildeshX_of_strlit(
-      "Difference found. No LHS line 4.\n RHS: d\n");
-  output_size = fildesh_tool_pipem(0, NULL, run_cmptxt, pa, &output_data);
-  assert(pa->exstatus == 1);
-  print_skip_output(err_out, expect, output_data, output_size);
-  assert(!avail_FildeshX(expect));
+  expect_cmptxt("", "a\nb\nc\nd", "a\nb\nc\nd");
+  expect_cmptxt("", "a\nb\nc\nd\n", "a\nb\nc\nd");
+  expect_cmptxt("", "a\nb\nc\nd", "a\nb\nc\nd\n");
+  expect_cmptxt("", "a\r\nb\nc\nd", "a\nb\r\nc\nd");
+  expect_cmptxt(
+      "Difference found. No RHS line 4.\n LHS: d\n",
+      "a\nb\nc\nd",
+      "a\nb\nc");
+  expect_cmptxt(
+      "Difference found. No LHS line 4.\n RHS: d\n",
+      "a\nb\nc\n",
+      "a\nb\nc\nd\n");
+  expect_cmptxt(
+      "Difference found on line 5.\n LHS: d\n RHS: e\n",
+      "a\nb\n\nc\nd\n",
+      "a\nb\n\nc\ne\n");
+  expect_cmptxt(
+      "Difference found on line 3.\n LHS: \n RHS: c\n",
+      "a\nb\n\nc\nd",
+      "a\nb\nc\nd");
+  expect_cmptxt(
+      "Difference found. No LHS line 5.\n RHS: \n",
+      "a\nb\nc\nd",
+      "a\nb\nc\nd\n\n");
 
+#undef expect_cmptxt
   free(output_data);
   close_FildeshO(err_out);
 }

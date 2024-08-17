@@ -98,12 +98,12 @@ fildesh_builtin_cmptxt_main(
     FildeshX lhs_slice = sliceline_FildeshX(lhs);
     FildeshX rhs_slice = sliceline_FildeshX(rhs);
 
-    if (!avail_FildeshX(&lhs_slice) || !avail_FildeshX(&rhs_slice)) {
-      if (avail_FildeshX(&lhs_slice)) {
+    if (!lhs_slice.at || !rhs_slice.at) {
+      if (lhs_slice.at) {
         exstatus = 1;
         print_diff_error(out, line_count, &lhs_slice, NULL);
       }
-      if (avail_FildeshX(&rhs_slice)) {
+      if (rhs_slice.at) {
         exstatus = 1;
         print_diff_error(out, line_count, NULL, &rhs_slice);
       }
