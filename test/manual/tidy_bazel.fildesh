@@ -2,28 +2,30 @@
 
 (: buildtools_dir Str .self.opt.buildtools_dir)
 
-(: buildifier_exe Str
- (++ buildtools_dir "/bazel-bin/buildifier/buildifier_/buildifier"))
+(: exclude_filepaths Str """\
+./compat/BUILD.bazel
+./src/BUILD.bazel
+./src/bin/BUILD.bazel
+./src/builtin/BUILD.bazel
+./src/lib/BUILD.bazel
+./src/lib/kv/BUILD.bazel
+./src/syntax/BUILD.bazel
+./test/example/BUILD.bazel
+./tool/BUILD.bazel
+""")
 
-"${buildifier_exe}" \
-  "BUILD.bazel" \
-  "MODULE.bazel" \
-  ".github/BUILD.bazel" \
-  ".github/workflows/BUILD.bazel" \
-  "eg/sxpb_string/BUILD.bazel" \
-  "include/BUILD.bazel" \
-  "include/fildesh/BUILD.bazel" \
-  "pkg/docker/BUILD.bazel" \
-  "src/sxproto/BUILD.bazel" \
-  "test/bazel/BUILD.bazel" \
-  "test/benchmark/BUILD.bazel" \
-  "test/builtin/BUILD.bazel" \
-  "test/cc/BUILD.bazel" \
-  "test/compat/BUILD.bazel" \
-  "test/lib/BUILD.bazel" \
-  "test/lib/kv/BUILD.bazel" \
-  "test/src/BUILD.bazel" \
-  "test/sxproto/BUILD.bazel" \
-  "test/syntax/BUILD.bazel" \
-  "test/tool/BUILD.bazel" \
-  "tool/bazel/BUILD.bazel" \
+splice -o $(OF exclude) / "${exclude_filepaths}" /
+
+pwd $(O pwd)
+
+|< find \
+  "./.github" "./compat" "./eg" "./pkg" "./src" "./test" "./tool" \
+  -name "BUILD.bazel"
+|- grep -v -F -f $(XF exclude)
+|- splice / "./BUILD.bazel\n./MODULE.bazel\n" / -
+|- replace_string "./"
+|- splice -paste / $(XA pwd) "/" / -
+|- xargs -d "\n" \
+  fildesh -as godo "${buildtools_dir}" \
+  bazel run //buildifier --
+|> stdout

@@ -3,14 +3,15 @@ load("//test/fuzz:fuzz.bzl", "cc_fuzz_test", "cc_smoke_test")
 cc_fuzz_test(
     name = "ensure_fuzz_test",
     srcs = ["ensure_fuzz_test.c"],
-    deps = ["//:fildesh_lib"],
     max_guesses = 50000,
+    deps = ["//:fildesh_lib"],
 )
+
 cc_smoke_test(
     name = "ensure_smoke_test",
     srcs = [
-        "ensure_smoke_test.c",
         "ensure_fuzz_test.c",
+        "ensure_smoke_test.c",
     ],
     deps = ["//:fildesh_lib"],
 )
@@ -18,8 +19,8 @@ cc_smoke_test(
 cc_smoke_test(
     name = "brbtree_smoke_test",
     srcs = [
-        "brbtree_smoke_test.c",
         "brbtree_fuzz_test.c",
+        "brbtree_smoke_test.c",
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
     ],
@@ -33,14 +34,15 @@ cc_fuzz_test(
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
     ],
-    deps = ["//:fildesh_lib"],
     max_guesses = 50000,
+    deps = ["//:fildesh_lib"],
 )
+
 cc_smoke_test(
     name = "bstree_smoke_test",
     srcs = [
-        "bstree_smoke_test.c",
         "bstree_fuzz_test.c",
+        "bstree_smoke_test.c",
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
     ],
@@ -50,20 +52,21 @@ cc_smoke_test(
 cc_fuzz_test(
     name = "rbtree_fuzz_test",
     srcs = [
-        "rbtree_fuzz_test.c",
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
+        "rbtree_fuzz_test.c",
     ],
-    deps = ["//test/lib/kv:kv_validation_lib"],
     max_guesses = 50000,
+    deps = ["//test/lib/kv:kv_validation_lib"],
 )
+
 cc_smoke_test(
     name = "rbtree_smoke_test",
     srcs = [
-        "rbtree_smoke_test.c",
-        "rbtree_fuzz_test.c",
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
+        "rbtree_fuzz_test.c",
+        "rbtree_smoke_test.c",
     ],
     deps = ["//test/lib/kv:kv_validation_lib"],
 )
@@ -71,21 +74,21 @@ cc_smoke_test(
 cc_fuzz_test(
     name = "single_list_fuzz_test",
     srcs = [
-        "single_list_fuzz_test.c",
         "kv_fuzz_common.c",
         "kv_fuzz_common.h",
+        "single_list_fuzz_test.c",
     ],
-    deps = ["//:fildesh_lib"],
     max_guesses = 50000,
-)
-cc_smoke_test(
-    name = "single_list_smoke_test",
-    srcs = [
-        "single_list_smoke_test.c",
-        "single_list_fuzz_test.c",
-        "kv_fuzz_common.c",
-        "kv_fuzz_common.h",
-    ],
     deps = ["//:fildesh_lib"],
 )
 
+cc_smoke_test(
+    name = "single_list_smoke_test",
+    srcs = [
+        "kv_fuzz_common.c",
+        "kv_fuzz_common.h",
+        "single_list_fuzz_test.c",
+        "single_list_smoke_test.c",
+    ],
+    deps = ["//:fildesh_lib"],
+)

@@ -1,6 +1,5 @@
 load("//tool/bazel:optional_setting.bzl", "optional_setting")
 
-
 optional_setting(
     name = "full_benchmarking_on",
     flag_name = "enable_full_benchmarking",

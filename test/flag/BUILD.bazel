@@ -4,8 +4,10 @@ fildesh_test(
     name = "named_arg_test",
     srcs = ["named_arg_test.fildesh"],
     fildesh_options = [
-        "-a", "hello=Hello",
-        "-a", "world=World",
+        "-a",
+        "hello=Hello",
+        "-a",
+        "world=World",
     ],
 )
 
@@ -28,8 +30,10 @@ fildesh_test(
     name = "setenv_test",
     srcs = ["setenv_test.fildesh"],
     fildesh_options = [
-        "-setenv", "HELLO=Hello",
-        "-setenv", "WORLD=World",
+        "-setenv",
+        "HELLO=Hello",
+        "-setenv",
+        "WORLD=World",
     ],
 )
 

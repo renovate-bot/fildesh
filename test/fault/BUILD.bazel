@@ -27,4 +27,3 @@ fildesh_failure_test(
     srcs = ["pump_executable_bytes_oxf_test.fildesh"],
     input_by_option = {"input_exe": "//tool:shout"},
 )
-
