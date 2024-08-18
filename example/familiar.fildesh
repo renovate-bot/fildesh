@@ -3,11 +3,11 @@
 # This shows how to use a familiar pipeline notation when it is convenient.
 # Take a look at the pseudocode and then relate it to the rest of the file.
 #
-# The {zec} command may be new to you.
-# It is like {cat}, but it echoes the strings given between slashes.
+# The `splice` command may be new to you.
+# It is like `cat`, but it echoes the strings given between slashes.
 #
-# The {elastic} command may be new as well.
-# It is ilke {tee}, but it won't cause deadlocks.
+# The `elastic` command may be new as well.
+# It is ilke `tee`, but it won't cause deadlocks.
 
 
 # The following pseudocode shows how the program works at a high level.
@@ -35,26 +35,25 @@
 
 
 # Create a sequence of numbers from 1 to {N}.
-|< seq 1 $(XA N)
+|< seq 1 "${N}"
 # Split off a new stream called {fivesum}.
 |- elastic - $(OF fivesum)
 
 # Add up all the numbers.
 |- tr "\n" " "
 |- add
-|- zec / 'The sum of 1 to ' $(XA N) ' is ' / -
-|> zec $(O allsum)
+|- splice / "The sum of 1 to ${N} is " / -
+|> cat $(O allsum)
 
 
 # For the {fivesum} stream,
 # add up all the numbers divisible by 5.
-|< zec $(X fivesum)
+|< cat $(X fivesum)
 |- grep -e '[05]$'
 |- tr "\n" " "
 |- add
-|- zec / 'The sum of 1 to ' $(XA N) ' by 5 is ' / -
-|> zec $(O fivesum)
+|- splice / "The sum of 1 to ${N} by 5 is " / -
+|> cat $(O fivesum)
 
-|< zec $(XF allsum) $(XF fivesum)
+|< cat $(XF allsum) $(XF fivesum)
 |> stdout
-

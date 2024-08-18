@@ -20,6 +20,7 @@
 
 #include "src/bin/version.h"
 #include "src/builtin/fildesh_builtin.h"
+#include "src/command/alias.h"
 #include "src/syntax/defstr.h"
 #include "src/syntax/line.h"
 #include "src/syntax/opt.h"
@@ -328,16 +329,6 @@ static char* lace_fd_path_strdup(Fildesh_fd fd) {
   return lace_strdup(buf);
 }
 
-
-static void ensure_strmap(FildeshKV* map, char* k, char* v) {
-  const FildeshKV_id id = ensure_FildeshKV(map, k, strlen(k)+1);
-  assign_at_FildeshKV(map, id, v, strlen(v)+1);
-}
-
-static char* lookup_strmap(FildeshKV* map, const char* k) {
-  return (char*) lookup_value_FildeshKV(map, k, strlen(k)+1);
-}
-
   static unsigned
 count_ws (const char* s)
 {
@@ -463,7 +454,7 @@ parse_file(
       begline[0] = '\0';
       begline = &begline[1];
 
-      push_FildeshAT(cmd->args, (char*) "zec");
+      push_FildeshAT(cmd->args, (char*)"splice");
       push_FildeshAT(cmd->args, (char*) "/");
       emsg = fildesh_syntax_sep_line(
           cmd->args, begline, map, scope_alloc, tmp_out);
@@ -1188,49 +1179,6 @@ FILDESH_POSIX_THREAD_CALLBACK(builtin_command_thread_fn, BuiltinCommandThreadArg
 
 static
   void
-fix_known_flags_Command(Command* cmd, FildeshKV* alias_map) {
-  char* replacement = lookup_strmap(alias_map, (*cmd->args)[0]);
-  if (replacement) {
-    (*cmd->args)[0] = replacement;
-  }
-
-  if (eq_cstr("sed", (*cmd->args)[0])) {
-    unsigned i;
-    for (i = 1; i < count_of_FildeshAT(cmd->args); ++i) {
-      const char* arg = (*cmd->args)[i];
-      if (eq_cstr("--line-buffered", arg)) {
-#ifdef __APPLE__
-        const char line_buffering_flag[] = "-l";
-#else
-        const char line_buffering_flag[] = "-u";
-#endif
-        (*cmd->args)[i] = strdup_FildeshAlloc(cmd->alloc, line_buffering_flag);
-      }
-    }
-  }
-  else if (eq_cstr("tr", (*cmd->args)[0])) {
-    if (count_of_FildeshAT(cmd->args) == 3 &&
-        1 == strlen((*cmd->args)[1]) &&
-        1 == strlen((*cmd->args)[2])) {
-      (*cmd->args)[0] = strdup_FildeshAlloc(cmd->alloc, "replace_string");
-    }
-  }
-  else if (eq_cstr("xargz", (*cmd->args)[0])) {
-    unsigned i = 1;
-    if (eq_cstr("--", (*cmd->args)[i])) {
-      i += 1;
-    }
-    if ((*cmd->args)[i]) {
-      replacement = lookup_strmap(alias_map, (*cmd->args)[i]);
-      if (replacement) {
-        (*cmd->args)[i] = replacement;
-      }
-    }
-  }
-}
-
-static
-  void
 add_inheritfd_flags_Command(char*** argv, Command* cmd, bool inprocess) {
   unsigned i;
 
@@ -1337,7 +1285,7 @@ spawn_commands(const char* fildesh_exe, Command** cmds,
     }
     assert(count_of_FildeshAT(fdargs) == count_of_FildeshAT(cmd->iargs));
 
-    fix_known_flags_Command(cmd, alias_map);
+    fildesh_command_fix_known_flags(cmd->args, alias_map, cmd->alloc);
 
     if (cmd->exec_fd >= 0 || count_of_FildeshAT(fdargs) > 0 ||
         cmd->status_fd >=0 || count_of_FildeshAT(cmd->exit_fds) > 0)

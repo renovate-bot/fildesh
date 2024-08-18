@@ -1,5 +1,4 @@
 #!/usr/bin/env fildesh
 
-$(O a) zec / "hello\n" /
+$(O a) splice / "hello\n" /
 $(X a) stdout
-

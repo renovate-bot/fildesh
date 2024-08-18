@@ -1,5 +1,6 @@
-|< zec / "hello\n" /
-|- zec - / /
-|- zec / / -
-|- zec -o - -x -
+|< splice / "hello\n" /
+|- splice - / /
+|- splice / / -
+|- splice -o - -x -
+|- cat
 |> stdout

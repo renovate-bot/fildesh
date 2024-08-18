@@ -5,7 +5,7 @@
 
 # Things are done in a pretty silly way.
 
-|<  godo example ls
+|< godo example ls
 
 # This is used for a test, so let's just some specific files.
 |- grep \
@@ -14,13 +14,14 @@
 
 |- sort
 
-# We could use this commented line, but let's be more convoluted.
+# We could use either of these commented lines, but let's be more convoluted.
+#|- replace_string "fildesh\n" "txt\n"
 #|- sed -e 's/fildesh$/txt/'
 
-# Create a string containing a `fildesh` program that runs `sed`.
+# Create a string containing a `fildesh` program that runs `replace_string`.
 $(H silly)
 |< stdin
-|- sed -e 's/fildesh$/txt/'
+|- replace_string "fildesh\n" "txt\n"
 |> stdout
 $(H silly)
 
@@ -29,11 +30,10 @@ $(H silly)
 
 # Construct a stream for a prefix to use for each line.
 # This is silly because the stream is converted to a string on the next line!
-$(O pfx) zec / "File in example: " /
+$(O pfx) splice / "File in example: " /
 
 # Add the prefix to all lines.
-|- zec -paste / $(XA pfx) / -
+|- splice -paste / $(XA pfx) / -
 
 # Finally direct the stream to standard output.
 |> stdout
-

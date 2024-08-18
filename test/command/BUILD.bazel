@@ -1,0 +1,7 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+cc_test(
+    name = "alias_test",
+    srcs = ["alias_test.c"],
+    deps = ["//src/command:alias_c"],
+)

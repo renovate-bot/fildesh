@@ -17,12 +17,12 @@ $(H subst)
 { printf ("s/\\<%s\\>/%-*s/\n", $1, length($1), $2); }
 $(H subst)
 
-|< zec $(H lab_file)
+|< cat $(H lab_file)
 |- sed \
     -e 's/^[[:space:]]\+/ /' \
     -e 's/^ //' \
     -e 's/ $//'
-|- tr ' ' '\n'
+|- tr " " "\n"
 |- grep -v -e '^!' -e '^$'
 |- ssh-all - $(H clientcmd)
 #- Usernames.

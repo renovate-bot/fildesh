@@ -58,6 +58,7 @@ cc_library(
     deps = [
         "//:fildesh_lib",
         "//:sxproto_lib",
+        "//src/command:alias_c",
     ],
     visibility = [
         "//src/bin:__pkg__",

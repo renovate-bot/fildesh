@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+    "//src:__pkg__",
+    "//test/command:__pkg__",
+])
+
+cc_library(
+    name = "alias_c",
+    srcs = [
+        "alias.c",
+        "alias.h",
+    ],
+    deps = ["//:fildesh_lib"],
+)

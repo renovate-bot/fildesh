@@ -17,10 +17,10 @@ $(H lab)
 $(H lab)
 
 # Create a stream {a} to with the lab text.
- $(O a) zec / $(XA lab) "\n" /
+ $(O a) splice / $(XA lab) "\n" /
 
 ## To read standard input instead of {lab},
-## Uncomment this {stdin} line and comment the above {zec} line.
+## Uncomment this {stdin} line and comment the above `splice` line.
 # $(O a) stdin
 
 # Split off another stream {b} to use later.
@@ -31,7 +31,7 @@ $(XO a) sed \
     -e 's/^ //' \
     -e 's/ $//'
 
-$(XO a) tr ' ' '\n'
+$(XO a) tr " " "\n"
 $(XO a) grep -v -e '^!' -e '^$'
 
 

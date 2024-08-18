@@ -1,7 +1,7 @@
 #!/usr/bin/env fildesh
 
 # Compute the sum from 1 to N  by essentially implementing
-# the {seq} tool and calling {add} on all the numbers.
+# the `seq` tool and calling `add` on all the numbers.
 # The following is essentially what's happening.
 #
 #     echo N  o
@@ -28,24 +28,24 @@
 ## Begin pipeline.
 
 # Start at {N} and read subsequent values from {pump}.
-|< zec / "${N}\n" / -   $(Xv pump)
+|< splice / "${N}\n" / -   $(Xv pump)
 # Loop until we hit 1.
 |- delimend "\n" "1"
 |- elastic - $(OF i)
-|- zec -paste - / ' -1' /
+|- splice -paste - / ' -1' /
 |- add
 #|- elastic - inspect1.txt
-|> zec $(O^ pump)
+|> cat $(O^ pump)
 
 # Sum up all the numbers we encounter in the loop.
-|< zec $(X i)
+|< cat $(X i)
 |- replace_string "\n" " "
 |- add
-|- zec / "The sum of 1 to ${N} is " / -
+|- splice / "The sum of 1 to ${N} is " / -
 |> stdout
 
 # Notes.
-# - `zec` is `cat` that interprets literal string content between the slashes.
+# - `splice` is `cat` that interprets literal string content between the slashes.
 # - `delimend` reads delimited strings until it hits a terminating case.
 #   - Equivalent commands:
 #     - delimend "\n" "1"

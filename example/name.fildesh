@@ -12,8 +12,6 @@ $(<< includetest.fildesh)
 (: passmsg Str (++ msg "\nYour password is " password "!"))
 (: greetmsg Str (++ msg "\nHow are you today?"))
 
-|< zec / $(XA greetmsg) "\n" /
-|- zec - / $(XA passmsg) "\n" /
+|< splice / $(XA greetmsg) "\n" /
+|- splice - / $(XA passmsg) "\n" /
 |> stdout
-
-

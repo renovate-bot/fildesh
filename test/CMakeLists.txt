@@ -14,6 +14,7 @@ add_subdirectory(fuzz)
 # Sorted by name.
 add_subdirectory(benchmark)
 add_subdirectory(builtin)
+add_subdirectory(command)
 add_subdirectory(example)
 add_subdirectory(fault)
 add_subdirectory(flag)
