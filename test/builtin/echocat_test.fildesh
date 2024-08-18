@@ -1,9 +1,8 @@
-#!/usr/bin/env fildesh
-
 # Run this with `-alias echocat=$(location //test/builtin:echocat)`.
 
-$(O expect) zec / "hello there\nworld\n" /
+$(O expect) splice / "hello there\nworld\n" /
 
-|< zec / "world\n" /
+|< splice / "world\n" /
 |- echocat "hello" "there"
-|> cmp $(XF expect)
+|- cmp $(XF expect)
+|> stdout

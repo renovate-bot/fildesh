@@ -1,9 +1,7 @@
-#!/usr/bin/env fildesh
 # Run with -a hello=Hello -a world=World
 
-$(O expect) zec / "Hello there World" /
-$(O result) zec / $(XA hello) " there " $(XA world) /
+$(O expect) splice / "Hello there World" /
 
-|< cmp $(XF expect) $(XF result)
+|< splice / $(XA hello) " there " $(XA world) /
+|- cmp $(XF expect)
 |> stdout
-

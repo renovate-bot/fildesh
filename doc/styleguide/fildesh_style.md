@@ -13,7 +13,7 @@ There's no need to avoid it if it improves readability.
 ```
 |< cat $(XF data_from_earlier)
 |- do some stuff
-|> zec -o $(OF data_for_later)
+|> splice -o $(OF data_for_later)
 ```
 
 

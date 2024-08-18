@@ -1,5 +1,3 @@
-#!/usr/bin/env fildesh
-
 # Same as the example, but written (and executed)
 # in a way that spawns excessive processes.
 
@@ -9,8 +7,8 @@
 (: default_offset Str "1")
 (: default_limit Str "5")
 
-$(O offset) zec -unless $(XA given_offset) / $(XA default_offset) /
-$(O limit) zec -unless $(XA given_limit) / $(XA default_limit) /
+$(O offset) splice -unless $(XA given_offset) / $(XA default_offset) /
+$(O limit) splice -unless $(XA given_limit) / $(XA default_limit) /
 
 $(> offset) $(XA offset)
 $(> limit) $(XA limit)
@@ -19,5 +17,5 @@ $(> greet) "Given: --offset=" $(XA given_offset) " --limit=" $(XA given_limit)
 $(> msg) "Let's count from " $(XA offset) ' to ' $(XA limit) '.'
 
 |< seq $(XA offset) $(XA limit)
-|- zec / $(XA greet) "\n" $(XA msg) "\n" / -
+|- splice / $(XA greet) "\n" $(XA msg) "\n" / -
 |> stdout

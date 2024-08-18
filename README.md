@@ -20,13 +20,13 @@ A Fildesh script can instead create those multiple files as pipes, letting the w
 # Pretend that these first 3 lines are just one program that we're testing,
 # expecting it to sum the integers from 1 to 10.
 |< seq 1 10
-|- tr "\n" " "
+|- replace_string "\n" " "
 |- add
 # Redirect output to a stream named `result`.
-|> zec -o $(OF result)
+|> splice -o $(OF result)
 
 # Make a stream named `expect` that contains the expected result: "55\n".
-zec -o $(OF expect) / "55\n" /
+splice -o $(OF expect) / "55\n" /
 
 # Compare the two streams. The script fails if the streams differ.
 |< cmp $(XF expect) $(XF result)
