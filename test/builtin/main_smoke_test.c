@@ -94,6 +94,20 @@ static void builtin_execfd_test() {
   MAIN_TEST(73, "execfd\0-o?\0/dev/null/absent");
 }
 
+static void builtin_fildesh_test() {
+  MAIN_TEST(64, "fildesh\0-x");
+  MAIN_TEST(64, "fildesh\0--");
+  MAIN_TEST(64, "fildesh\0-as");
+  MAIN_TEST(64, "fildesh\0-as\0builtin");
+  MAIN_TEST(10, "fildesh\0-as\0builtin\0expect_failure\0-status\0""10\0-propagate");
+}
+
+static void builtin_godo_test() {
+  MAIN_TEST(64, "godo");
+  MAIN_TEST(64, "godo\0.");
+  MAIN_TEST(66, "godo\0/dev/null/absent\0true");
+}
+
 static void builtin_replace_string_test() {
   MAIN_TEST(64, "replace_string");
   MAIN_TEST(64, "replace_string\0--");
@@ -166,6 +180,8 @@ int main() {
 
   builtin_elastic_pthread_test();
   builtin_execfd_test();
+  builtin_fildesh_test();
+  builtin_godo_test();
   builtin_replace_string_test();
   builtin_splice_test();
   builtin_sponge_test();

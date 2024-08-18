@@ -2,5 +2,6 @@
 |- splice - / /
 |- splice / / -
 |- splice -o - -x -
+|- builtin splice
 |- cat
 |> stdout

@@ -26,7 +26,7 @@
 #include "src/syntax/opt.h"
 #include "src/syntax/symval.h"
 
-/* Defined in main_fildesh.c.*/
+/* Defined in src/bin/main.c*/
 void push_fildesh_exit_callback(void (*f) (void*), void* x);
 
 
@@ -752,6 +752,13 @@ setup_commands(Command** cmds, CommandHookup* cmd_hookup)
         }
         assert(on_argv);
       }
+      else if (fildesh_eqstrlit("builtin", arg)) {
+        if (count_of_FildeshAT(cmd->args) == arg_r+1 ||
+            !fildesh_builtin_main_fn_lookup((*cmd->args)[arg_r+1])) {
+          FailBreak(cmd, "Unknown builtin", arg);
+        }
+        assert(on_argv);
+      }
       if (on_argv) {break;}
     }
 
@@ -1332,6 +1339,14 @@ spawn_commands(const char* fildesh_exe, Command** cmds,
       push_FildeshAT(argv, lace_strdup("--"));
       push_FildeshAT(argv, lace_strdup((*cmd->args)[0]));
     }
+    else if (0 == strcmp("builtin", (*cmd->args)[0])) {
+      assert(fildesh_builtin_main_fn_lookup((*cmd->args)[1]));
+      if (!forkonly) {
+        use_thread = !!fildesh_builtin_threadsafe_fn_lookup((*cmd->args)[1]);
+      }
+      push_FildeshAT(argv, lace_strdup(fildesh_exe));
+      push_FildeshAT(argv, lace_strdup("-as"));
+    }
     else if (fildesh_builtin_main_fn_lookup((*cmd->args)[0])) {
       if (!forkonly) {
         use_thread = !!fildesh_builtin_threadsafe_fn_lookup((*cmd->args)[0]);
@@ -1483,8 +1498,16 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
     }
     else if (eq_cstr (arg, "-as")) {
       const char* builtin_name = argv[argi];
+      if (fildesh_eqstrlit("builtin", builtin_name)) {
+        builtin_name = argv[++argi];
+      }
+      if (!builtin_name) {
+        builtin_name = "";
+        argi -= 1;
+      }
       argv[argi] = fildesh_exe;
       exstatus = fildesh_builtin_main(builtin_name, argc-argi, &argv[argi]);
+      if (exstatus < 0) {exstatus = 64;}
       exiting = true;
     }
     else if (eq_cstr(arg, "-alias")) {
