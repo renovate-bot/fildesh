@@ -1,13 +1,23 @@
 
 $(H script)
-expect_failure -propagate -status 1
+|< splice / "should print this\n" /
+|> stdout
+
 $(barrier)
-|< zec / "should not print this\n" /
+expect_failure -propagate -status 1
+
+$(barrier)
+|< splice / "should not print this\n" /
 |> stdout
 $(H script)
 
-|< fildesh $(X script) $(O? status)
-|- cmp /dev/null
+splice -o $(OF expect) / "should print this\n" /
+
+|< fildesh -stderr $(OF err) $(X script) $(O? status)
+|> cmp $(XF expect)
+
+|< splice / "FAILED COMMAND line 5: expect_failure -propagate -status 1" /
+|- cmptxt - $(XF err)
 |> stdout
 
 expect_failure -x? $(XF status)

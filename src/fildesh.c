@@ -358,6 +358,7 @@ parse_file(
     CommandHookup* cmd_hookup,
     Command** cmds,
     FildeshX* in,
+    size_t* ret_line_count,
     const char* this_filename,
     FildeshKV* map,
     FildeshAlloc* scope_alloc,
@@ -365,7 +366,7 @@ parse_file(
     FildeshO* tmp_out)
 {
   int istat = 0;
-  size_t text_nlines = 0;
+  size_t text_nlines = *ret_line_count;
   while (istat == 0) {
     char* line;
     Command* cmd;
@@ -421,8 +422,11 @@ parse_file(
       lose_Command(&last_FildeshAT(cmds));
       mpop_FildeshAT(cmds, 1);
 
-      istat = parse_file(cmd_hookup, cmds, src, filename_FildeshXF(src),
-                         map, scope_alloc, global_alloc, tmp_out);
+      *ret_line_count = 0;
+      istat = parse_file(
+          cmd_hookup, cmds,
+          src, ret_line_count, filename_FildeshXF(src),
+          map, scope_alloc, global_alloc, tmp_out);
       if (istat == 0 && count_of_FildeshAT(cmds) > 0 &&
           last_FildeshAT(cmds).kind == BarrierCommand)
       {
@@ -538,6 +542,7 @@ parse_file(
       }
     }
   }
+  *ret_line_count = text_nlines;
   return istat;
 }
 
@@ -1074,7 +1079,7 @@ output_Command(FILE* out, const Command* cmd)
   unsigned i;
   if (cmd->kind != RunCommand)  return;
 
-  fputs ("COMMAND: ", out);
+  fprintf(out, "COMMAND line %u: ", cmd->line_num);
   for (i = 0; i < (unsigned)count_of_FildeshAT(cmd->args); ++i) {
     if (i > 0)  fputc(' ', out);
     if ((*cmd->args)[i]) {
@@ -1441,6 +1446,7 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
   Command** cmds = NULL;
   bool use_stdin = true;
   FildeshX* script_in = NULL;
+  size_t script_line_count = 0;
   FildeshO tmp_out[1] = {DEFAULT_FildeshO};
   FildeshAlloc* global_alloc;
   CommandHookup* cmd_hookup;
@@ -1717,8 +1723,8 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
     const Fildesh_fd stdout_fd = cmd_hookup->stdout_fd;
     FildeshAlloc* scope_alloc = open_FildeshAlloc();
     istat = parse_file(
-        cmd_hookup,
-        cmds, script_in, filename_FildeshXF(script_in),
+        cmd_hookup, cmds,
+        script_in, &script_line_count, filename_FildeshXF(script_in),
         &cmd_hookup->map, scope_alloc, global_alloc, tmp_out);
     if (istat != 0 ||
         (count_of_FildeshAT(cmds) == 0 || last_FildeshAT(cmds).kind != BarrierCommand))
