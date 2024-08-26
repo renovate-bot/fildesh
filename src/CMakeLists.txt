@@ -66,6 +66,8 @@ add_library(fildesh_builtin_lib_obj OBJECT
   "${PROJECT_SOURCE_DIR}/src/builtin/void.c"
   "${PROJECT_SOURCE_DIR}/src/command/alias.c"
   "${PROJECT_SOURCE_DIR}/src/command/alias.h"
+  "${PROJECT_SOURCE_DIR}/src/command/hookup.c"
+  "${PROJECT_SOURCE_DIR}/src/command/hookup.h"
   "${PROJECT_SOURCE_DIR}/src/syntax/defstr.c"
   "${PROJECT_SOURCE_DIR}/src/syntax/defstr.h"
   "${PROJECT_SOURCE_DIR}/src/syntax/line.c"

@@ -51,6 +51,7 @@ cc_library(
         "//:fildesh_lib",
         "//:sxproto_lib",
         "//src/command:alias_c",
+        "//src/command:hookup_c",
         "//src/syntax:line_c",
         "//src/syntax:opt_c",
         "//src/syntax:symval_c",

@@ -21,6 +21,7 @@
 #include "src/bin/version.h"
 #include "src/builtin/fildesh_builtin.h"
 #include "src/command/alias.h"
+#include "src/command/hookup.h"
 #include "src/syntax/defstr.h"
 #include "src/syntax/line.h"
 #include "src/syntax/opt.h"
@@ -41,7 +42,6 @@ enum CommandKind {
 
 typedef enum CommandKind CommandKind;
 typedef struct Command Command;
-typedef struct CommandHookup CommandHookup;
 typedef struct BuiltinCommandThreadArg BuiltinCommandThreadArg;
 
 
@@ -83,31 +83,10 @@ struct Command
   FildeshAlloc* alloc;
 };
 
-/* See the setup_commands() phase.*/
-struct CommandHookup {
-  char* temporary_directory;
-  unsigned tmpfile_count;
-  FildeshKV map;
-  FildeshKV add_map; /* Temporarily hold new symbols for the current line.*/
-  Fildesh_fd stdin_fd;
-  Fildesh_fd stdout_fd;
-  DECLARE_FildeshAT(const char*, stdargs);
-  /* Stderr stays at fd 2 but should be closed explicitly if we dup2 over it.*/
-  bool stderr_fd_opened;
-};
-
 struct BuiltinCommandThreadArg {
   Command* command;  /* Cleanup but don't free.*/
   char** argv;  /* Free nested.*/
 };
-
-static char* add_tmp_file(CommandHookup*, const char*, FildeshAlloc*);
-
-  static void
-lose_SymVal (SymVal* v)
-{
-  v->kind = NSymValKinds;
-}
 
   static void
 init_Command(Command* cmd, FildeshAlloc* alloc)
@@ -233,60 +212,18 @@ lose_Commands (void* arg)
   free(cmds);
 }
 
-  static CommandHookup*
-new_CommandHookup(FildeshAlloc* alloc)
-{
-  const FildeshKV empty_map = DEFAULT_FildeshKV;
-  CommandHookup* cmd_hookup = fildesh_allocate(CommandHookup, 1, alloc);
-  cmd_hookup->map = empty_map;
-  cmd_hookup->map.alloc = alloc;
-  cmd_hookup->add_map = empty_map;
-  cmd_hookup->add_map.alloc = alloc;
-  cmd_hookup->temporary_directory = NULL;
-  cmd_hookup->tmpfile_count = 0;
-  cmd_hookup->stdin_fd = 0;
-  cmd_hookup->stdout_fd = 1;
-  init_FildeshAT(cmd_hookup->stdargs);
-  cmd_hookup->stderr_fd_opened = false;
-  return cmd_hookup;
+static void close_FildeshCommandHookup_generic(void* arg) {
+  close_FildeshCommandHookup((FildeshCommandHookup*) arg);
 }
-
-static void free_CommandHookup(CommandHookup* cmd_hookup, int* istat) {
-  FildeshKV_id id;
-  FildeshKV* map = &cmd_hookup->map;
-  for (id = first_FildeshKV(map);
-       !fildesh_nullid(id);
-       id = next_at_FildeshKV(map, id))
-  {
-    SymVal* x = (SymVal*) value_at_FildeshKV(map, id);
-    if (x->kind == ODescVal && *istat == 0) {
-      fildesh_log_errorf("Dangling output stream! Symbol: %s",
-                         (char*) key_at_FildeshKV(map, id));
-      *istat = -1;
-    }
-    else if (x->kind == TmpFileVal) {
-      fildesh_compat_file_rm(x->as.iofilename);
-    }
-    lose_SymVal(x);
-  }
-  close_FildeshKV(&cmd_hookup->map);
-  close_FildeshKV(&cmd_hookup->add_map);
-  /* Close stdio if they are still valid and have been changed.*/
-  if (cmd_hookup->stdin_fd >= 0 && cmd_hookup->stdin_fd != 0) {
-    fildesh_compat_fd_close(cmd_hookup->stdin_fd);
-  }
-  if (cmd_hookup->stdout_fd >= 0 && cmd_hookup->stdout_fd != 1) {
-    fildesh_compat_fd_close(cmd_hookup->stdout_fd);
-  }
-  close_FildeshAT(cmd_hookup->stdargs);
-  if (cmd_hookup->stderr_fd_opened) {
-    fildesh_compat_fd_close(2);
-  }
+static void close_FildeshAlloc_generic(void* arg) {
+  close_FildeshAlloc((FildeshAlloc*) arg);
 }
-
-  static void
-close_FildeshAlloc_generic(void* arg)
-{ close_FildeshAlloc((FildeshAlloc*) arg); }
+static void close_FildeshKV_generic(void* arg) {
+  close_FildeshKV((FildeshKV*) arg);
+}
+static void close_FildeshO_generic(void* arg) {
+  close_FildeshO((FildeshO*) arg);
+}
 
 static inline
   bool
@@ -355,7 +292,7 @@ perror_Command(const Command* cmd, const char* msg, const char* msg2)
 static
   int
 parse_file(
-    CommandHookup* cmd_hookup,
+    FildeshCommandHookup* cmd_hookup,
     Command** cmds,
     FildeshX* in,
     size_t* ret_line_count,
@@ -515,7 +452,8 @@ parse_file(
       begline[0] = '\0';
       sym = declare_fildesh_SymVal(map, TmpFileVal, sym_name);
       if (!sym) {istat = -1; break;}
-      sym->as.iofilename = add_tmp_file(cmd_hookup, ".txt", global_alloc);
+      sym->as.iofilename = tmpfile_FildeshCommandHookup(
+          cmd_hookup, ".txt", global_alloc);
 
       lose_Command(cmd);
       mpop_FildeshAT(cmds, 1);
@@ -578,52 +516,19 @@ add_fd_arg_Command (Command* cmd, int fd)
   return strdup_FildeshAlloc(cmd->alloc, buf);
 }
 
-  static void
-remove_tmppath(void* temporary_directory)
-{
-  if (0 != fildesh_compat_file_rmdir((char*)temporary_directory)) {
-    fildesh_compat_errno_trace();
-    fildesh_log_warningf("Temp directory not removed: %s",
-                      (char*)temporary_directory);
-  }
-  free(temporary_directory);
-  fildesh_log_trace("freed temporary_directory");
-}
-
-  char*
-add_tmp_file(CommandHookup* cmd_hookup, const char* extension,
-             FildeshAlloc* alloc)
-{
-  char buf[2048];
-  assert(extension);
-  if (!cmd_hookup->temporary_directory) {
-    cmd_hookup->temporary_directory = fildesh_compat_file_mktmpdir("fildesh");
-    fildesh_compat_errno_clear();
-    if (!cmd_hookup->temporary_directory) {
-      fildesh_log_error("Unable to create temp directory.");
-      return NULL;
-    }
-    push_fildesh_exit_callback(remove_tmppath, cmd_hookup->temporary_directory);
-  }
-
-  sprintf(buf, "%s/%u%s", cmd_hookup->temporary_directory,
-          cmd_hookup->tmpfile_count, extension);
-  cmd_hookup->tmpfile_count += 1;
-  return strdup_FildeshAlloc(alloc, buf);
-}
-
   static char*
 add_tmp_file_Command(Command* cmd,
-                     CommandHookup* cmd_hookup,
+                     FildeshCommandHookup* cmd_hookup,
                      const char* extension)
 {
-  push_FildeshAT(cmd->tmp_files, add_tmp_file(cmd_hookup, extension, cmd->alloc));
+  push_FildeshAT(cmd->tmp_files, tmpfile_FildeshCommandHookup(
+          cmd_hookup, extension, cmd->alloc));
   return (*cmd->tmp_files)[count_of_FildeshAT(cmd->tmp_files) - 1];
 }
 
 static
   char*
-write_heredoc_tmpfile(Command* cmd, CommandHookup* cmd_hookup, const char* doc)
+write_heredoc_tmpfile(Command* cmd, FildeshCommandHookup* cmd_hookup, const char* doc)
 {
   FildeshO* out;
   char* filename = add_tmp_file_Command(cmd, cmd_hookup, ".txt");
@@ -691,7 +596,7 @@ zero_argv_SymValKind(SymValKind kind)
 
 static
   int
-setup_commands(Command** cmds, CommandHookup* cmd_hookup)
+setup_commands(Command** cmds, FildeshCommandHookup* cmd_hookup)
 {
   FildeshKV* map = &cmd_hookup->map;
   /* Temporarily hold new symbols for the current line.*/
@@ -1458,7 +1363,7 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
   size_t script_line_count = 0;
   FildeshO tmp_out[1] = {DEFAULT_FildeshO};
   FildeshAlloc* global_alloc;
-  CommandHookup* cmd_hookup;
+  FildeshCommandHookup* cmd_hookup;
   unsigned argi = 1;
   unsigned i;
   FildeshKV alias_map[1] = {DEFAULT_FildeshKV};
@@ -1478,7 +1383,9 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
   assert(!outputv);
 
   global_alloc = open_FildeshAlloc();
-  cmd_hookup = new_CommandHookup(global_alloc);
+  cmd_hookup = new_FildeshCommandHookup(global_alloc);
+  defer_FildeshCommandHookup(cmd_hookup, close_FildeshO_generic, tmp_out);
+  defer_FildeshCommandHookup(cmd_hookup, close_FildeshKV_generic, alias_map);
 
   while (argi < argc && exstatus == 0 && !exiting) {
     const char* arg;
@@ -1691,19 +1598,19 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
         &argv[argi], &cmd_hookup->map, cmd_hookup->stdargs,  tmp_out);
   }
   if (exiting || exstatus != 0) {
-    close_FildeshKV(alias_map);
-    free_CommandHookup(cmd_hookup, &istat);
+    close_FildeshCommandHookup(cmd_hookup);
     close_FildeshAlloc(global_alloc);
     return exstatus;
   }
   push_fildesh_exit_callback(close_FildeshAlloc_generic, global_alloc);
+  push_fildesh_exit_callback(close_FildeshCommandHookup_generic, cmd_hookup);
 
   {
     DECLARE_DEFAULT_FildeshAT(Command, tmp_cmds);
     cmds = (Command**)malloc(sizeof(tmp_cmds));
     memcpy(cmds, tmp_cmds, sizeof(tmp_cmds));
   }
-  push_fildesh_exit_callback(lose_Commands, cmds);
+  defer_FildeshCommandHookup(cmd_hookup, lose_Commands, cmds);
 
   if (use_stdin) {
     script_in = open_arg_FildeshXF(0, argv, inputv);
@@ -1791,11 +1698,8 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
     }
     cmd_hookup->stdout_fd = stdout_fd;
   }
-  close_FildeshX(script_in);  /* Just in case we missed it.*/
-  free_CommandHookup(cmd_hookup, &istat);
-  close_FildeshKV(alias_map);
-  close_FildeshO(tmp_out);
 
+  close_FildeshX(script_in);  /* Just in case we missed it.*/
+  close_FildeshCommandHookup(cmd_hookup);
   return exstatus;
 }
-
