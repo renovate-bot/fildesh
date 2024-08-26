@@ -34,6 +34,7 @@ int (* fildesh_builtin_threadsafe_fn_lookup(const char* name)
 int (* fildesh_builtin_main_fn_lookup(const char* name)
     )(unsigned, char**);
 int fildesh_builtin_main(const char* name, unsigned argc, char** argv);
+int fildesh_main_builtin(unsigned argc, char** argv);
 #else
 static inline
 int (* fildesh_builtin_main_fn_lookup(const char* name)
@@ -46,6 +47,11 @@ static inline
 int fildesh_builtin_main(const char* name, unsigned argc, char** argv)
 {
   (void) name;
+  (void) argc;
+  (void) argv;
+  return -1;
+}
+static inline int fildesh_main_builtin(unsigned argc, char** argv) {
   (void) argc;
   (void) argv;
   return -1;

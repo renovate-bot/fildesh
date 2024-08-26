@@ -1,0 +1,11 @@
+
+splice -o $(OF expect) / "hello world" /
+
+|< command -- void - "hello" "world"
+|- cmptxt $(XF expect)
+|> stdout
+
+$(barrier)
+builtin -- void
+command -- void $(O? status)
+expect_failure -status 64 -x? $(XF status)

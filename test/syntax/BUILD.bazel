@@ -19,6 +19,12 @@ fildesh_test(
 )
 
 fildesh_test(
+    name = "command_test",
+    srcs = ["command_test.fildesh"],
+    tool_by_alias = {"void": "//tool:shout"},
+)
+
+fildesh_test(
     name = "comment_test",
     srcs = ["comment_test.fildesh"],
 )

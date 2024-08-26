@@ -9,6 +9,11 @@ endif()
 add_test(NAME syntax_coalesce_undefined_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/coalesce_undefined_test.fildesh")
 
+add_test(NAME syntax_command_test COMMAND ${Fildesh_EXECUTABLE}
+  -alias "void=$<TARGET_FILE:shout>"
+  -f "${CMAKE_CURRENT_SOURCE_DIR}/command_test.fildesh"
+)
+
 add_test(NAME syntax_comment_test COMMAND ${Fildesh_EXECUTABLE}
   -f "${CMAKE_CURRENT_SOURCE_DIR}/comment_test.fildesh"
 )

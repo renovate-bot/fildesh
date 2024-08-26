@@ -1,5 +1,6 @@
 #include "src/builtin/fildesh_builtin.h"
 
+#include <assert.h>
 #include <string.h>
 
 #if defined(FILDESH_PREFER_AIO)
@@ -16,13 +17,14 @@
 # endif
 #endif
 
+int fildesh_main_command(unsigned argc, char** argv);
 #ifdef FILDESH_BUILTIN_ELASTIC_AIO_ON
 int main_elastic_aio(unsigned argc, char** argv);
 #endif
 #ifdef FILDESH_BUILTIN_ELASTIC_POLL_ON
 int main_elastic_poll(unsigned argc, char** argv);
 #endif
-int main_godo(unsigned argc, char** argv);
+int fildesh_main_godo(unsigned argc, char** argv);
 int main_ssh_all(unsigned argc, char** argv);
 int main_waitdo(unsigned argc, char** argv);
 int main_xargz(unsigned argc, char** argv);
@@ -147,6 +149,8 @@ int (* fildesh_builtin_threadsafe_fn_lookup(const char* name)
     {NULL, NULL},
   };
   unsigned i;
+
+  assert(name);
   for (i = 0; builtins[i].name; ++i) {
     if (0 == strcmp(name, builtins[i].name)) {
       return builtins[i].main_fn;
@@ -167,7 +171,9 @@ int (* fildesh_builtin_main_fn_lookup(const char* name)
     {"add", fildesh_main_add},
     {"best-match", fildesh_main_bestmatch},
     {"bestmatch", fildesh_main_bestmatch},
+    {"builtin", fildesh_main_builtin},
     {"capture_string", fildesh_main_capture_string},
+    {"command", fildesh_main_command},
     {"cmp", fildesh_main_cmp},
     {"cmptxt", fildesh_main_cmptxt},
     {"delimend", fildesh_main_delimend},
@@ -182,7 +188,7 @@ int (* fildesh_builtin_main_fn_lookup(const char* name)
     {"execfd", main_execfd},
     {"expect_failure", main_expect_failure},
     {"fildesh", main_fildesh},
-    {"godo", main_godo},
+    {"godo", fildesh_main_godo},
     {"oargz", fildesh_main_oargz},
     {"replace_string", fildesh_main_replace_string},
     {"seq", fildesh_main_seq},
@@ -204,6 +210,7 @@ int (* fildesh_builtin_main_fn_lookup(const char* name)
   };
   unsigned i;
 
+  assert(name);
   for (i = 0; builtins[i].name; ++i) {
     if (0 == strcmp(builtins[i].name, name)) {
       return builtins[i].main_fn;
@@ -223,3 +230,18 @@ int fildesh_builtin_main(const char* name, unsigned argc, char** argv)
   return f(argc, argv);
 }
 
+int fildesh_main_builtin(unsigned argc, char** argv) {
+  int exstatus = -1;
+  const char* name = "";
+  unsigned argi = 1;
+  if (argi < argc && argv[argi] && 0 == strcmp("--", argv[argi])) {
+    argi += 1;
+  }
+  if (argi < argc && argv[argi]) {
+    name = argv[argi];
+    argv[argi] = argv[0];
+  }
+  exstatus = fildesh_builtin_main(name, argc-argi, &argv[argi]);
+  if (exstatus < 0) {exstatus = 127;}
+  return exstatus;
+}

@@ -77,6 +77,21 @@ static void builtin_cmp_test() {
   MAIN_TEST(64, "cmptxt\0-");
 }
 
+static void builtin_command_test() {
+  MAIN_TEST(127, "command");
+  MAIN_TEST(127, "command\0--");
+
+  MAIN_TEST(127, "builtin");
+  MAIN_TEST(127, "builtin\0--");
+  MAIN_TEST(127, "builtin\0/dev/null/absent");
+  MAIN_TEST(0, "builtin\0--\0void");
+  MAIN_TEST(10, "builtin\0expect_failure\0-status\0""10\0-propagate");
+}
+
+static void builtin_delimend_test() {
+  MAIN_TEST(64, "delimend");
+}
+
 static void builtin_elastic_pthread_test() {
   MAIN_TEST(64, "elastic_pthread\0-o");
   MAIN_TEST(66, "elastic_pthread\0-x");
@@ -97,14 +112,14 @@ static void builtin_execfd_test() {
 static void builtin_fildesh_test() {
   MAIN_TEST(64, "fildesh\0-x");
   MAIN_TEST(64, "fildesh\0--");
-  MAIN_TEST(64, "fildesh\0-as");
-  MAIN_TEST(64, "fildesh\0-as\0builtin");
+  MAIN_TEST(127, "fildesh\0-as");
   MAIN_TEST(10, "fildesh\0-as\0builtin\0expect_failure\0-status\0""10\0-propagate");
 }
 
 static void builtin_godo_test() {
   MAIN_TEST(64, "godo");
   MAIN_TEST(64, "godo\0.");
+  MAIN_TEST(66, "godo\0/dev/null/absent\0/dev/null/absent");
   MAIN_TEST(66, "godo\0/dev/null/absent\0true");
 }
 
@@ -175,9 +190,8 @@ int main() {
   builtin_bestmatch_test();
   builtin_capture_string_test();
   builtin_cmp_test();
-
-  MAIN_TEST(64, "delimend");
-
+  builtin_command_test();
+  builtin_delimend_test();
   builtin_elastic_pthread_test();
   builtin_execfd_test();
   builtin_fildesh_test();

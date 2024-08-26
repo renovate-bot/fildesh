@@ -49,7 +49,10 @@ fildesh_command_fix_known_flags(
       (*argv)[0] = strdup_FildeshAlloc(alloc, "replace_string");
     }
   }
-  else if (fildesh_eqstrlit("xargz", (*argv)[0])) {
+  else if (
+      fildesh_eqstrlit("command", (*argv)[0]) ||
+      fildesh_eqstrlit("xargz", (*argv)[0]))
+  {
     unsigned i = 1;
     if (fildesh_eqstrlit("--", (*argv)[i])) {
       i += 1;

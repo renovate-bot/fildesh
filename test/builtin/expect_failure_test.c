@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
   bad_filename = fildesh_compat_file_catpath(
       literal_0_filename, "no_file_here");
 
-  fildesh_log_info("Testing failure cases. Expect lots of error messages.");
-
+  fildesh_log_info("Testing failure cases.");
+  fildesh_log_warning("Expect lots of error messages.");
 
 
   fildesh_log_trace("Testing obvious usage errors.");

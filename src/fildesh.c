@@ -758,9 +758,18 @@ setup_commands(Command** cmds, CommandHookup* cmd_hookup)
         assert(on_argv);
       }
       else if (fildesh_eqstrlit("builtin", arg)) {
-        if (count_of_FildeshAT(cmd->args) == arg_r+1 ||
+        if (arg_r+1 < count_of_FildeshAT(cmd->args) &&
+            fildesh_eqstrlit("--", (*cmd->args)[arg_r+1])) {
+          unsigned i;
+          for (i = arg_r+1; i+1 < count_of_FildeshAT(cmd->args); ++i) {
+            (*cmd->args)[i] = (*cmd->args)[i+1];
+          }
+          mpop_FildeshAT(cmd->args, 1);
+        }
+        if (arg_r+1 < count_of_FildeshAT(cmd->args) &&
+            (*cmd->args)[arg_r+1] &&
             !fildesh_builtin_main_fn_lookup((*cmd->args)[arg_r+1])) {
-          FailBreak(cmd, "Unknown builtin", arg);
+          FailBreak(cmd, "Unknown builtin", (*cmd->args)[arg_r+1]);
         }
         assert(on_argv);
       }
@@ -1503,17 +1512,9 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
       exiting = true;
     }
     else if (eq_cstr (arg, "-as")) {
-      const char* builtin_name = argv[argi];
-      if (fildesh_eqstrlit("builtin", builtin_name)) {
-        builtin_name = argv[++argi];
-      }
-      if (!builtin_name) {
-        builtin_name = "";
-        argi -= 1;
-      }
+      argi -= 1;
       argv[argi] = fildesh_exe;
-      exstatus = fildesh_builtin_main(builtin_name, argc-argi, &argv[argi]);
-      if (exstatus < 0) {exstatus = 64;}
+      exstatus = fildesh_main_builtin(argc-argi, &argv[argi]);
       exiting = true;
     }
     else if (eq_cstr(arg, "-alias")) {

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int
-main_godo(unsigned argc, char** argv);
+fildesh_main_godo(unsigned argc, char** argv);
 
 static void run_godo(const char* expectish_exe, char* filepath) {
   int istat;
@@ -37,7 +37,7 @@ static void run_godo(const char* expectish_exe, char* filepath) {
       fprintf(stderr, "%s\n", argv[i]);
     }
   }
-  istat = main_godo(5, (char**)argv);
+  istat = fildesh_main_godo(5, (char**)argv);
   assert(istat == 0);
   free(exe);
 }
