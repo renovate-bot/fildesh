@@ -1,13 +1,42 @@
-exports_files([
-    "defstr.c",
-    "defstr.h",
-    "line.c",
-    "line.h",
-    "opt.c",
-    "opt.h",
-    "symval.c",
-    "symval.h",
-], visibility = [
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
     "//src:__pkg__",
+    "//src/command:__pkg__",
     "//test/fuzz:__pkg__",
 ])
+
+cc_library(
+    name = "line_c",
+    srcs = [
+        "defstr.c",
+        "defstr.h",
+        "line.c",
+        "line.h",
+    ],
+    deps = [
+        ":symval_c",
+        "//:fildesh_lib",
+    ],
+)
+
+cc_library(
+    name = "opt_c",
+    srcs = [
+        "opt.c",
+        "opt.h",
+    ],
+    deps = [
+        ":symval_c",
+        "//:fildesh_lib",
+    ],
+)
+
+cc_library(
+    name = "symval_c",
+    srcs = [
+        "symval.c",
+        "symval.h",
+    ],
+    deps = ["//:fildesh_lib"],
+)

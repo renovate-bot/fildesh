@@ -88,8 +88,11 @@ parse_double_quoted_fildesh_string(FildeshX* in, FildeshO* out, FildeshKV* map)
       c = in->at[in->off];
       switch(c) {
         case '0': {c = '\0'; break;}
-        case 'n': {c = '\n'; break;}
         case 't': {c = '\t'; break;}
+        case 'n': {c = '\n'; break;}
+        case 'v': {c = '\v'; break;}
+        case 'f': {c = '\f'; break;}
+        case 'r': {c = '\r'; break;}
         case '\r':
         case '\n': {
           have_char = false;
@@ -149,14 +152,16 @@ parse_double_quoted_fildesh_string_or_variable(FildeshX* in, FildeshO* out, size
   }
   else if (!skipstr_FildeshX(in, "(")) {
     const char* v;
-    slice = until_chars_FildeshX(in, ") \t\v\r\n");
+    slice = until_chars_FildeshX(in, ") \t\n\v\f\r");
     if (slice.size == 0) {return "No token.";}
     if (in->off >= in->size) {return "Unexpected end of file.";}
     v = lookup_string_variable(map, &slice, tmp_out);
-    if (!v) {
-      return "Unknown string variable.";
+    if (v) {
+      putstr_FildeshO(out, v);
     }
-    putstr_FildeshO(out, v);
+    else {
+      emsg = "Unknown string variable.";
+    }
   }
   else if (skipstr_FildeshX(in, "??")) {
     const char* v;
@@ -166,9 +171,14 @@ parse_double_quoted_fildesh_string_or_variable(FildeshX* in, FildeshO* out, size
     slice = until_chars_FildeshX(in, fildesh_compat_string_blank_bytes);
     if (slice.size == 0) {return "Need a second arg for \"(??\".";}
     v = lookup_string_variable(map, &slice, tmp_out);
-    if (!skip_blank_bytes(in, text_nlines)) {return "Thought there was space here.";}
-    emsg = parse_double_quoted_fildesh_string_or_variable(in, tmp_out, text_nlines, map);
-    skip_blank_bytes(in, text_nlines);
+    if (skip_blank_bytes(in, text_nlines)) {
+      emsg = parse_double_quoted_fildesh_string_or_variable(
+          in, tmp_out, text_nlines, map);
+      skip_blank_bytes(in, text_nlines);
+    }
+    else {
+      emsg = "Thought there was space here.";
+    }
     if (emsg) {
       /* Nothing.*/
     }
@@ -219,9 +229,9 @@ parse_fildesh_string_definition(
 
   truncate_FildeshO(tmp_out);
 
-  for (skipchrs_FildeshX(in, " \t\v\r");
+  for (skipchrs_FildeshX(in, " \t\v\f\r");
        !skipstr_FildeshX(in, "(: ");
-       skipchrs_FildeshX(in, " \t\v\r"))
+       skipchrs_FildeshX(in, " \t\v\f\r"))
   {
     if (skipstr_FildeshX(in, "#")) {
       until_char_FildeshX(in, '\n');

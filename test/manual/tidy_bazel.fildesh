@@ -9,7 +9,6 @@
 ./src/builtin/BUILD.bazel
 ./src/lib/BUILD.bazel
 ./src/lib/kv/BUILD.bazel
-./src/syntax/BUILD.bazel
 ./test/example/BUILD.bazel
 ./tool/BUILD.bazel
 """)
