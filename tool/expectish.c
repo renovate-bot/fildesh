@@ -4,6 +4,7 @@
  * Keep small; built often.
  **/
 #include <stdio.h>
+#include <string.h>
 
 #ifndef UNIT_TESTING
 #define fildesh_tool_expectish_main main
@@ -30,8 +31,7 @@ int fildesh_tool_expectish_main(int argc, char** argv) {
     } else if (*s == '\0' && argi+1 < argc && argv[argi+1]) {
       argi += 1;
       s = argv[argi];
-    } else if ((char)c == '\n' || (char)c == ' ' ||
-               (char)c == '\t' || (char)c == '\r') {
+    } else if (memchr(" \t\n\v\f\r", c, 6)) {
       c = fgetc(f);
     } else {
       fclose(f);

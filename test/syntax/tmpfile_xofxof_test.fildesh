@@ -1,9 +1,13 @@
 
 $(tmpfile f)
 
-zec -o $(XOF f) / "hello there world" /
+shout $(XOF f) "hello" "there" "world"
 
 $(barrier)
-|< zec / "hello there world" /
-|- cmp - $(XOF f)
-|> stdout
+expectish $(XOF f) "hellothere" "world"
+
+expectish $(XOF f) "hellothere" $(O? status)
+expect_failure -status 65 -x? $(XF status)
+
+expectish $(XOF f) "hellothere" "world" "!"  $(O? status)
+expect_failure -status 74 -x? $(XF status)

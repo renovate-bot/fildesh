@@ -1,4 +1,5 @@
 
+set(FildeshTool_expectish_EXECUTABLE "$<TARGET_FILE:expectish>")
 set(FildeshTool_shout_EXECUTABLE "$<TARGET_FILE:shout>")
 set(FildeshTool_spawn_EXECUTABLE "$<TARGET_FILE:spawn>")
 

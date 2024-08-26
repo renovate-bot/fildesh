@@ -1,0 +1,4 @@
+# `shout` and `expectish` are external programs.
+
+|< shout - "hello" "world"
+|> expectish - "hello" "world"

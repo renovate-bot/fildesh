@@ -1,12 +1,8 @@
 load("//tool/bazel:fildesh_test.bzl", "fildesh_test")
 
 fildesh_test(
-    name = "alias_ofxf_test",
-    srcs = ["alias_ofxf_test.fildesh"],
-    target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
+    name = "alias_ox_test",
+    srcs = ["alias_ox_test.fildesh"],
     tool_by_alias = {
         "expectish": "//tool:expectish",
         "shout": "//tool:shout",
@@ -159,6 +155,10 @@ fildesh_test(
 fildesh_test(
     name = "tmpfile_xofxof_test",
     srcs = ["tmpfile_xofxof_test.fildesh"],
+    tool_by_alias = {
+        "expectish": "//tool:expectish",
+        "shout": "//tool:shout",
+    },
 )
 
 fildesh_test(

@@ -1,16 +1,15 @@
 
-if (UNIX)
-  add_test(NAME syntax_alias_ofxf_test COMMAND fildesh
-    -alias "expectish=$<TARGET_FILE:expectish>"
-    -alias "shout=$<TARGET_FILE:shout>"
-    -f "${CMAKE_CURRENT_SOURCE_DIR}/alias_ofxf_test.fildesh")
-endif()
+add_test(NAME syntax_alias_ox_test COMMAND ${Fildesh_EXECUTABLE}
+  -alias "expectish=${FildeshTool_expectish_EXECUTABLE}"
+  -alias "shout=${FildeshTool_shout_EXECUTABLE}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/alias_ox_test.fildesh"
+)
 
 add_test(NAME syntax_coalesce_undefined_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/coalesce_undefined_test.fildesh")
 
 add_test(NAME syntax_command_test COMMAND ${Fildesh_EXECUTABLE}
-  -alias "void=$<TARGET_FILE:shout>"
+  -alias "void=${FildeshTool_shout_EXECUTABLE}"
   -f "${CMAKE_CURRENT_SOURCE_DIR}/command_test.fildesh"
 )
 
@@ -90,14 +89,20 @@ add_test(NAME syntax_stdout_ooox_test COMMAND ${Fildesh_EXECUTABLE}
   -f "${CMAKE_CURRENT_SOURCE_DIR}/stdout_ooox_test.fildesh"
 )
 
-add_test(NAME syntax_tmpfile_xofxof_test COMMAND fildesh -f
-  "${CMAKE_CURRENT_SOURCE_DIR}/tmpfile_xofxof_test.fildesh")
+add_test(NAME syntax_tmpfile_xofxof_test COMMAND ${Fildesh_EXECUTABLE}
+  -alias "expectish=${FildeshTool_expectish_EXECUTABLE}"
+  -alias "shout=${FildeshTool_shout_EXECUTABLE}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tmpfile_xofxof_test.fildesh"
+)
 
 add_test(NAME syntax_wait_xaxaxa_test COMMAND
   "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
-  "$<TARGET_FILE:fildesh>" -f
-  "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh")
+  ${Fildesh_EXECUTABLE}
+  "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh"
+)
 add_test(NAME syntax_forkonly_wait_xaxaxa_test COMMAND
   "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
-  "$<TARGET_FILE:fildesh>" -forkonly -f
-  "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh")
+  ${Fildesh_EXECUTABLE} -forkonly
+  "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh"
+  "--testname=syntax_forkonly_wait_xaxaxa_test"
+)

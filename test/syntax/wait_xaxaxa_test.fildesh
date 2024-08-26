@@ -1,18 +1,16 @@
+(: testname Str (?? .self.opt.testname "wait_xaxaxa_test"))
 
-$(> filename) $(getenv TEST_TMPDIR) "/wait_xaxaxa_test_file.txt"
+$(> filename) $(getenv TEST_TMPDIR) "/${testname}_file.txt"
 
-|< zec / "hello world" /
+|< splice / "hello world" /
 |- replace_string "world" "za warudo"
 |> sponge "${filename}"
 
 $(barrier)
-
-zec -o $(OF result) / / "${filename}"
-zec -o $(OF expect) / "hello za warudo" /
+splice -o $(OF result) / / "${filename}"
+splice -o $(OF expect) / "hello za warudo" /
 |< cmp $(XF expect) $(XF result)
 |> stdout
 
 $(barrier)
-
-zec -o "${filename}" / "overwrite" /
-
+splice -o "${filename}" / "overwrite" /
