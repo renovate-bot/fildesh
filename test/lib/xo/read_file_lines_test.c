@@ -4,7 +4,7 @@
 #include <string.h>
 
 int main() {
-  FildeshX* in = open_FildeshXF("test/src/read_file_lines_test.c");
+  FildeshX* in = open_FildeshXF("test/lib/xo/read_file_lines_test.c");
   FildeshX slice;
 
   assert(in);

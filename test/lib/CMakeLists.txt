@@ -1,5 +1,5 @@
-
 add_subdirectory(kv)
+add_subdirectory(xo)
 
 add_executable(lib_alloc_test
   "alloc_test.c")

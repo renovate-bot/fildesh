@@ -1,11 +1,11 @@
-
 #include <fildesh/fildesh.h>
-#include "include/fildesh/fildesh_compat_string.h"
-#include "mascii.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "include/fildesh/fildesh_compat_string.h"
+#include "src/lib/mascii.h"
 
 static inline bool sliced_FildeshX(const FildeshX* slice) {
   return (slice->at && (slice->alloc_lgsize == 0));
