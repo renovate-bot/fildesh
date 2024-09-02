@@ -1,12 +1,36 @@
-#include <fildesh/fildesh.h>
-#include "include/fildesh/fildesh_compat_errno.h"
-#include "include/fildesh/fildesh_compat_file.h"
-#include "include/fildesh/fildesh_compat_string.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
-int main() {
+#include <fildesh/fildesh.h>
+
+#include "include/fildesh/fildesh_compat_errno.h"
+#include "include/fildesh/fildesh_compat_file.h"
+#include "include/fildesh/fildesh_compat_string.h"
+
+static void catpath_test() {
+  char* filepath;
+  filepath = fildesh_compat_file_catpath("/tmp/d", "f.txt");
+  assert(0 == strcmp("/tmp/d/f.txt", filepath));
+  free(filepath);
+
+  filepath = fildesh_compat_file_catpath("/tmp/d/", "f.txt");
+  assert(0 == strcmp("/tmp/d/f.txt", filepath));
+  free(filepath);
+
+  filepath = fildesh_compat_file_catpath("/tmp/d", NULL);
+  assert(0 == strcmp("/tmp/d/", filepath));
+  free(filepath);
+
+  filepath = fildesh_compat_file_catpath(NULL, "f.txt");
+  assert(0 == strcmp("f.txt", filepath));
+  free(filepath);
+
+  filepath = fildesh_compat_file_catpath("", "");
+  assert(!filepath);
+}
+
+static void write_read_compare_test() {
   const char* output_directory = getenv("TEST_TMPDIR");
   char* initial_filename;
   char* sibling_filename;
@@ -59,6 +83,10 @@ int main() {
 
   free(initial_filename);
   free(sibling_filename);
+}
 
+int main() {
+  catpath_test();
+  write_read_compare_test();
   return 0;
 }

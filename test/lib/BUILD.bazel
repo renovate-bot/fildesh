@@ -19,6 +19,12 @@ cc_test(
 )
 
 cc_test(
+    name = "size_test",
+    srcs = ["size_test.c"],
+    deps = ["//:fildesh_lib"],
+)
+
+cc_test(
     name = "string_test",
     srcs = ["string_test.c"],
     deps = ["//:fildesh_lib"],

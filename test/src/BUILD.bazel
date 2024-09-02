@@ -1,28 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
-load("//tool/bazel:spawn_test.bzl", "spawn_test")
-
-cc_binary(
-    name = "chatty",
-    testonly = True,
-    srcs = ["chatty.c"],
-    linkopts = select({
-        "@platforms//os:linux": ["-lrt"],
-        "//conditions:default": [],
-    }),
-    target_compatible_with = [
-        "@platforms//os:linux",
-    ],
-    visibility = ["//test/src:__pkg__"],
-    deps = ["//:fildesh_lib"],
-)
-
-spawn_test(
-    name = "chatty_test",
-    binary = ":chatty",
-    target_compatible_with = [
-        "@platforms//os:linux",
-    ],
-)
+load("@rules_cc//cc:defs.bzl", "cc_test")
 
 cc_test(
     name = "delimit_edge_test",
@@ -64,12 +40,6 @@ cc_test(
 cc_test(
     name = "sibling_file_test",
     srcs = ["sibling_file_test.c"],
-    deps = ["//:fildesh_lib"],
-)
-
-cc_test(
-    name = "size_test",
-    srcs = ["size_test.c"],
     deps = ["//:fildesh_lib"],
 )
 

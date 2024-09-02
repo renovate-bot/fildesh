@@ -54,12 +54,16 @@ fildesh_compat_file_catpath(const char* dir, const char* filename)
   p = (char*) malloc(dir_length + 1 + add_length + 1);
   if (!p) {return NULL;}
   i = 0;
-  memcpy(&p[i], dir, dir_length);
-  i += dir_length;
-  if (dir_length > 0 && dir[dir_length-1] != '/') {
-    p[i++] = '/';
+  if (dir_length > 0) {
+    memcpy(&p[i], dir, dir_length);
+    i += dir_length;
+    if (dir[dir_length-1] != '/') {
+      p[i++] = '/';
+    }
   }
-  memcpy(&p[i], filename, add_length);
+  if (add_length > 0) {
+    memcpy(&p[i], filename, add_length);
+  }
   i += add_length;
   p[i] = '\0';
   return p;
