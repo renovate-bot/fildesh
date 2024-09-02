@@ -56,7 +56,7 @@ int main (int argc, const char** argv)
   if (!out)
   {
     fprintf (err, "%s: Cannot write:%s\n", argv[0], argv[argi]);
-    return 1;
+    return 73;
   }
 
   ++ argi;
@@ -74,7 +74,9 @@ int main (int argc, const char** argv)
     in = fopen (argv[argi + i], "rb");
     if (!in) {
       fprintf (err, "%s: Cannot read:%s\n", argv[0], argv[argi + i]);
-      return 1;
+      free(files_nbytes);
+      fclose(out);
+      return 66;
     }
 
     fprintf (out, "static const %s %s_%u[]={", arrtype, arrsym, i);

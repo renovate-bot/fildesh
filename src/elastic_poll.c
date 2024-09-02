@@ -2,9 +2,6 @@
  * \file elastic_poll.c
  * Echo stdin to stdout with an arbitrary sized buffer.
  **/
-#include <fildesh/fildesh.h>
-#include "include/fildesh/fildesh_compat_fd.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -12,13 +9,12 @@
 #include <string.h>
 #include <unistd.h>
 
-/* #define DEBUGGING */
+/* #define FILDESH_LOG_TRACE_ON */
+#include <fildesh/fildesh.h>
 
-#ifdef DEBUGGING
+#include "include/fildesh/fildesh_compat_fd.h"
+
 #define StateMsg(msg, i, istat)  fildesh_log_tracef("%s %u %d", msg, i, istat)
-#else
-#define StateMsg(msg, i, istat)
-#endif
 
 typedef struct IOState IOState;
 
@@ -48,7 +44,9 @@ close_IOState(IOState* io, struct pollfd* pfd) {
     return;
   }
   io->done = 1;
-  fildesh_compat_fd_close(pfd->fd);
+  if (pfd->fd >= 0) {
+    fildesh_compat_fd_close(pfd->fd);
+  }
   close_FildeshAT(io->buf);
 }
 

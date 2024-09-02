@@ -23,9 +23,13 @@ static void alloc_test()
   assert(bufs[0][1] == 'a');
   assert(bufs[1][0] == 'b');
   assert(bufs[2][0] == 'c');
+
+  /* Zero-size allocation returns non-NULL but does not reserve anything.*/
+  assert(fildesh_allocate(char, 0, alloc));
+  assert(fildesh_allocate(char, 0, alloc) == fildesh_allocate(char, 0, alloc));
+
   close_FildeshAlloc(alloc);
 }
-
 
 static void strdup_test()
 {

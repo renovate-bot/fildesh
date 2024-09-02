@@ -1017,7 +1017,7 @@ FILDESH_POSIX_THREAD_CALLBACK(builtin_command_thread_fn, BuiltinCommandThreadArg
 {
   Command* cmd = st->command;
   unsigned offset = 0;
-  unsigned argc;
+  unsigned argc = 0;
   char** argv;
   FildeshX** inputs = NULL;
   FildeshO** outputs = NULL;
@@ -1029,12 +1029,17 @@ FILDESH_POSIX_THREAD_CALLBACK(builtin_command_thread_fn, BuiltinCommandThreadArg
   assert(count_of_FildeshAT(cmd->iargs) == 0);
   assert(cmd->exec_fd < 0);
 
-  for (argc = 0; st->argv[argc]; ++argc) {
-    if (offset == 0 && 0 == strcmp("-as", st->argv[argc])) {
-      offset = argc + 1;
+  for (i = 0; st->argv[i]; ++i) {
+    argc = i+1;
+  }
+  assert(argc >= 3);
+
+  for (i = 2; i < argc; ++i) {
+    if (0 == strcmp("-as", st->argv[i-1])) {
+      offset = i;
+      break;
     }
   }
-
   /* We should have found something. Retain argv[0].*/
   assert(offset >= 2);
   name = st->argv[offset];
@@ -1453,8 +1458,12 @@ fildesh_builtin_fildesh_main(unsigned argc, char** argv,
        v[0] = '\0';
        v = &v[1];
        sym = declare_fildesh_SymVal(&cmd_hookup->map, HereDocVal, k);
-       if (!sym) {istat = -1; break;}
-       sym->as.here_doc = v;
+       if (sym) {
+         sym->as.here_doc = v;
+       }
+       else {
+         exstatus = 64;
+       }
      } else {
         fildesh_log_errorf("Bad -a arg: %s", k);
         exstatus = 64;

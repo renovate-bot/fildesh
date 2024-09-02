@@ -300,10 +300,11 @@ main(int argc, const char** argv)
 
 
   text = read_text_file (xfilename);
-  if (!text)  BailOut(1, "Cannot read input.");
+  if (!text)  BailOut(66, "Cannot read input.");
 
   if (!write_switch_file (ofilename, strname, casepfx, array_name, text)) {
-    BailOut(1, "Failed to write switch file.");
+    free(text);
+    BailOut(73, "Failed to write switch file.");
   }
   free(text);
   return 0;

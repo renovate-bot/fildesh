@@ -336,28 +336,25 @@ fildesh_builtin_ujoin_main(
     if (stream_line)
     {
       bool tab = false;
-      if (keep_join_field)
-      {
+      if (keep_join_field) {
         putstr_FildeshO(out, join->field);
         tab = true;
       }
 
       if (stream_on_left && stream_line != join->field) {
         if (tab) {putstr_FildeshO(out, delim);}
-        tab = true;
         putstr_FildeshO(out, stream_line);
+        tab = true;
       }
 
-      if (join->lookup_line)
-      {
+      if (join->lookup_line) {
         if (tab) {putstr_FildeshO(out, delim);}
-        tab = true;
         putstr_FildeshO(out, join->lookup_line);
+        tab = true;
       }
 
       if (!stream_on_left && stream_line != join->field) {
         if (tab) {putstr_FildeshO(out, delim);}
-        tab = true;
         putstr_FildeshO(out, stream_line);
       }
       putc_FildeshO(out, '\n');

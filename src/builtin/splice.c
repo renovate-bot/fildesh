@@ -202,19 +202,23 @@ fildesh_builtin_zec_main(unsigned argc, char** argv,
   assert(nbegs < argc);
   assert(nends < argc);
   inputs = (FildeshX**) malloc((nbegs + nends) * sizeof(FildeshX*));
-  if (!inputs) {exstatus = 71; fildesh_compat_errno_trace();}
-
-  for (i = 0; i < nbegs && exstatus == 0; ++i) {
-    inputs[i] = open_arg_FildeshXF(argi+i, argv, inputv);
-    if (!inputs[i] && exstatus == 0) {
-      exstatus = 66;
-    }
+  if (!inputs) {
+    exstatus = 71;
+    fildesh_compat_errno_trace();
   }
+  else {
+    for (i = 0; i < nbegs; ++i) {
+      inputs[i] = open_arg_FildeshXF(argi+i, argv, inputv);
+      if (!inputs[i]) {
+        exstatus = 66;
+      }
+    }
 
-  for (i = 0; i < nends && exstatus == 0; ++i) {
-    inputs[nbegs+i] = open_arg_FildeshXF(end_slash+1+i, argv, inputv);
-    if (!inputs[nbegs + i] && exstatus == 0) {
-      exstatus = 66;
+    for (i = 0; i < nends; ++i) {
+      inputs[nbegs+i] = open_arg_FildeshXF(end_slash+1+i, argv, inputv);
+      if (!inputs[nbegs+i]) {
+        exstatus = 66;
+      }
     }
   }
 

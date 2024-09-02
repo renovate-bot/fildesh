@@ -1,31 +1,31 @@
 # Test transpose with tabs.
 
-$(H input_content)
-a	b	c	d	e	f	g
-1	2	3	4	5	6
-A	B	C	D	E
-aa	bb	cc	dd	ee	ff	gg	hh	ii
-11	22	33
-AA	BB	CC	DD	EE
-$(H input_content)
+(: input_content Str """\
 
-$(H expect_content)
-a	1	A	aa	11	AA
-b	2	B	bb	22	BB
-c	3	C	cc	33	CC
-d	4	D	dd		DD
-e	5	E	ee		EE
-f	6		ff		
-g			gg		
-			hh		
-			ii		
+a\tb\tc\td\te\tf\tg
 
-$(H expect_content)
+1\t2\t3\t4\t5\t6
+A\tB\tC\tD\tE
+aa\tbb\tcc\tdd\tee\tff\tgg\thh\tii
+11\t22\t33
+AA\tBB\tCC\tDD\tEE\
+""")
 
-zec -o $(OF expect) / $(XA expect_content) /
+(: expect_content Str """\
+\ta\t\t1\tA\taa\t11\tAA
+\tb\t\t2\tB\tbb\t22\tBB
+\tc\t\t3\tC\tcc\t33\tCC
+\td\t\t4\tD\tdd\t\tDD
+\te\t\t5\tE\tee\t\tEE
+\tf\t\t6\t\tff\t\t
+\tg\t\t\t\tgg\t\t
+\t\t\t\t\thh\t\t
+\t\t\t\t\tii\t\t
+""")
 
-|< zec / $(XA input_content) /
+splice -o $(OF expect) / "${expect_content}" /
+
+|< splice / "${input_content}" /
 |- transpose
 |- cmp $(XF expect)
 |> stdout
-

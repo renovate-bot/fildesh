@@ -43,7 +43,9 @@ parse_row(
     if (pad) {skipchrs_FildeshX(row_in, fildesh_compat_string_blank_bytes);}
   }
   row->fields = fildesh_allocate(char*, row->field_count, alloc);
-  memcpy(row->fields, *fields_buf, row->field_count * sizeof(char*));
+  if (row->field_count > 0) {
+    memcpy(row->fields, *fields_buf, row->field_count * sizeof(char*));
+  }
 }
 
   int
