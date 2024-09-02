@@ -2,13 +2,9 @@
 add_library(fildesh_lib_obj OBJECT
   "alloc.c"
   "array.c"
-  "infile.c"
-  "instream.c"
   "log.c"
   "mascii.c"
   "mascii.h"
-  "outfile.c"
-  "outstream.c"
   "string.c"
   "kv/brbtree.c"
   "kv/bstree.c"
@@ -19,6 +15,10 @@ add_library(fildesh_lib_obj OBJECT
   "kv/kve.h"
   "kv/rbtree.c"
   "kv/single_list.c"
+  "xo/infile.c"
+  "xo/instream.c"
+  "xo/outfile.c"
+  "xo/outstream.c"
   "${PROJECT_SOURCE_DIR}/include/fildesh/fildesh.h"
   )
 add_library(fildesh_lib STATIC

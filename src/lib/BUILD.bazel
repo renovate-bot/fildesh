@@ -1,17 +1,13 @@
-exports_files([
-    "alloc.c",
-    "array.c",
-    "infile.c",
-    "instream.c",
-    "log.c",
-    "mascii.c",
-    "mascii.h",
-    "outfile.c",
-    "outstream.c",
-    "string.c",
-], visibility = [
-    "//:__pkg__",
-    "//test/benchmark:__pkg__",
-    "//test/fuzz:__pkg__",
-    "//test/src:__pkg__",
-])
+exports_files(
+    [
+        "alloc.c",
+        "array.c",
+        "log.c",
+        "mascii.c",
+        "mascii.h",
+        "string.c",
+    ],
+    visibility = [
+        "//:__pkg__",
+    ],
+)

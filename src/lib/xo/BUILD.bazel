@@ -1,0 +1,11 @@
+exports_files(
+    [
+        "infile.c",
+        "instream.c",
+        "outfile.c",
+        "outstream.c",
+    ],
+    visibility = [
+        "//:__pkg__",
+    ],
+)
