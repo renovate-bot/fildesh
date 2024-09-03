@@ -2,30 +2,18 @@
  * \file elastic_aio.c
  * Echo stdin to stdout with an arbitrary sized buffer.
  **/
-
 #include <aio.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
+/* #define FILDESH_LOG_TRACE_ON */
 #include <fildesh/fildesh.h>
 
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-
-/* #define DEBUGGING */
-
-#ifdef DEBUGGING
-#define StateMsg(msg)  fildesh_log_trace(msg)
-#define StateMsg1(msg, x)  fildesh_log_tracef("%s: %s", msg, x)
-#else
-#define StateMsg(msg)
-#define StateMsg1(msg, x)
-#endif
-
+#include "include/fildesh/fildesh_compat_errno.h"
 
 typedef struct IOState IOState;
 
@@ -62,11 +50,11 @@ bool all_done(IOState** ios)
   unsigned i;
   for (i = 1; i < count_of_FildeshAT(ios); ++i) {
     if (!(*ios)[i].done) {
-      StateMsg("all done? No");
+      fildesh_log_trace("all done? No");
       return 0;
     }
   }
-  StateMsg("all done? Yes");
+  fildesh_log_trace("all done? Yes");
   return 1;
 }
 
@@ -105,7 +93,7 @@ main_elastic_aio(unsigned argc, char** argv)
 
     if (0 == strcmp(arg, "-x")) {
       if (argi == argc) {
-        fprintf(stderr, "%s: need input file after -x.\n", argv[0]);
+        fildesh_log_errorf("%s: need input file after -x.", argv[0]);
         return 1;
       }
       arg = argv[argi++];
@@ -113,7 +101,7 @@ main_elastic_aio(unsigned argc, char** argv)
       io = &(*ios)[0];
     } else if (0 == strcmp(arg, "-o")) {
       if (argi == argc) {
-        fprintf(stderr, "%s: need output file after -o.\n", argv[0]);
+        fildesh_log_errorf("%s: need output file after -o.", argv[0]);
         return 1;
       }
       arg = argv[argi++];
@@ -127,11 +115,11 @@ main_elastic_aio(unsigned argc, char** argv)
     io->aio.aio_fildes = fd;
 
     if (fd < 0) {
-      fprintf (stderr, "%s: failed to open: %s\n", argv[0], arg);
+      fildesh_log_errorf("%s: failed to open: %s", argv[0], arg);
       return 1;
     }
     if (0 > setfd_async(fd)) {
-      fprintf (stderr, "%s: failed to set O_ASYNC on %s.\n", argv[0], arg);
+      fildesh_log_errorf("%s: failed to set O_ASYNC on %s.", argv[0], arg);
       return 1;
     }
   }
@@ -142,8 +130,8 @@ main_elastic_aio(unsigned argc, char** argv)
     IOState* io = &(*ios)[0];
     io->aio.aio_fildes = fd;
     if (0 > setfd_async(fd)) {
-      StateMsg("setfd_async(stdin)");
-      fprintf (stderr, "%s: failed to set O_ASYNC on stdin.\n", argv[0]);
+      fildesh_log_trace("setfd_async(stdin)");
+      fildesh_log_errorf("%s: failed to set O_ASYNC on stdin.", argv[0]);
       return 1;
     }
   }
@@ -154,12 +142,12 @@ main_elastic_aio(unsigned argc, char** argv)
     *io = default_IOState();
     io->aio.aio_fildes = fd;
     if (0 > setfd_async(fd)) {
-      StateMsg("setfd_async(stdout)");
-      fprintf (stderr, "%s: failed to set O_ASYNC on stdout.\n", argv[0]);
+      fildesh_log_trace("setfd_async(stdout)");
+      fildesh_log_errorf("%s: failed to set O_ASYNC on stdout.", argv[0]);
       return 1;
     }
   }
-  StateMsg("Done opening files.");
+  fildesh_log_trace("Done opening files.");
   /**** END ARGUMENT_PARSING ****/
 
   aiocb_buf = (const struct aiocb**) malloc(
@@ -180,7 +168,7 @@ main_elastic_aio(unsigned argc, char** argv)
         x->pending = 1;
       }
       else {
-        StateMsg("aio_read() error");
+        fildesh_log_trace("aio_read() error");
         x->done = 1;
         clear_FildeshAT(x->buf);
       }
@@ -208,7 +196,7 @@ main_elastic_aio(unsigned argc, char** argv)
         o->pending = 1;
       }
       else {
-        StateMsg("aio_write() error");
+        fildesh_log_trace("aio_write() error");
         o->done = 1;
         clear_FildeshAT( o->buf );
       }
@@ -227,7 +215,7 @@ main_elastic_aio(unsigned argc, char** argv)
     } while (istat != 0 && errno == EINTR);
 
     if (istat != 0) {
-      StateMsg( "aio_suspend()" );
+      fildesh_log_trace("aio_suspend()");
       break;
     }
 
@@ -242,7 +230,7 @@ main_elastic_aio(unsigned argc, char** argv)
 
       x->pending = 0;
       if (istat != 0) {
-        StateMsg( "aio_error(read)" );
+        fildesh_log_trace("aio_error(read)");
         x->done = 1;
         clear_FildeshAT( x->buf );
         break;
@@ -253,7 +241,7 @@ main_elastic_aio(unsigned argc, char** argv)
         clear_FildeshAT( x->buf );
         break;
       }
-      StateMsg1("aio_return() -> %d", (int)sstat);
+      fildesh_log_tracef("aio_return() -> %d", (int)sstat);
       x->aio.aio_offset += sstat;
 
       for (i = 1; i < count_of_FildeshAT(ios); ++i) {
@@ -280,7 +268,7 @@ main_elastic_aio(unsigned argc, char** argv)
 
       o->pending = 0;
       if (istat != 0) {
-        StateMsg( "aio_error(write)" );
+        fildesh_log_trace("aio_error(write)");
         o->done = 1;
         clear_FildeshAT( o->buf );
         clear_FildeshAT( o->xbuf );
@@ -289,7 +277,7 @@ main_elastic_aio(unsigned argc, char** argv)
 
       sstat = aio_return(&o->aio);
       if (sstat < 0) {
-        StateMsg( "aio_return(write)" );
+        fildesh_log_trace("aio_return(write)");
         o->done = 1;
         clear_FildeshAT( o->buf );
         clear_FildeshAT( o->xbuf );

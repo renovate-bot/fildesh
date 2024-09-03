@@ -21,6 +21,7 @@ endif()
 
 if (FILDESH_BUILTIN_ELASTIC_AIO_ON)
   list(APPEND FILDESH_EXTRA_ELASTIC_DEFS "FILDESH_BUILTIN_ELASTIC_AIO_ON")
+  list(APPEND FILDESH_EXTRA_ELASTIC_DEFS "_POSIX_C_SOURCE=199309L")
   list(APPEND FILDESH_EXTRA_ELASTIC_SOURCES "elastic_aio.c")
   list(APPEND FILDESH_EXTRA_ELASTIC_LIBS ${FILDESH_AIO_LIBS})
 endif()
@@ -31,9 +32,18 @@ if (FILDESH_BUILTIN_ELASTIC_POLL_ON)
 endif()
 
 
+add_library(fildesh_main_builtin_obj OBJECT
+  "${PROJECT_SOURCE_DIR}/src/builtin/fildesh_builtin.c"
+  "${PROJECT_SOURCE_DIR}/src/builtin/fildesh_builtin.h"
+  ${FILDESH_EXTRA_ELASTIC_SOURCES}
+)
+set_property(TARGET fildesh_main_builtin_obj APPEND PROPERTY COMPILE_DEFINITIONS
+  FILDESH_BUILTIN_LIBRARY
+  ${FILDESH_EXTRA_ELASTIC_DEFS}
+)
+
 add_library(fildesh_builtin_lib_obj OBJECT
   "fildesh.c"
-  ${FILDESH_EXTRA_ELASTIC_SOURCES}
   "execfd.c"
   "godo.c"
   "ssh-all.c"
@@ -50,8 +60,6 @@ add_library(fildesh_builtin_lib_obj OBJECT
   "${PROJECT_SOURCE_DIR}/src/builtin/delimend.c"
   "${PROJECT_SOURCE_DIR}/src/builtin/elastic_pthread.c"
   "${PROJECT_SOURCE_DIR}/src/builtin/expect_failure.c"
-  "${PROJECT_SOURCE_DIR}/src/builtin/fildesh_builtin.c"
-  "${PROJECT_SOURCE_DIR}/src/builtin/fildesh_builtin.h"
   "${PROJECT_SOURCE_DIR}/src/builtin/oargz.c"
   "${PROJECT_SOURCE_DIR}/src/builtin/replace_string.c"
   "${PROJECT_SOURCE_DIR}/src/builtin/seq.c"
@@ -76,12 +84,13 @@ add_library(fildesh_builtin_lib_obj OBJECT
   "${PROJECT_SOURCE_DIR}/src/syntax/opt.h"
   "${PROJECT_SOURCE_DIR}/src/syntax/symval.c"
   "${PROJECT_SOURCE_DIR}/src/syntax/symval.h"
-  )
-
+)
 set_property(TARGET fildesh_builtin_lib_obj APPEND PROPERTY COMPILE_DEFINITIONS
-  FILDESH_BUILTIN_LIBRARY ${FILDESH_EXTRA_ELASTIC_DEFS})
+  FILDESH_BUILTIN_LIBRARY
+)
 
 add_library(fildesh_builtin_lib STATIC
+  $<TARGET_OBJECTS:fildesh_main_builtin_obj>
   $<TARGET_OBJECTS:fildesh_builtin_lib_obj>
   $<TARGET_OBJECTS:sxproto_lib_obj>
   $<TARGET_OBJECTS:fildesh_lib_obj>

@@ -7,27 +7,26 @@
  * The aio_suspend() will return when some amount
  * of data has been read.
  **/
-#define FILDESH_POSIX_SOURCE
-
-#include <fildesh/fildesh.h>
-#include "include/fildesh/fildesh_compat_errno.h"
-#include "include/fildesh/fildesh_compat_fd.h"
-#include "include/fildesh/fildesh_compat_sh.h"
-
 #include <aio.h>
 #include <errno.h>
 #include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <sys/socket.h>
 #include <unistd.h>
+#include <sys/socket.h>
 
+#include <fildesh/fildesh.h>
+
+#include "include/fildesh/fildesh_compat_errno.h"
+#include "include/fildesh/fildesh_compat_fd.h"
+#include "include/fildesh/fildesh_compat_sh.h"
 
 int main (int argc, char** argv)
 {
   int argi = 1;
   int istat = 0;
+  int exstatus = 0;
   const char* host = "127.0.0.1";
   const char* service = "1337";
   const char* message_text_data = NULL;
@@ -52,14 +51,17 @@ int main (int argc, char** argv)
   /* crit.ai_socktype = SOCK_DGRAM; */
   /* crit.ai_protocol = IPPROTO_UDP; */
 
-
-  if (argi >= argc) {
-    message_text_data = "hi";
-    message_text_size = strlen(message_text_data);
-  } else if (0 == strcmp(argv[argi], "-connect")) {
+  if (argi < argc && 0 == strcmp("-connect", argv[argi])) {
     connecting = true;
-  } else {
+    argi += 1;
+  }
+
+  if (argi < argc) {
     message_text_data = argv[argi];
+    message_text_size = strlen(message_text_data);
+  }
+  else {
+    message_text_data = "hi";
     message_text_size = strlen(message_text_data);
   }
 
@@ -122,13 +124,20 @@ int main (int argc, char** argv)
     if (istat != 0) {fildesh_compat_errno_trace(); return 1;}
 
     pid = fildesh_compat_fd_spawnlp(
-        source_fd, 1, 2, NULL, argv[0], "-connect", NULL);
+        source_fd, 1, 2, NULL, argv[0], "-connect", message_text_data, NULL);
     if (pid < 0) {fildesh_compat_errno_trace(); return 126;}
 
     listen_sock = socket(addr->ai_family,
                          addr->ai_socktype,
                          addr->ai_protocol);
     if (listen_sock < 0) {fildesh_compat_errno_trace(); return 1;}
+
+    istat = 1;
+    istat = setsockopt(
+        listen_sock, SOL_SOCKET, SO_REUSEADDR,
+        &istat, sizeof(istat));
+    if (istat != 0) {fildesh_compat_errno_trace(); close(listen_sock); return 1;}
+
     istat = bind (listen_sock, addr->ai_addr, addr->ai_addrlen);
     if (istat != 0) {fildesh_compat_errno_trace(); close(listen_sock); return 1;}
 
@@ -157,12 +166,19 @@ int main (int argc, char** argv)
 
     if (istat == 0) {
       nbytes = aio_return(aio);
-      if (nbytes <= 0) {fildesh_compat_errno_trace();}
+      if (nbytes <= 0) {
+        errno = -(int)nbytes;
+        fildesh_compat_errno_trace();
+      }
     }
-    if (nbytes > 0) {
+    if (nbytes >= 0) {
       fputs("got:", stdout);
       fwrite(buf, sizeof(char), nbytes, stdout);
       fputc('\n', stdout);
+    }
+    if (nbytes != (ssize_t)message_text_size ||
+        0 != memcmp(message_text_data, buf, message_text_size)) {
+      exstatus = 74;
     }
 
     if (sock >= 0) {close(sock);}
@@ -175,6 +191,6 @@ int main (int argc, char** argv)
   }
 
   memset(aio, 0, sizeof(*aio));
-  return (istat == 0 ? 0 : 1);
+  if (exstatus == 0 && istat != 0) {exstatus = 1;}
+  return exstatus;
 }
-

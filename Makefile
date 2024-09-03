@@ -32,7 +32,7 @@ proj:
 	$(GODO) $(BldPath) $(MAKE)
 
 test:
-	$(GODO) $(BldPath) $(MAKE) test
+	$(GODO) $(BldPath) $(MAKE) 'ARGS=--timeout 10' test
 
 analyze:
 	rm -fr $(ScanRptPath)
