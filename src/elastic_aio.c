@@ -165,11 +165,11 @@ main_elastic_aio(unsigned argc, char** argv)
       x->aio.aio_nbytes = count_of_FildeshAT(x->buf);
       istat = aio_read(&x->aio);
       if (istat == 0) {
-        x->pending = 1;
+        x->pending = true;
       }
       else {
         fildesh_log_trace("aio_read() error");
-        x->done = 1;
+        x->done = true;
         clear_FildeshAT(x->buf);
       }
     }
@@ -193,11 +193,11 @@ main_elastic_aio(unsigned argc, char** argv)
       o->aio.aio_nbytes = count_of_FildeshAT(o->buf);
       istat = aio_write(&o->aio);
       if (istat == 0) {
-        o->pending = 1;
+        o->pending = true;
       }
       else {
         fildesh_log_trace("aio_write() error");
-        o->done = 1;
+        o->done = true;
         clear_FildeshAT( o->buf );
       }
     }
@@ -211,7 +211,10 @@ main_elastic_aio(unsigned argc, char** argv)
           aiocb_buf[n++] = &io->aio;
         }
       }
-      istat = aio_suspend(aiocb_buf, n, 0);
+      istat = 0;
+      if (n > 0) {
+        istat = aio_suspend(aiocb_buf, n, NULL);
+      }
     } while (istat != 0 && errno == EINTR);
 
     if (istat != 0) {
@@ -231,13 +234,13 @@ main_elastic_aio(unsigned argc, char** argv)
       x->pending = 0;
       if (istat != 0) {
         fildesh_log_trace("aio_error(read)");
-        x->done = 1;
+        x->done = true;
         clear_FildeshAT( x->buf );
         break;
       }
       sstat = aio_return(&x->aio);
       if (sstat <= 0) {
-        x->done = 1;
+        x->done = true;
         clear_FildeshAT( x->buf );
         break;
       }
@@ -266,10 +269,10 @@ main_elastic_aio(unsigned argc, char** argv)
         continue;
       }
 
-      o->pending = 0;
+      o->pending = false;
       if (istat != 0) {
         fildesh_log_trace("aio_error(write)");
-        o->done = 1;
+        o->done = true;
         clear_FildeshAT( o->buf );
         clear_FildeshAT( o->xbuf );
         continue;
@@ -278,7 +281,7 @@ main_elastic_aio(unsigned argc, char** argv)
       sstat = aio_return(&o->aio);
       if (sstat < 0) {
         fildesh_log_trace("aio_return(write)");
-        o->done = 1;
+        o->done = true;
         clear_FildeshAT( o->buf );
         clear_FildeshAT( o->xbuf );
         continue;
