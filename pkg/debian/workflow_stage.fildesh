@@ -2,21 +2,21 @@
 
 (: source_root Str .self.opt.source_root)
 (: pkg_dst Str .self.opt.pkg_dst)
+(: final_dst Str (?? .self.opt.final_dst (++ pkg_dst "/final")))
+(: architecture Str (?? .self.opt.architecture "amd64"))
 
-$(> root_dst) "${pkg_dst}/fildesh"
-$(> pkg_debian) "${root_dst}/DEBIAN"
-$(> architecture) "amd64"
-$(> final_dst) "${pkg_dst}/final"
+(: root_dst Str (++ pkg_dst "/fildesh"))
+(: pkg_debian Str (++ root_dst "/DEBIAN"))
 
-|< grep -m1 -E -e 'version = ' "${source_root}/MODULE.bazel"
-|> sed -E -e 's/.*"(.*)".*/\1/' $(O version)
+|< capture_string -x "${source_root}/src/bin/version.h" -- "." "\""
+|> replace_string -o $(OF version) -- "\""
 
-zec -o "${pkg_debian}/control" / \
+splice -o "${pkg_debian}/control" / \
   "Package: fildesh\n" \
   "Version: " $(XA version) "\n" \
   "Maintainer: grencez\n" \
   "Architecture: ${architecture}\n" \
-  "Description: Now you're scripting with FIFOs.\n" \
+  "Description: create nonlinear pipelines with file descriptors\n" \
   /
 
 $(barrier)

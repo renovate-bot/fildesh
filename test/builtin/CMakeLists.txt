@@ -95,7 +95,10 @@ target_link_libraries(builtin_execfd_test fildesh_lib fildesh_tool_lib)
 set_property(TARGET builtin_execfd_test
   APPEND PROPERTY COMPILE_DEFINITIONS UNIT_TESTING)
 add_test(NAME builtin_execfd_test COMMAND
-  "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
+  ${Fildesh_EXECUTABLE}
+  -setenv "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
+  -as command
+  --
   "$<TARGET_FILE:builtin_execfd_test>"
   "${FildeshTool_shout_EXECUTABLE}"
 )

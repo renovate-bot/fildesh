@@ -39,9 +39,14 @@ add_test(NAME syntax_dev_stderr_ox_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/dev_stderr_ox_test.fildesh")
 
 add_test(NAME syntax_environment_variable_xaxa_test COMMAND
-  "${CMAKE_COMMAND}" -E env "VARIABLE_A=hello" "VARIABLE_B=world"
-  "$<TARGET_FILE:fildesh>" -f
-  "${CMAKE_CURRENT_SOURCE_DIR}/environment_variable_xaxa_test.fildesh")
+  ${Fildesh_EXECUTABLE}
+  -setenv "VARIABLE_A=hello"
+  -setenv "VARIABLE_B=world"
+  -as command
+  --
+  "${Fildesh_EXECUTABLE}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/environment_variable_xaxa_test.fildesh"
+)
 
 add_test(NAME syntax_escape_string_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/escape_string_test.fildesh")
@@ -60,9 +65,8 @@ add_test(NAME syntax_expect_failure_oxf_test COMMAND fildesh -f
 add_test(NAME syntax_expect_failure_message_oxoxoxox_test COMMAND fildesh -f
   "${CMAKE_CURRENT_SOURCE_DIR}/expect_failure_message_oxoxoxox_test.fildesh")
 
-add_test(NAME syntax_filepath_xofxof_test COMMAND
-  "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
-  ${Fildesh_EXECUTABLE}
+add_test(NAME syntax_filepath_xofxof_test COMMAND ${Fildesh_EXECUTABLE}
+  -setenv "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/filepath_xofxof_test.fildesh"
 )
 
@@ -95,14 +99,13 @@ add_test(NAME syntax_tmpfile_xofxof_test COMMAND ${Fildesh_EXECUTABLE}
   "${CMAKE_CURRENT_SOURCE_DIR}/tmpfile_xofxof_test.fildesh"
 )
 
-add_test(NAME syntax_wait_xaxaxa_test COMMAND
-  "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
-  ${Fildesh_EXECUTABLE}
+add_test(NAME syntax_wait_xaxaxa_test COMMAND ${Fildesh_EXECUTABLE}
+  -setenv "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh"
 )
-add_test(NAME syntax_forkonly_wait_xaxaxa_test COMMAND
-  "${CMAKE_COMMAND}" -E env "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
-  ${Fildesh_EXECUTABLE} -forkonly
+add_test(NAME syntax_forkonly_wait_xaxaxa_test COMMAND ${Fildesh_EXECUTABLE}
+  -setenv "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
+  -forkonly
   "${CMAKE_CURRENT_SOURCE_DIR}/wait_xaxaxa_test.fildesh"
   "--testname=syntax_forkonly_wait_xaxaxa_test"
 )

@@ -68,8 +68,6 @@ objdump -M intel --disassemble=find_FildeshMascii bld/test/benchmark/strcspn_ben
 ### TinyCC Compilation
 Exercised in `.github/workflows/lint_manual.yaml`.
 ```shell
-mkdir -p bld
-cd bld
-cmake -D CMAKE_C_COMPILER=tcc ..
-make
+cmake -B bld -D CMAKE_C_COMPILER=tcc
+cmake --build bld
 ```

@@ -35,8 +35,9 @@ add_executable(lib_xo_sibling_file_test
   "sibling_file_test.c")
 target_link_libraries(lib_xo_sibling_file_test fildesh_lib)
 add_test(NAME lib_xo_sibling_file_test COMMAND
-  "${CMAKE_COMMAND}" -E env
-  "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
+  ${Fildesh_EXECUTABLE}
+  -setenv "TEST_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}"
+  -as command
   --
   "$<TARGET_FILE:lib_xo_sibling_file_test>"
 )

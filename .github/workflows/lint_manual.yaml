@@ -18,18 +18,16 @@ jobs:
       run: cmake -E make_directory ${{runner.workspace}}/bld/pkg
 
     - name: Configure CMake
-      working-directory: ${{runner.workspace}}/bld
       run: >
-        cmake $GITHUB_WORKSPACE
+        cmake -B "${{ runner.workspace }}/bld"
         -DCMAKE_C_COMPILER=tcc
         -DCMAKE_BUILD_TYPE=RelOnHost
         -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/bld/pkg
 
     - name: Build Fildesh
-      working-directory: ${{runner.workspace}}/bld
       run: |
-        cmake --build "."
-        cmake -D "COMPONENT:STRING=bin" -P "cmake_install.cmake"
+        cmake --build "${{ runner.workspace }}/bld"
+        cmake --install "${{ runner.workspace }}/bld" --component "bin"
 
     - name: Lint
       run: >

@@ -21,34 +21,27 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/bld
-
-    - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      shell: bash
-      working-directory: ${{runner.workspace}}/bld
-      # Note the current convention is to use the -S and -B options here to specify source
-      # and build directories, but this is only available with CMake 3.13 and higher.
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{matrix.cmake_build_type}}
+    - name: Generate Buildsystem
+      run: >
+        cmake -B "${{ runner.workspace }}/bld"
+        -D CMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
 
     - name: Build
-      working-directory: ${{runner.workspace}}/bld
-      shell: bash
-      run: cmake --build . --config ${{matrix.cmake_build_type}}
+      run: >
+        cmake --build "${{ runner.workspace }}/bld"
+        --config ${{ matrix.cmake_build_type }}
 
     - name: Test
-      working-directory: ${{runner.workspace}}/bld
-      shell: bash
-      run: ctest --timeout 10 -C ${{matrix.cmake_build_type}}
+      run: >
+        ctest --test-dir "${{ runner.workspace }}/bld"
+        -C ${{ matrix.cmake_build_type }}
+        --timeout 10
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: Test Results (${{ matrix.platform }})
+        name: failure-${{ matrix.platform }}
         path: |
           ${{runner.workspace}}/bld/Testing/
           ${{runner.workspace}}/bld/src/RelOnHost/
@@ -56,7 +49,7 @@ jobs:
           ${{runner.workspace}}/bld/tool/RelOnHost/
 
 
-  configure_with_old_cmake:
+  test_with_old_cmake:
     runs-on: ubuntu-latest
 
     steps:
@@ -70,13 +63,24 @@ jobs:
     - name: CMake Version Get
       run: cmake --version
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/bld
+    - name: Create Build Directory
+      run: cmake -E make_directory "${{ runner.workspace }}/bld"
 
-    - name: Configure
+    - name: Generate Buildsystem
       shell: bash
-      working-directory: ${{runner.workspace}}/bld
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=RelOnHost
+      working-directory: "${{ runner.workspace }}/bld"
+      # The current convention is to use the -S and -B options
+      # to specify source and build directories,
+      # but those are only available with CMake 3.13 and higher.
+      run: cmake -D CMAKE_BUILD_TYPE=RelOnHost "$GITHUB_WORKSPACE"
+
+    - name: Build
+      working-directory: "${{ runner.workspace }}/bld"
+      run: cmake --build . --config RelOnHost
+
+    - name: Test
+      working-directory: "${{ runner.workspace }}/bld"
+      run: ctest --timeout 10 -C RelOnHost
 
 
   alpine:
@@ -98,17 +102,14 @@ jobs:
           build-base
           cmake
 
-    - name: Build inside Alpine chroot as default user (unprivileged)
-      run: |
-        mkdir bld
-        cd bld
-        cmake ..
-        cmake --build .
+    - name: Generate Buildsystem
       shell: alpine.sh {0}
+      run: cmake -B "bld"
 
-    - name: Test inside Alpine chroot as default user (unprivileged)
-      run: |
-        cd bld
-        ctest --timeout 10
+    - name: Build
       shell: alpine.sh {0}
+      run: cmake --build "bld"
 
+    - name: Test
+      shell: alpine.sh {0}
+      run: ctest --test-dir "bld" --timeout 10
