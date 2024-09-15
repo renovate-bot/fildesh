@@ -11,25 +11,30 @@ GODO=$(CMakeExe) -E chdir
 MKDIR=$(CMakeExe) -E make_directory
 CTAGS=ctags
 
-.PHONY: default all cmake proj \
-	test analyze tags \
+.PHONY: default all cmake \
+	run test analyze tags \
 	clean-analyze clean distclean \
 	update pull
 
 default:
 	if [ ! -d $(BldPath) ] ; then $(MAKE) cmake ; fi
-	$(MAKE) proj
+	$(GODO) $(BldPath) $(MAKE) -s
 
 all:
 	$(MAKE) cmake
-	$(MAKE) proj
+	$(GODO) $(BldPath) $(MAKE) -s
 
 cmake:
 	if [ ! -d $(BldPath) ] ; then $(MKDIR) $(BldPath) ; fi
-	$(GODO) $(BldPath) $(CMAKE) -D CMAKE_BUILD_TYPE=RelOnHost ..
+	$(GODO) $(BldPath) $(CMAKE) \
+		-D CMAKE_BUILD_TYPE=RelOnHost \
+	 	-Wdev \
+		..
 
-proj:
-	$(GODO) $(BldPath) $(MAKE)
+run:
+	if [ ! -d $(BldPath) ] ; then $(MAKE) cmake ; fi
+	$(GODO) $(BldPath) $(MAKE) -s fildesh
+	$(BldPath)/src/bin/fildesh $(ARGS)
 
 test:
 	$(GODO) $(BldPath) $(MAKE) 'ARGS=--timeout 10' test

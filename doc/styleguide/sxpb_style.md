@@ -23,10 +23,18 @@
 ```
 
 See [https://grencez.dev/2024/sxpb-string-grammar-20240717#bare](https://grencez.dev/2024/sxpb-string-grammar-20240717#bare) for a precise explanation of when double quotes can be omitted from strings.
+The grammar can also be found at [eg/sxpb_string/grammar.sxpb](../../eg/sxpb_string/grammar.sxpb) in Sxpb format.
+For a small example of valid edge cases, see [eg/ansible/motd.sxpb](../../eg/ansible/motd.sxpb).
 
 ### Repetition
 ```
-; Arrays are lists of elements.
-(my_array (()) a b c)
+; Arrays begin with empty nested parentheses.
+(my_ints (()) 1 2 3)
+(my_strings (()) a b c)
+(my_dicts (())
+ (() (i 1) (f 2.0) (s three))
+ ()  ; Empty.
+ (() (i 4) (f 5.0) (s six))
+)
 (my_empty_array (()))
 ```

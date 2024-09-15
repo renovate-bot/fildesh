@@ -1,0 +1,19 @@
+; An Ansible play expressed in Sxpb format that updates a host's /etc/motd file.
+;
+; This is a reproduction of the "playbook" found at
+; https://grencez.dev/2024/sxpb-string-grammar-20240717#example
+; but without a toplevel array, hence being just a single "play".
+; Strings are written obscurely to demonstrate valid Sxpb edge cases.
+(name Set up a motivational Message of the Day.)
+(hosts all)
+(tasks (())
+ (()
+  (name "1 " task to configure 10 times more motivation in the motd!)
+  (ansible.builtin.copy
+   (dest /etc/motd)
+   (owner root) (group root) (mode "0644")
+   (content If you're tired of starting over, stop giving up. """
+Yesterday, you said "tomorrow".
+Will you push even further beyond today?
+""")))
+)

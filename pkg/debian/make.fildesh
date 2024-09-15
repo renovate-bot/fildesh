@@ -1,12 +1,11 @@
 #!/bin/env fildesh
 
-$(> source_root) $(getenv PWD)
-$(> bld_dst) "${source_root}/bld"
-$(> pkg_dst) "${bld_dst}/pkg"
-$(> root_dst) "${pkg_dst}/fildesh"
-$(> vim_prefix) "${root_dst}/usr/share/vim/vimfiles"
-$(> pkg_debian) "${root_dst}/DEBIAN"
-$(> architecture) "amd64"
+(: source_root Str .self.env.PWD)
+(: bld_dst Str (++ source_root "/bld"))
+(: pkg_dst Str (++ bld_dst "/pkg"))
+(: root_dst Str (++ pkg_dst "/fildesh"))
+(: pkg_debian Str (++ root_dst "/DEBIAN"))
+(: architecture Str (?? .self.opt.architecture "amd64"))
 
 rm -fr "${bld_dst}"
 
@@ -14,41 +13,38 @@ $(barrier)
 install -d "${pkg_debian}" "${root_dst}/usr"
 
 $(barrier)
-godo "${bld_dst}" cmake \
-  -D "CMAKE_INSTALL_PREFIX:PATH=${root_dst}/usr" \
+cmake -B "${bld_dst}" \
   -D "CMAKE_BUILD_TYPE:STRING=Release" \
-  ".."
+  -D "CMAKE_INSTALL_PREFIX:PATH=${root_dst}/usr"
 
 $(barrier)
-|< godo "${bld_dst}" cmake --build "."
+|< cmake --build "${bld_dst}"
 |> void
 
 $(barrier)
-|< godo "${bld_dst}" cmake -D "COMPONENT:STRING=bin" -P "cmake_install.cmake"
+|< cmake --install "${bld_dst}" --component "bin"
 |> void
-|< godo "${bld_dst}" cmake -D "COMPONENT:STRING=lib" -P "cmake_install.cmake"
+|< cmake --install "${bld_dst}" --component "lib"
 |> void
-|< godo "${bld_dst}" cmake -D "COMPONENT:STRING=share_vim" -P "cmake_install.cmake"
+|< cmake --install "${bld_dst}" --component "share_vim"
 |> void
 
 
 $(barrier)
-|< grep -m1 -E -e 'version = ' "${source_root}/MODULE.bazel"
-|> sed -E -e 's/.*"(.*)".*/\1/' $(O version)
+|< capture_string -x "${source_root}/src/bin/version.h" -- "." "\""
+|> replace_string -o $(OF version) -- "\""
 
-zec -o "${pkg_debian}/control" / \
+splice -o "${pkg_debian}/control" / \
   "Package: fildesh\n" \
   "Version: " $(XA version) "\n" \
   "Maintainer: grencez\n" \
   "Architecture: ${architecture}\n" \
-  "Description: Now you're scripting with FIFOs.\n" \
+  "Description: create nonlinear pipelines with file descriptors\n" \
   /
 
 $(barrier)
-
 dpkg-deb -Zxz --root-owner-group --build "${root_dst}"
 
 $(barrier)
-
-|< zec / "You have a shiny new package at ${pkg_dst}/fildesh.deb\n" /
+|< splice / "You have a shiny new package: ${pkg_dst}/fildesh.deb\n" /
 |> stdout

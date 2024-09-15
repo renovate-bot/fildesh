@@ -1,13 +1,12 @@
 ---
-name: Release Packages
+name: Package
 
 on:
   push:
-    branches: ['release']
+    branches: [release, stage, trunk]
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v4
@@ -20,24 +19,19 @@ jobs:
         ${{runner.workspace}}/bld/pkg/final
 
     - name: Configure CMake
-      shell: bash
-      working-directory: ${{runner.workspace}}/bld
       run: >
-        cmake $GITHUB_WORKSPACE
+        cmake -B "${{ runner.workspace }}/bld"
         -DCMAKE_BUILD_TYPE:STRING=Release
         -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/bld/pkg/fildesh/usr
 
     - name: Build
-      working-directory: ${{runner.workspace}}/bld
-      shell: bash
-      run: cmake --build "."
+      run: cmake --build "${{ runner.workspace }}/bld"
 
     - name: Install
-      working-directory: ${{runner.workspace}}/bld
       run: |
-        cmake -D "COMPONENT:STRING=bin" -P "cmake_install.cmake"
-        cmake -D "COMPONENT:STRING=lib" -P "cmake_install.cmake"
-        cmake -D "COMPONENT:STRING=share_vim" -P "cmake_install.cmake"
+        cmake --install "${{ runner.workspace }}/bld" --component "bin"
+        cmake --install "${{ runner.workspace }}/bld" --component "lib"
+        cmake --install "${{ runner.workspace }}/bld" --component "share_vim"
 
     - name: Package deb
       working-directory: ${{runner.workspace}}
