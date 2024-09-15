@@ -15,6 +15,7 @@ license(
 exports_files([
     "LICENSE",
     "MODULE.bazel",
+    "README.md",
 ])
 
 alias(

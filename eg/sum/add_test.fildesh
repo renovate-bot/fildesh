@@ -1,0 +1,28 @@
+# Expected result sums on their own lines: 55, 0, and 5050.
+splice -o $(OF expect) / "55\n" "0\n" "5050\n" /
+
+# First test input line: Integers from 1 to 10.
+|< seq 1 10
+|> replace_string -o $(OF input_line_1) "\n" " "
+
+# Second test input line: Nothing.
+splice -o $(OF input_line_2) / "" /
+
+# Third test input line: Integers from 1 to 100.
+|< seq 1 100
+|> replace_string -o $(OF input_line_3) "\n" " "
+
+# Combine the test input lines.
+|< splice $(XF input_line_1) / "\n" $(XA input_line_2) "\n" / $(XF input_line_3)
+# System under test: Program that sums each line of input numbers.
+|- add
+# Compare the expected and actual results,
+# and exit with a nonzero status if they differ.
+|- cmp $(XF expect) -
+# Show the diff on stdout if there is any.
+|> stdout
+
+$(barrier)
+# Indicate success when all previous commands have finished successfully.
+|< splice / "Success: `add` produced expected result.\n" /
+|> stdout

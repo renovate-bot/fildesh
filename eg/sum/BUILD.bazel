@@ -1,0 +1,28 @@
+load("//test/example:example.bzl", "fildesh_expect_test")
+load("//tool/bazel:fildesh_test.bzl", "fildesh_test")
+
+fildesh_test(
+    name = "add_test",
+    srcs = ["add_test.fildesh"],
+)
+
+fildesh_expect_test(
+    name = "cycle_test",
+    srcs = [":cycle.fildesh"],
+    expect = ":cycle_expect.txt",
+)
+
+fildesh_expect_test(
+    name = "dag_test",
+    srcs = [":dag.fildesh"],
+    expect = ":dag_expect.txt",
+)
+
+fildesh_test(
+    name = "readme_test",
+    srcs = ["readme_test.fildesh"],
+    input_by_option = {
+        "example_file": "add_test.fildesh",
+        "readme_file": "//:README.md",
+    },
+)

@@ -7,7 +7,6 @@
 ./src/BUILD.bazel
 ./src/bin/BUILD.bazel
 ./src/builtin/BUILD.bazel
-./test/example/BUILD.bazel
 ./tool/BUILD.bazel
 """)
 

@@ -49,7 +49,12 @@
 # For the {fivesum} stream,
 # add up all the numbers divisible by 5.
 |< cat $(X fivesum)
-|- grep -e '[05]$'
+# Put a space after numbers that end with a 0 or 5 digit.
+|- replace_string "0\n" "0 \n"
+|- replace_string "5\n" "5 \n"
+# Keep lines containing a space.
+|- capture_string " " "\n"
+# Add up the remaining numbers.
 |- tr "\n" " "
 |- add
 |- splice / "The sum of 1 to ${N} by 5 is " / -

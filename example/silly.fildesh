@@ -10,7 +10,7 @@
 # This is used for a test, so let's just some specific files.
 |- grep \
     -e '^hello.fildesh$' \
-    -e '^cycle.fildesh$'
+    -e '^name.fildesh$'
 
 |- sort
 

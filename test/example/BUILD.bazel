@@ -1,6 +1,5 @@
 load("//test/example:example.bzl", "fildesh_expect_test")
 
-
 fildesh_expect_test(
     name = "args_test",
     srcs = ["//example:args.fildesh"],
@@ -10,11 +9,11 @@ fildesh_expect_test(
 fildesh_expect_test(
     name = "args2_test",
     srcs = ["//example:args.fildesh"],
-    expect = "args2.txt",
     args = [
         "--offset=2",
         "--limit=7",
     ],
+    expect = "args2.txt",
 )
 
 fildesh_expect_test(
@@ -27,11 +26,11 @@ fildesh_expect_test(
 fildesh_expect_test(
     name = "args2_forkonly_test",
     srcs = ["args_forkonly_test.fildesh"],
-    expect = "args2.txt",
     args = [
         "--offset=2",
         "--limit=7",
     ],
+    expect = "args2.txt",
     forkonly = True,
 )
 
@@ -46,22 +45,6 @@ fildesh_expect_test(
 )
 
 fildesh_expect_test(
-    name = "cycle_test",
-    srcs = ["//example:cycle.fildesh"],
-    expect = "cycle.txt",
-)
-
-fildesh_expect_test(
-    name = "familiar_test",
-    srcs = ["//example:familiar.fildesh"],
-    expect = "familiar.txt",
-    target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
-)
-
-fildesh_expect_test(
     name = "hello_test",
     srcs = ["//example:hello.fildesh"],
     expect = "//test/expect:literal_hello.txt",
@@ -69,22 +52,20 @@ fildesh_expect_test(
 
 fildesh_expect_test(
     name = "name_test",
-    srcs = [
-        "//example:name.fildesh",
-        "//example:includetest.fildesh",
-    ],
+    srcs = ["//example:name.fildesh"],
+    data = ["//example:includetest.fildesh"],
     expect = "name.txt",
 )
 
 fildesh_expect_test(
     name = "silly_test",
     srcs = ["//example:silly.fildesh"],
-    expect = "silly.txt",
     data = [
         "//example:args.fildesh",
-        "//example:cycle.fildesh",
         "//example:hello.fildesh",
+        "//example:name.fildesh",
     ],
+    expect = "silly.txt",
     target_compatible_with = select({
         "@platforms//os:windows": ["@platforms//:incompatible"],
         "//conditions:default": [],

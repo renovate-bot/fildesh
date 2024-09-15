@@ -1,17 +1,15 @@
 
 set(plain_example_test_list
   "args"
-  "cycle"
   "name"
-  )
+)
 
 if (UNIX)
   list(APPEND plain_example_test_list
     "convoluted"
-    "familiar"
     "silly"
     "test"
-    )
+  )
 endif()
 
 

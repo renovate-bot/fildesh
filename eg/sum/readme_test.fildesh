@@ -1,0 +1,11 @@
+# Verify that the given example file's content is also in the given README file.
+(: example_file Filepath .self.opt.example_file)
+(: readme_file Filepath .self.opt.readme_file)
+
+splice -o $(OF example_content) / / $(XOF example_file)
+
+|< cat $(XOF readme_file)
+|- capture_string -- $(XA example_content) "\0"
+|- replace_string "\0"
+|- cmp $(XOF readme_file) -
+|> stdout
