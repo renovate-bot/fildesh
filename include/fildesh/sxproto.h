@@ -1,3 +1,5 @@
+#ifndef FILDESH_SXPROTO_H_
+#define FILDESH_SXPROTO_H_
 #include <fildesh/fildesh.h>
 
 BEGIN_EXTERN_C
@@ -203,3 +205,4 @@ static inline FildeshSxpbIT FildeshSxpbIT_of_NULL() {
 }
 
 END_EXTERN_C
+#endif
